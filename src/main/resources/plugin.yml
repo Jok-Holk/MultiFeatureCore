@@ -1,0 +1,19 @@
+name: MultiFeatureCore
+version: '1.0-SNAPSHOT'
+main: com.jokholk.multifeature.MainPlugin
+api-version: '1.21'
+load: STARTUP
+authors: [Jok Holk]
+description: Custom Plugins Made By Jok Holk
+website: jokholk.dev
+commands:
+  menu:
+    description: Open custom menu
+  rank:
+    description: Manage player ranks
+permissions:
+  multifeature.menu:
+    description: Access custom menu
+  multifeature.admin:
+    description: Full admin permissions
+    default: op

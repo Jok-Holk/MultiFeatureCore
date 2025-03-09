@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="multifeaturecore:jar">
+    <output-path>D:/test_server/plugins</output-path>
+    <root id="archive" name="multifeaturecore.jar">
+      <element id="module-output" name="multifeaturecore" />
+    </root>
+  </artifact>
+</component>

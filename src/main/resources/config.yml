@@ -1,0 +1,35 @@
+# config.yml
+menu:
+  title: "Menu"
+  items:
+    - name: "Fast Travel"
+      material: "COMPASS"
+      slot: 4
+rank:
+  default: "GUEST"  # Default rank for new players
+  permissions:
+    GUEST:  # Guest rank
+      - "multifeature.menu"  # Access to custom menu
+    BUILDER:  # Builder rank
+      - "multifeature.menu"
+      - "minecraft.command.gamemode"  # Change gamemode
+      - "minecraft.command.time"  # Change time
+      - "minecraft.command.effect"  # Add/remove effects
+      - "minecraft.command.clear"  # Clear inventory
+      - "worldedit.*"  # Use WorldEdit
+    ADMIN:  # Admin rank
+      - "*"  # All permissions
+    OWNER:  # Owner rank
+      - "*"  # All permissions
+    DEVELOPER:  # Owner rank
+      - "*"  # All permissions
+  colors:
+    GUEST: "§7" # Gray
+    BUILDER: "§a" # Green
+    ADMIN: "§e" # Yellow
+    OWNER: "§c" # Red
+    DEVELOPER: "§5" # Purple
+  guest-settings:
+    gamemode: ADVENTURE
+    hunger: disabled
+    flight: enabled
