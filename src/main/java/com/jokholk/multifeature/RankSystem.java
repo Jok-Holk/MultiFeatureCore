@@ -23,8 +23,19 @@ public class RankSystem {
 
     // Check if a rank is valid
     public boolean isValidRank(String rank) {
-        return plugin.getConfig().getConfigurationSection("rank.permissions").contains(rank);
+
+        if (plugin.getConfig()
+                .getConfigurationSection("rank.permissions") == null) {
+
+            plugin.getLogger().severe("CONFIG ERROR: rank.permissions missing!");
+            return false;
+        }
+
+        return plugin.getConfig()
+                .getConfigurationSection("rank.permissions")
+                .contains(rank);
     }
+
 
     // Get a list of all valid ranks
     public List<String> getRanks() {
@@ -102,7 +113,19 @@ public class RankSystem {
         playerPermissions.put(playerId, newAttachment);
 
         String rank = getRank(player);
-        List<String> permissions = plugin.getConfig().getStringList("rank.permissions." + rank);
+        List<String> permissions =
+                plugin.getConfig().getStringList("rank.permissions." + rank);
+
+        if (permissions.isEmpty()) {
+
+            plugin.getLogger().warning(
+                    "No permissions found for rank " + rank
+                            + " -> fallback to GUEST"
+            );
+
+            permissions = plugin.getConfig()
+                    .getStringList("rank.permissions.GUEST");
+        }
 
         for (String permission : permissions) {
             newAttachment.setPermission(permission, true);

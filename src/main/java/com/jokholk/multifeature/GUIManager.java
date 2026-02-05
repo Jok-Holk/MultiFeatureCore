@@ -7,19 +7,43 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GUIManager {
-    public static Inventory createMenu(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 9, "§6Menu");
 
-        // Add items to the GUI (Example: Compass for teleportation)
-        ItemStack compass = new ItemStack(Material.COMPASS);
-        ItemMeta meta = compass.getItemMeta();
-        meta.setDisplayName("§aFast Travel");
-        meta.setLore(Arrays.asList("§7Click to teleport to spawn."));
-        compass.setItemMeta(meta);
-        gui.setItem(4, compass);
+    public static Inventory createMenu(Player p, CheckpointManager cm) {
+
+        Inventory gui = Bukkit.createInventory(null, 9, "Fast Travel");
+
+        for (int i = 1; i <= 9; i++) {
+
+            String id = "checkpoint" + i;
+
+            ItemStack item = new ItemStack(Material.GRASS_BLOCK);
+            ItemMeta m = item.getItemMeta();
+
+            String name = cm.getName(p, id);
+            m.setDisplayName("§a" + name);
+
+            List<String> lore = new ArrayList<>();
+            lore.add("§7ID: " + id);
+
+            org.bukkit.Location l = cm.loadCheckpoint(p, id);
+
+            if (l != null) {
+                lore.add("§f" + l.getBlockX() + ", "
+                        + l.getBlockY() + ", "
+                        + l.getBlockZ());
+            } else {
+                lore.add("§cNot set");
+            }
+
+            m.setLore(lore);
+            item.setItemMeta(m);
+
+            gui.setItem(i - 1, item);
+        }
 
         return gui;
     }

@@ -10,10 +10,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f810471-c1fc-45f3-ac61-17e371fb27d4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multifeaturecore.iml" beforeDir="false" afterPath="$PROJECT_DIR$/multifeaturecore.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GUIManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GUIManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MenuCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MenuCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NametagManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NametagManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/GUIManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/GUIManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MenuCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MenuCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/NametagManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/NametagManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankSystem.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankSystem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/ScoreboardManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/ScoreboardManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +49,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Jok-Holk&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Jok-Holk/MultiFeatureCore.git&quot;,
+    &quot;accountId&quot;: &quot;8a2559cc-2588-42db-8339-60b191569622&quot;
+  }
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -38,31 +68,41 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2tu8mtn9eyMHrES1PgWfpRaTdIE" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+  <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/test_server/plugins",
-    "project.structure.last.edited": "Artifacts",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.multifeaturecore [clean,package].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/test_server/plugins&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Admin\IdeaProjects\MultiFeatureCore\src\main\java\com\jokholk" />
       <recent name="C:\Users\Admin\IdeaProjects\MultiFeatureCore" />
     </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -74,5 +114,9 @@
       <updated>1741190763981</updated>
     </task>
     <servers />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

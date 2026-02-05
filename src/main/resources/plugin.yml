@@ -1,19 +1,44 @@
 name: MultiFeatureCore
-version: '1.0-SNAPSHOT'
+version: '2.0-SNAPSHOT'
 main: com.jokholk.multifeature.MainPlugin
-api-version: '1.21'
+api-version: '1.21.7'
 load: STARTUP
+
 authors: [Jok Holk]
 description: Custom Plugins Made By Jok Holk
 website: jokholk.dev
+
 commands:
   menu:
-    description: Open custom menu
+    description: Open fast travel menu
+    usage: /menu [save|load|name]
+
   rank:
     description: Manage player ranks
+    usage: /rank <player> <rank>
+
+  scoreboard:
+    description: Toggle scoreboard
+    usage: scoreboard [on|off]
+
 permissions:
+
   multifeature.menu:
-    description: Access custom menu
+    description: Access fast travel system
+    default: true
+
   multifeature.admin:
-    description: Full admin permissions
+    description: Manage ranks
     default: op
+
+  multifeature.checkpoint.save:
+    description: Save checkpoints
+    default: true
+
+  multifeature.checkpoint.load:
+    description: Load checkpoints
+    default: true
+
+  multifeature.checkpoint.rename:
+    description: Rename checkpoints
+    default: true
