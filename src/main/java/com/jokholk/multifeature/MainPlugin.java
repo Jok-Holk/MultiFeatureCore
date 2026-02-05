@@ -1,7 +1,6 @@
 package com.jokholk.multifeature;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -11,138 +10,146 @@ import org.bukkit.entity.Player;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.UUID;
 
 public class MainPlugin extends JavaPlugin implements Listener {
+
     private YamlConfiguration config;
-    private HashMap<UUID, PermissionAttachment> playerPermissions = new HashMap<>();
-    private RankSystem rankSystem; // Declare rank system
+
+    private RankSystem rankSystem;
     private ScoreboardManager scoreboardManager;
     private NametagManager nametagManager;
 
+    private CheckpointManager checkpointManager;
+    private ScoreboardSettings scoreSettings;
+
     @Override
     public void onEnable() {
-        // Load config.yml
-        saveDefaultConfig();
-        config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
 
-        // Initialize rank system
+        saveDefaultConfig();
+        config = YamlConfiguration.loadConfiguration(
+                new File(getDataFolder(), "config.yml")
+        );
+
         rankSystem = new RankSystem(this);
         scoreboardManager = new ScoreboardManager(rankSystem);
         nametagManager = new NametagManager(rankSystem);
+        scoreSettings = new ScoreboardSettings(this);
+        // ➤ GIỜ DÒNG NÀY MỚI HỢP LỆ
+        checkpointManager = new CheckpointManager(this);
 
-        // Register events
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ChatListener(rankSystem), this);
+        getServer().getPluginManager().registerEvents(new MenuListener(this), this);
 
-        // Register commands
-        this.getCommand("menu").setExecutor(new MenuCommand(this));
-        this.getCommand("rank").setExecutor(new RankCommand(this));
+        // ➤ Chống NPE khi chưa khai báo command trong plugin.yml
+        if (getCommand("menu") != null)
+            getCommand("menu").setExecutor(new MenuCommand(this));
 
-        // Load and assign ranks for online players and set their permissions
+        if (getCommand("rank") != null)
+            getCommand("rank").setExecutor(new RankCommand(this));
+
         for (Player player : getServer().getOnlinePlayers()) {
-            rankSystem.updatePermissions(player);  // Set permissions
-            setDefaultGamemode(player);  // Set default gamemode
-            scoreboardManager.updateScoreboard(player);  // Update scoreboard
-            nametagManager.updateNametag(player);  // Update nametag
+            rankSystem.updatePermissions(player);
+            setDefaultGamemode(player);
+            if (scoreSettings.isEnabled(player))
+                scoreboardManager.updateScoreboard(player);
+            nametagManager.updateNametag(player);
         }
+        getCommand("scoreboard")
+                .setExecutor(new ScoreboardCommand(this));
 
-        getLogger().info("MultiFeatureCore has been enabled!");
-
-        // Periodically update scoreboard and nametags
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player player : getServer().getOnlinePlayers()) {
-                    scoreboardManager.updateScoreboard(player);
+                    if (scoreSettings.isEnabled(player))
+                        scoreboardManager.updateScoreboard(player);
                     nametagManager.updateNametag(player);
                 }
             }
-        }.runTaskTimer(this, 0L, 100L);  // Every 5 seconds
+        }.runTaskTimer(this, 0L, 100L);
     }
 
     @Override
     public void onDisable() {
-        // Save player ranks when the server shuts down
         for (Player player : getServer().getOnlinePlayers()) {
-            rankSystem.savePlayerRank(player);  // Save the rank to file
+            rankSystem.savePlayerRank(player);
         }
-        getLogger().info("MultiFeatureCore has been disabled!");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+
         Player player = event.getPlayer();
-        rankSystem.updatePermissions(player);  // Update permissions
-        setDefaultGamemode(player);  // Set default gamemode
-        scoreboardManager.updateScoreboard(player);  // Update scoreboard
-        nametagManager.updateNametag(player);  // Update nametag
 
-        // Continuously replenish hunger for Guests
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if ("GUEST".equals(rankSystem.getRank(player))) {
-                    player.setFoodLevel(20);
-                    player.setSaturation(20f);
-                }
-            }
-        }.runTaskTimer(this, 0L, 100L);  // Every 5 seconds
+        rankSystem.updatePermissions(player);
+        setDefaultGamemode(player);
+        scoreboardManager.updateScoreboard(player);
+        nametagManager.updateNametag(player);
 
-        // Custom join message
         String rank = rankSystem.getRank(player);
         String rankColor = rankSystem.getRankColor(player);
-        getLogger().info("Player " + player.getName() + " joined with rank: " + rank);
 
         if (rank.equals("OWNER")) {
-            event.setJoinMessage(rankColor + "GOD HAS COME");
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.0f);
+            event.joinMessage(
+                    net.kyori.adventure.text.Component.text(rankColor + "GOD HAS COME")
+            );
+            playLightningSound();
         } else {
-            event.setJoinMessage(rankColor + "[" + rank + "] " + player.getName() + " joined the game");        }
+            event.joinMessage(
+                    net.kyori.adventure.text.Component.text(
+                            rankColor + "[" + rank + "] " + player.getName() + " joined the game"
+                    )
+            );
+        }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+
         Player player = event.getPlayer();
         String rank = rankSystem.getRank(player);
         String rankColor = rankSystem.getRankColor(player);
 
-        // Custom leave message
         if (rank.equals("OWNER")) {
-            event.setQuitMessage(rankColor + "GOD HAS LEFT");
-            playLightningSound();
+            event.quitMessage(
+                    net.kyori.adventure.text.Component.text(rankColor + "GOD HAS LEFT")
+            );
         } else {
-            event.setQuitMessage(rankColor + "[" + rank + "] " + player.getName() + " left the game");
+            event.quitMessage(
+                    net.kyori.adventure.text.Component.text(
+                            rankColor + "[" + rank + "] " + player.getName() + " left the game"
+                    )
+            );
         }
     }
 
     public void setDefaultGamemode(Player player) {
-        String rank = rankSystem.getRank(player);
 
-        if ("GUEST".equals(rank)) {
-            // Set gamemode to ADVENTURE (2)
+        if ("GUEST".equals(rankSystem.getRank(player))) {
+
             player.setGameMode(GameMode.ADVENTURE);
 
-            // Disable hunger system
             player.setFoodLevel(20);
             player.setSaturation(20f);
             player.setExhaustion(0f);
 
-            // Enable flight
             player.setAllowFlight(true);
             player.setFlying(true);
         }
     }
 
     private void playLightningSound() {
-        // Play lightning sound for all players
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.0f);
+            onlinePlayer.playSound(
+                    onlinePlayer.getLocation(),
+                    Sound.ENTITY_LIGHTNING_BOLT_THUNDER,
+                    1.0f,
+                    1.0f
+            );
         }
     }
 
@@ -154,6 +161,10 @@ public class MainPlugin extends JavaPlugin implements Listener {
         return rankSystem;
     }
 
+    public CheckpointManager getCheckpointManager() {
+        return checkpointManager;
+    }
+
     public void updatePlayerNametag(Player player) {
         nametagManager.updateNametag(player);
     }
@@ -161,4 +172,12 @@ public class MainPlugin extends JavaPlugin implements Listener {
     public void updatePlayerScoreboard(Player player) {
         scoreboardManager.updateScoreboard(player);
     }
+    public ScoreboardSettings getScoreSettings() {
+        return scoreSettings;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
 }

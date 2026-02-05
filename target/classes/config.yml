@@ -1,35 +1,52 @@
-# config.yml
 menu:
-  title: "Menu"
-  items:
-    - name: "Fast Travel"
-      material: "COMPASS"
-      slot: 4
+  title: "Fast Travel"
+  size: 9
+
+checkpoint:
+  countdown: 3          # Seconds before teleport
+  cancel-on-move: true
+  cooldown: 30          # Seconds between teleports
+  sound:
+    enable: true
+    name: ENTITY_ENDERMAN_TELEPORT
+
 rank:
-  default: "GUEST"  # Default rank for new players
+  default: "GUEST"
+
   permissions:
-    GUEST:  # Guest rank
-      - "multifeature.menu"  # Access to custom menu
-    BUILDER:  # Builder rank
+    GUEST:
       - "multifeature.menu"
-      - "minecraft.command.gamemode"  # Change gamemode
-      - "minecraft.command.time"  # Change time
-      - "minecraft.command.effect"  # Add/remove effects
-      - "minecraft.command.clear"  # Clear inventory
-      - "worldedit.*"  # Use WorldEdit
-    ADMIN:  # Admin rank
-      - "*"  # All permissions
-    OWNER:  # Owner rank
-      - "*"  # All permissions
-    DEVELOPER:  # Owner rank
-      - "*"  # All permissions
+
+    BUILDER:
+      - "multifeature.menu"
+      - "minecraft.command.gamemode"
+      - "minecraft.command.time"
+      - "minecraft.command.effect"
+      - "minecraft.command.clear"
+      - "worldedit.*"
+
+    ADMIN:
+      - "*"
+
+    OWNER:
+      - "*"
+
+    DEVELOPER:
+      - "*"
+
   colors:
-    GUEST: "§7" # Gray
-    BUILDER: "§a" # Green
-    ADMIN: "§e" # Yellow
-    OWNER: "§c" # Red
-    DEVELOPER: "§5" # Purple
-  guest-settings:
-    gamemode: ADVENTURE
-    hunger: disabled
-    flight: enabled
+    GUEST: "§7"
+    BUILDER: "§a"
+    ADMIN: "§e"
+    OWNER: "§c"
+    DEVELOPER: "§5"
+
+messages:
+  prefix: "§6[FastTravel] §f"
+  saved: "Checkpoint §e%name% §fsaved!"
+  renamed: "Checkpoint renamed to §e%name%"
+  not-found: "Checkpoint not found!"
+  countdown: "Teleporting in §e%time%§f..."
+  moved: "You moved! Teleport cancelled."
+  teleported: "Teleported to §a%name%"
+  cooldown: "Please wait §e%time%§f seconds before next teleport."

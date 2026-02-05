@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 public class ScoreboardManager {
+
     private final RankSystem rankSystem;
 
     public ScoreboardManager(RankSystem rankSystem) {
@@ -12,58 +13,72 @@ public class ScoreboardManager {
     }
 
     public void updateScoreboard(Player player) {
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("MultiFeatureCore", "dummy", "§dmc.sillycat.gay");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        // Clear any existing entries
-        board.getEntries().forEach(board::resetScores);
+        // Lấy scoreboard hiện tại hoặc tạo mới
+        Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
-        // Define all lines in order (top to bottom)
-        String[] lines = {
-                "§9------------------",
-                getCenteredTime(player),
-                " ",
-                "§c" + player.getName(),  // Player name in red
-                "§aPersonal Info:",
-                "§f- Rank: " + rankSystem.getRankColor(player) + rankSystem.getRank(player),
-                "§f- Ping: §e" + player.getPing() + "ms",
-                "  ",
-                "§aServer Info:",
-                "§f- Online: §a" + Bukkit.getOnlinePlayers().size() + " players",
-                "§f- Staff: §a" + countStaffOnline(),
-                "   ",
-                "§9------------------"
+        Objective obj = board.getObjective("mfc");
+
+        if (obj == null) {
+            obj = board.registerNewObjective(
+                    "mfc",
+                    "dummy",
+                    "§dmc.sillycat.gay"
+            );
+            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        }
+
+        // Xóa nội dung cũ
+        for (String entry : board.getEntries()) {
+            board.resetScores(entry);
+        }
+
+        String name = player.getName();
+        String rank = rankSystem.getRank(player);
+        String color = rankSystem.getRankColor(player);
+
+        int ping = player.getPing();
+
+        // Tính giờ world
+        long time = player.getWorld().getTime();
+        int hours = (int) ((time / 1000 + 6) % 24);
+        int minutes = (int) ((time % 1000) * 60 / 1000);
+        String clock = String.format("%02d:%02d", hours, minutes);
+
+        int online = Bukkit.getOnlinePlayers().size();
+        int staff = countStaffOnline();
+
+        // ===== STYLE A =====
+        String[] lines = new String[]{
+
+                "§7",
+
+                "§f" + name + " §7| " + color + rank,
+
+                "§fPing: §e" + ping + "ms §7| §f" + clock,
+
+                "§7",
+
+                "§fOnline: §a" + online + " §7| §fStaff: §a" + staff
         };
 
-        // Add lines with teams and scores
-        for (int i = 0; i < lines.length; i++) {
-            int score = lines.length - i;  // Highest score at top (13 to 1)
-            Team team = board.getTeam("line_" + score);
-            if (team == null) {
-                team = board.registerNewTeam("line_" + score);
-            }
-            String entry = "§" + (char)('a' + i);  // Unique invisible entries: §a, §b, §c, etc.
-            team.addEntry(entry);
-            team.setPrefix(lines[i]);
-            obj.getScore(entry).setScore(score);  // Set score for ordering
+        int score = lines.length;
+
+        for (String line : lines) {
+            obj.getScore(line).setScore(score);
+            score--;
         }
 
         player.setScoreboard(board);
     }
 
-    private String getCenteredTime(Player player) {
-        long time = player.getWorld().getTime();
-        int hours = (int) ((time / 1000 + 6) % 24);
-        int minutes = (int) ((time % 1000) * 60 / 1000);
-        return "§7        " + String.format("%02d:%02d", hours, minutes) + "        ";
-    }
-
     private int countStaffOnline() {
         return (int) Bukkit.getOnlinePlayers().stream()
                 .filter(p -> {
-                    String rank = rankSystem.getRank(p);
-                    return rank.equals("ADMIN") || rank.equals("OWNER") || rank.equals("DEVELOPER");
+                    String r = rankSystem.getRank(p);
+                    return r.equals("ADMIN")
+                            || r.equals("OWNER")
+                            || r.equals("DEVELOPER");
                 })
                 .count();
     }
