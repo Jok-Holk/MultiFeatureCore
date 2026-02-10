@@ -9,11 +9,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 
-public class MenuCommand implements CommandExecutor {
+public class TravelCommand implements CommandExecutor {
 
     private final MainPlugin plugin;
 
-    public MenuCommand(MainPlugin plugin) {
+    public TravelCommand(MainPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -27,7 +27,7 @@ public class MenuCommand implements CommandExecutor {
 
         CheckpointManager cm = plugin.getCheckpointManager();
 
-        // /menu
+        // /travel
         if (args.length == 0) {
             p.openInventory(GUIManager.createMenu(p, cm));
             return true;
@@ -38,23 +38,17 @@ public class MenuCommand implements CommandExecutor {
         // SAVE --------------------------------------------------
         if (sub.equalsIgnoreCase("save")) {
 
-            // 1. Kiểm tra có nhập tên không
             if (args.length < 2) {
-                p.sendMessage("§cUsage: /menu save <checkpoint1-9 | name>");
+                p.sendMessage("§cUsage: /travel save <checkpoint1-9 | name>");
                 return true;
             }
 
             String input = args[1];
-
-            // 2. Xác định ID hợp lệ
             String id;
 
-            // Nếu nhập checkpoint1 -> checkpoint9
             if (input.matches("checkpoint[1-9]")) {
                 id = input;
-            }
-            else {
-                // Tìm theo tên đã tồn tại
+            } else {
                 String found = cm.findIdByName(p, input);
 
                 if (found != null) {
@@ -65,7 +59,6 @@ public class MenuCommand implements CommandExecutor {
                 }
             }
 
-            // 3. Xử lý tên hiển thị
             String name;
 
             if (args.length >= 3) {
@@ -76,19 +69,17 @@ public class MenuCommand implements CommandExecutor {
                 name = id;
             }
 
-            // 4. SAVE AN TOÀN
             cm.saveCheckpoint(p, id, name);
 
-            // 5. THÔNG BÁO
             p.sendMessage("§aSaved checkpoint §e" + name);
             return true;
         }
 
-// LOAD --------------------------------------------------
+        // LOAD --------------------------------------------------
         if (sub.equalsIgnoreCase("load")) {
 
             if (args.length < 2) {
-                p.sendMessage("§cUsage: /menu load <name or checkpoint>");
+                p.sendMessage("§cUsage: /travel load <name or checkpoint>");
                 return true;
             }
 
@@ -96,7 +87,6 @@ public class MenuCommand implements CommandExecutor {
 
             String id = cm.findIdByName(p, input);
 
-            // ➤ CHECK QUAN TRỌNG
             if (id == null) {
                 p.sendMessage("§cCheckpoint does not exist!");
                 return true;
@@ -139,17 +129,18 @@ public class MenuCommand implements CommandExecutor {
             }.runTaskTimer(plugin, 0, 20);
 
             return true;
-        }// DELETE ------------------------------------------------
+        }
+
+        // DELETE ------------------------------------------------
         if (sub.equalsIgnoreCase("delete")) {
 
             if (args.length < 2) {
-                p.sendMessage("§cUsage: /menu delete <checkpoint1-9>");
+                p.sendMessage("§cUsage: /travel delete <checkpoint1-9>");
                 return true;
             }
 
             String id = args[1];
 
-            // ➤ CHỈ CHO PHÉP ID GỐC
             if (!id.matches("checkpoint[1-9]")) {
                 p.sendMessage("§cYou must use checkpoint ID (checkpoint1-9)!");
                 return true;
@@ -162,31 +153,29 @@ public class MenuCommand implements CommandExecutor {
                 return true;
             }
 
-            // ➤ CHƯA CÓ CONFIRM
             if (args.length < 3 || !args[2].equalsIgnoreCase("confirm")) {
 
                 p.sendMessage("§eAre you sure you want to delete §c" + id + "§e?");
-                p.sendMessage("§7Type: §f/menu delete " + id + " confirm");
+                p.sendMessage("§7Type: §f/travel delete " + id + " confirm");
                 return true;
             }
 
-            // ➤ XÓA THẬT
             cm.deleteCheckpoint(p, id);
 
             p.sendMessage("§aCheckpoint §e" + id + " §ahas been permanently deleted.");
             return true;
         }
-// RENAME ------------------------------------------------
+
+        // RENAME ------------------------------------------------
         if (sub.equalsIgnoreCase("name")) {
 
             if (args.length < 3) {
-                p.sendMessage("§cUsage: /menu name <checkpoint1-9> <new name>");
+                p.sendMessage("§cUsage: /travel name <checkpoint1-9> <new name>");
                 return true;
             }
 
             String id = args[1];
 
-            // ➤ CHỈ CHO PHÉP ID GỐC
             if (!id.matches("checkpoint[1-9]")) {
                 p.sendMessage("§cYou can only rename using checkpoint ID (checkpoint1-9)!");
                 return true;
@@ -208,13 +197,14 @@ public class MenuCommand implements CommandExecutor {
             p.sendMessage("§aCheckpoint §e" + id + " §arenamed to §e" + name);
             return true;
         }
-        // ===== FALLBACK AN TOÀN =====
-        p.sendMessage("§cUnknown menu command.");
-        p.sendMessage("§7/menu");
-        p.sendMessage("§7/menu save <checkpoint1-9> <name>");
-        p.sendMessage("§7/menu load <name or id>");
-        p.sendMessage("§7/menu name <checkpoint1-9> <new name>");
-        p.sendMessage("§7/menu delete <checkpoint1-9>");
+
+        // FALLBACK ----------------------------------------------
+        p.sendMessage("§cUnknown travel command.");
+        p.sendMessage("§7/travel");
+        p.sendMessage("§7/travel save <checkpoint1-9> <name>");
+        p.sendMessage("§7/travel load <name or id>");
+        p.sendMessage("§7/travel name <checkpoint1-9> <new name>");
+        p.sendMessage("§7/travel delete <checkpoint1-9>");
         return true;
     }
 }
