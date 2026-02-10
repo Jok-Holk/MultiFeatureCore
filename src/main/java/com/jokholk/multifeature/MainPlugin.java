@@ -87,7 +87,13 @@ public class MainPlugin extends JavaPlugin implements Listener {
 
         rankSystem.updatePermissions(player);
         setDefaultGamemode(player);
-        scoreboardManager.updateScoreboard(player);
+        if (scoreSettings.isEnabled(player)) {
+            scoreboardManager.updateScoreboard(player);
+        } else {
+            player.setScoreboard(
+                    Bukkit.getScoreboardManager().getNewScoreboard()
+            );
+        }
         nametagManager.updateNametag(player);
 
         String rank = rankSystem.getRank(player);

@@ -1,17 +1,17 @@
 name: MultiFeatureCore
-version: '2.0-SNAPSHOT'
+version: '2.1.0'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '1.21.7'
 load: STARTUP
 
 authors: [Jok Holk]
-description: Custom Plugins Made By Jok Holk
-website: jokholk.dev
+description: A multi-feature core plugin providing personal fast travel, customizable ranks, chat prefix, nametag, and toggleable scoreboard.
+website: https://jokholk.dev
 
 commands:
-  menu:
-    description: Open fast travel menu
-    usage: /menu [save|load|name]
+  travel:
+    description: Fast travel system
+    usage: /travel [save|load|name|delete]
 
   rank:
     description: Manage player ranks
@@ -23,7 +23,7 @@ commands:
 
 permissions:
 
-  multifeature.menu:
+  multifeature.travel:
     description: Access fast travel system
     default: true
 

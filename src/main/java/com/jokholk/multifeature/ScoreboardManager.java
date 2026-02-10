@@ -15,19 +15,15 @@ public class ScoreboardManager {
     public void updateScoreboard(Player player) {
 
         // Lấy scoreboard hiện tại hoặc tạo mới
-        Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        Objective obj = board.getObjective("mfc");
+        Objective obj = board.registerNewObjective(
+                "mfc",
+                "dummy",
+                "§dmc.sillycat.gay"
+        );
 
-        if (obj == null) {
-            obj = board.registerNewObjective(
-                    "mfc",
-                    "dummy",
-                    "§dmc.sillycat.gay"
-            );
-            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        }
-
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         // Xóa nội dung cũ
         for (String entry : board.getEntries()) {
             board.resetScores(entry);
