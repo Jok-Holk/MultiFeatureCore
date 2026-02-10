@@ -9,29 +9,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1f810471-c1fc-45f3-ac61-17e371fb27d4" name="Changes" comment="">
+    <list default="true" id="1f810471-c1fc-45f3-ac61-17e371fb27d4" name="Changes" comment="update 2.0 rewrite menu making fast travel system. Fix rank system a bit. Fix scoreboard, make it smaller and can be turned on or off.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multifeaturecore.iml" beforeDir="false" afterPath="$PROJECT_DIR$/multifeaturecore.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GUIManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GUIManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MenuCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MenuCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NametagManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NametagManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MenuCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/TravelCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MenuListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/TravelListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/GUIManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/GUIManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MenuCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MenuCommand.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/NametagManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/NametagManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankCommand.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankSystem.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankSystem.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/ScoreboardManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/ScoreboardManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +97,29 @@
       <option name="presentableId" value="Default" />
       <updated>1741190763981</updated>
     </task>
+    <task id="LOCAL-00001" summary="update 2.0 rewrite menu making fast travel system. Fix rank system a bit. Fix scoreboard, make it smaller and can be turned on or off.">
+      <option name="closed" value="true" />
+      <created>1770274748990</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1770274748990</updated>
+    </task>
+    <task id="LOCAL-00002" summary="update 2.0 rewrite menu making fast travel system. Fix rank system a bit. Fix scoreboard, make it smaller and can be turned on or off.">
+      <option name="closed" value="true" />
+      <created>1770274804223</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1770274804223</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update 2.0 rewrite menu making fast travel system. Fix rank system a bit. Fix scoreboard, make it smaller and can be turn on or off." />
+    <MESSAGE value="update 2.0 rewrite menu making fast travel system. Fix rank system a bit. Fix scoreboard, make it smaller and can be turned on or off." />
+    <option name="LAST_COMMIT_MESSAGE" value="update 2.0 rewrite menu making fast travel system. Fix rank system a bit. Fix scoreboard, make it smaller and can be turned on or off." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

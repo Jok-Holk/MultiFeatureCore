@@ -5,11 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class MenuListener implements Listener {
+public class TravelListener implements Listener {
 
     private final MainPlugin plugin;
 
-    public MenuListener(MainPlugin plugin) {
+    public TravelListener(MainPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -25,6 +25,6 @@ public class MenuListener implements Listener {
 
         int slot = e.getSlot() + 1;
 
-        p.performCommand("menu load checkpoint" + slot);
+        p.performCommand("travel load checkpoint" + slot);
     }
 }

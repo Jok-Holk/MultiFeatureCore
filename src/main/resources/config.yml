@@ -1,4 +1,4 @@
-menu:
+travel:
   title: "Fast Travel"
   size: 9
 
@@ -15,10 +15,10 @@ rank:
 
   permissions:
     GUEST:
-      - "multifeature.menu"
+    - "multifeature.travel"
 
     BUILDER:
-      - "multifeature.menu"
+      - "multifeature.travel"
       - "minecraft.command.gamemode"
       - "minecraft.command.time"
       - "minecraft.command.effect"

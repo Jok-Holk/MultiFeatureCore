@@ -42,11 +42,11 @@ public class MainPlugin extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ChatListener(rankSystem), this);
-        getServer().getPluginManager().registerEvents(new MenuListener(this), this);
+        getServer().getPluginManager().registerEvents(new TravelListener(this), this);
 
         // ➤ Chống NPE khi chưa khai báo command trong plugin.yml
-        if (getCommand("menu") != null)
-            getCommand("menu").setExecutor(new MenuCommand(this));
+        if (getCommand("travel") != null)
+            getCommand("travel").setExecutor(new TravelCommand(this));
 
         if (getCommand("rank") != null)
             getCommand("rank").setExecutor(new RankCommand(this));
