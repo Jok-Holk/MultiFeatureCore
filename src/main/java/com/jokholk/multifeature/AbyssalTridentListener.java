@@ -94,9 +94,9 @@ public class AbyssalTridentListener implements Listener {
     public void onLaunch(ProjectileLaunchEvent e) {
         if (!(e.getEntity() instanceof Trident trident)) return;
         if (!(trident.getShooter() instanceof Player shooter)) return;
-        if (!isAbyssalTrident(trident.getItem())) return;
-        if (!isOwner(shooter, trident.getItem())) {
-            punishThief(shooter, trident.getItem());
+        if (!isAbyssalTrident(trident.getItemStack())) return;
+        if (!isOwner(shooter, trident.getItemStack())) {
+            punishThief(shooter, trident.getItemStack());
             e.setCancelled(true);
             return;
         }
@@ -118,7 +118,7 @@ public class AbyssalTridentListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onHit(ProjectileHitEvent e) {
         if (!(e.getEntity() instanceof Trident trident)) return;
-        if (!isAbyssalTrident(trident.getItem())) return;
+        if (!isAbyssalTrident(trident.getItemStack())) return;
         if (!trackedTridents.containsKey(trident.getUniqueId())) return;
 
         UUID shooterUUID = trackedTridents.remove(trident.getUniqueId());
@@ -166,7 +166,7 @@ public class AbyssalTridentListener implements Listener {
 
     private void scheduleReturn(Trident trident, Player shooter) {
         // Lưu item để trả về nếu entity bị xóa
-        ItemStack returnItem = trident.getItem().clone();
+        ItemStack returnItem = trident.getItemStack().clone();
 
         new BukkitRunnable() {
             @Override
