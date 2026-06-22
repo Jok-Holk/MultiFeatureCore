@@ -38,7 +38,12 @@ Equip a compass and click two blocks to measure distance (X/Y/Z + 2D + 3D) or fi
 Right-click to launch upward. Falling on a player below executes divine judgment. Item is owner-locked — anyone else who picks it up gets kicked.
 
 ### Abyssal Sovereign (`/abyssal`)
-A sea-themed trident. Throws at 3× normal speed, deals extreme damage. On hit: real lightning strike + explosion. Returns automatically to owner. Hit a player in Survival: instant execution. Owner-locked like the God Mace.
+A sea-themed trident. Throws at 3× normal speed with extreme base damage. On hit: lightning strike + explosion + splash AoE damage to surrounding entities. Returns to owner after hitting a block. Hit a player in Survival: instant execution. Owner-locked like the God Mace.
+
+**Wet-condition bonus** — if the target is in water or exposed to rain:
+- Direct hit damage doubles (40 → 80)
+- Splash AoE expands from 3×3 to 6×6 blocks
+- Explosion radius doubles; 6 fireworks instead of 3
 
 ### Glass Shortcut (`/glass`)
 Places a glass block at your feet instantly — for temporary scaffolding.
@@ -95,6 +100,8 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
+| 4.3.5 | Abyssal Sovereign wet-condition system: double damage + wider splash AoE in water/rain |
+| 4.3.0 | Fix Abyssal Sovereign: inventory removal in Creative, trident return after entity hit |
 | 4.2.5 | Add FAVS (`voxelsniper.*`) permissions; fix JAR build (shade → jar-plugin) |
 | 4.2.0 | Add Abyssal Sovereign trident; fix deprecated `DO_DAYLIGHT_CYCLE` API |
 | 4.1.0 | Add `/glass` and `/daylength` |

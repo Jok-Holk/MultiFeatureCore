@@ -47,7 +47,7 @@ public class AbyssalTridentCommand implements CommandExecutor {
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.UNBREAKING, 10, true);
         m.addEnchant(Enchantment.IMPALING, 5, true);
-        m.addEnchant(Enchantment.LOYALTY, 3, true);
+        // Không dùng Loyalty — custom return chỉ khi trúng block
 
         trident.setItemMeta(m);
 

@@ -1,10 +1,10 @@
-name: MultiFeatureCore
-version: '4.3.0'
+﻿name: MultiFeatureCore
+version: '4.3.5'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
 authors: [Jok Holk]
-description: A multi-feature core plugin — fast travel, rank system, height lock, and build measurement tools.
+description: A multi-feature core plugin â€” fast travel, rank system, height lock, and build measurement tools.
 website: https://jokholk.dev
 
 commands:
