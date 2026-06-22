@@ -125,38 +125,39 @@ public class AbyssalTridentListener implements Listener {
         Player shooter = Bukkit.getPlayer(shooterUUID);
 
         Entity hitEntity = e.getHitEntity();
-        Location hitLoc = hitEntity != null ? hitEntity.getLocation() : trident.getLocation();
 
-        // ── Hiệu ứng tất cả các lần trúng ──
-        spawnAbyssalEffects(hitLoc);
+        if (hitEntity != null) {
+            // ── Trúng entity → hiệu ứng, Loyalty 3 tự quay về ──
+            Location hitLoc = hitEntity.getLocation();
+            spawnAbyssalEffects(hitLoc);
 
-        // ── Trúng sinh vật ──
-        if (hitEntity instanceof LivingEntity mob && !(hitEntity instanceof Player)) {
-            // Sét thật + nổ không phá block tại vị trí mob
-            hitLoc.getWorld().strikeLightning(hitLoc);
-            hitLoc.getWorld().createExplosion(hitLoc, 3.5f, false, false);
-        }
+            if (hitEntity instanceof LivingEntity && !(hitEntity instanceof Player)) {
+                hitLoc.getWorld().strikeLightning(hitLoc);
+                hitLoc.getWorld().createExplosion(hitLoc, 3.5f, false, false);
+            }
 
-        // ── Trúng người chơi ở survival → tiêu diệt ──
-        if (hitEntity instanceof Player victim &&
-                victim.getGameMode() == GameMode.SURVIVAL) {
+            if (hitEntity instanceof Player victim &&
+                    victim.getGameMode() == GameMode.SURVIVAL) {
 
-            hitLoc.getWorld().strikeLightningEffect(hitLoc); // hiệu ứng thị giác
-            hitLoc.getWorld().createExplosion(hitLoc, 3.5f, false, false);
+                hitLoc.getWorld().strikeLightningEffect(hitLoc);
+                hitLoc.getWorld().createExplosion(hitLoc, 3.5f, false, false);
 
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (victim.isOnline()) {
-                    victim.kickPlayer(
-                            "§b⚓ THE ABYSS CLAIMS YOU ⚓\n\n" +
-                            "§3The crushing deep has swallowed you whole..."
-                    );
-                }
-            }, 1L);
-        }
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (victim.isOnline()) {
+                        victim.kickPlayer(
+                                "§b⚓ THE ABYSS CLAIMS YOU ⚓\n\n" +
+                                "§3The crushing deep has swallowed you whole..."
+                        );
+                    }
+                }, 1L);
+            }
+            // Không gọi scheduleReturn — Loyalty 3 xử lý quay về tự nhiên
 
-        // ── Quay nhanh về chủ ──
-        if (shooter != null && shooter.isOnline()) {
-            scheduleReturn(trident, shooter);
+        } else {
+            // ── Trúng block → kéo nhanh về chủ ──
+            if (shooter != null && shooter.isOnline()) {
+                scheduleReturn(trident, shooter);
+            }
         }
     }
 
@@ -165,7 +166,6 @@ public class AbyssalTridentListener implements Listener {
     // ======================================================
 
     private void scheduleReturn(Trident trident, Player shooter) {
-        // Lưu item để trả về nếu entity bị xóa
         ItemStack returnItem = trident.getItemStack().clone();
 
         new BukkitRunnable() {
@@ -173,31 +173,38 @@ public class AbyssalTridentListener implements Listener {
             public void run() {
                 if (!shooter.isOnline()) { cancel(); return; }
 
-                // Entity đã bị Bukkit thu hồi
+                // Entity bị thu hồi ngoài scheduler (Loyalty hoặc pickup)
                 if (!trident.isValid()) {
-                    shooter.getInventory().addItem(returnItem);
+                    giveBack(shooter, returnItem);
                     cancel();
                     return;
                 }
 
                 Location tridentLoc = trident.getLocation();
-                Location targetLoc = shooter.getLocation().add(0, 1, 0);
+                Location targetLoc  = shooter.getLocation().add(0, 1, 0);
 
                 if (tridentLoc.distanceSquared(targetLoc) < 1.5) {
                     trident.remove();
-                    shooter.getInventory().addItem(returnItem);
+                    giveBack(shooter, returnItem);
                     cancel();
                     return;
                 }
 
-                // Đẩy nhanh về phía chủ (3 block/tick)
+                // Kéo về chủ — tốc độ 1.75 block/tick
                 Vector dir = targetLoc.toVector()
                         .subtract(tridentLoc.toVector())
                         .normalize()
-                        .multiply(3.5);
+                        .multiply(1.75);
                 trident.setVelocity(dir);
             }
         }.runTaskTimer(plugin, 3L, 1L);
+    }
+
+    // Creative mode giữ item trong inventory khi ném — không trả thêm để tránh duplicate
+    private void giveBack(Player shooter, ItemStack item) {
+        if (shooter.getGameMode() != GameMode.CREATIVE) {
+            shooter.getInventory().addItem(item);
+        }
     }
 
     // ======================================================

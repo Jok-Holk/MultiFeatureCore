@@ -1,5 +1,5 @@
 name: MultiFeatureCore
-version: '4.2.5'
+version: '4.3.0'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
