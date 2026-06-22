@@ -1,35 +1,54 @@
 name: MultiFeatureCore
-version: '2.1.0'
+version: '4.2.5'
 main: com.jokholk.multifeature.MainPlugin
-api-version: '1.21.7'
-load: STARTUP
+api-version: '26.1'
 
 authors: [Jok Holk]
-description: A multi-feature core plugin providing personal fast travel, customizable ranks, chat prefix, nametag, and toggleable scoreboard.
+description: A multi-feature core plugin — fast travel, rank system, height lock, and build measurement tools.
 website: https://jokholk.dev
 
 commands:
   travel:
     description: Fast travel system
-    usage: /travel [save|load|name|delete]
+    usage: /travel [save|load|name|delete] [checkpoint1-9]
 
   rank:
     description: Manage player ranks
     usage: /rank <player> <rank>
 
   scoreboard:
-    description: Toggle scoreboard
-    usage: scoreboard [on|off]
+    description: Toggle personal scoreboard
+    usage: /scoreboard [on|off]
+
+  godmace:
+    description: Summon the GOD MACE
+    usage: /godmace
+
+  heightlock:
+    description: Lock your Y level for precision building
+    usage: /heightlock [<y>|on|off]
+
+  measure:
+    description: Measure distances and find center points using a compass
+    usage: /measure <distance|center>
+
+  glass:
+    description: Place a glass block at your current position
+    usage: /glass
+
+  daylength:
+    description: Get or set the Minecraft day cycle length in minutes
+    usage: /daylength [<minutes>|reset]
+
+  abyssal:
+    description: Summon the ABYSSAL SOVEREIGN trident
+    usage: /abyssal
 
 permissions:
 
   multifeature.travel:
     description: Access fast travel system
     default: true
-
-  multifeature.admin:
-    description: Manage ranks
-    default: op
 
   multifeature.checkpoint.save:
     description: Save checkpoints
@@ -42,3 +61,31 @@ permissions:
   multifeature.checkpoint.rename:
     description: Rename checkpoints
     default: true
+
+  multifeature.admin:
+    description: Manage player ranks
+    default: op
+
+  multifeature.godmace:
+    description: Summon GOD MACE
+    default: op
+
+  multifeature.heightlock:
+    description: Lock Y level
+    default: op
+
+  multifeature.measure:
+    description: Use measurement compass tools
+    default: op
+
+  multifeature.glass:
+    description: Place glass block at current position
+    default: op
+
+  multifeature.daylength:
+    description: Get or set day length
+    default: op
+
+  multifeature.abyssal:
+    description: Summon the Abyssal Sovereign trident
+    default: op

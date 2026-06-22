@@ -16,13 +16,14 @@ public class TravelListener implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent e) {
 
-        if (!e.getView().getTitle().equals("Fast Travel"))
-            return;
+        if (!e.getView().getTitle().equals("Fast Travel")) return;
 
         e.setCancelled(true);
 
-        Player p = (Player) e.getWhoClicked();
+        if (e.getClickedInventory() == null) return;
+        if (!e.getClickedInventory().equals(e.getView().getTopInventory())) return;
 
+        Player p = (Player) e.getWhoClicked();
         int slot = e.getSlot() + 1;
 
         p.performCommand("travel load checkpoint" + slot);

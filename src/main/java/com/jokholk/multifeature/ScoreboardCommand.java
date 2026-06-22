@@ -1,5 +1,6 @@
 package com.jokholk.multifeature;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
@@ -25,22 +26,24 @@ public class ScoreboardCommand implements CommandExecutor {
         if (a[0].equalsIgnoreCase("off")) {
 
             plugin.getScoreSettings().set(p, false);
+
+            plugin.getScoreboardManager().remove(p);
+
             p.setScoreboard(
-                    plugin.getServer()
-                            .getScoreboardManager()
-                            .getNewScoreboard()
+                    Bukkit.getScoreboardManager().getNewScoreboard()
             );
 
             p.sendMessage("§eScoreboard disabled");
             return true;
         }
 
+
         if (a[0].equalsIgnoreCase("on")) {
 
             plugin.getScoreSettings().set(p, true);
 
-            plugin.getScoreboardManager()
-                    .updateScoreboard(p);
+            // update ngay 1 lần cho đỡ phải đợi 5s
+            plugin.getScoreboardManager().updateScoreboard(p);
 
             p.sendMessage("§aScoreboard enabled");
             return true;

@@ -95,6 +95,34 @@ public class RankSystem {
         return plugin.getConfig().getString("rank.colors." + rank, "§7");
     }
 
+    public UUID findOfflineUUID(String name) {
+        File dataFolder = new File(plugin.getDataFolder(), "player_data");
+        if (!dataFolder.exists()) return null;
+        File[] files = dataFolder.listFiles((dir, n) -> n.endsWith(".yml"));
+        if (files == null) return null;
+        for (File file : files) {
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            if (name.equalsIgnoreCase(cfg.getString("name", ""))) {
+                try {
+                    return UUID.fromString(file.getName().replace(".yml", ""));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        return null;
+    }
+
+    public void setRankByUUID(UUID uuid, String rank) {
+        playerRanks.put(uuid, rank);
+        File playerFile = new File(plugin.getDataFolder(), "player_data/" + uuid + ".yml");
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(playerFile);
+        cfg.set("rank", rank);
+        try {
+            cfg.save(playerFile);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Could not save rank for " + uuid);
+        }
+    }
+
     public void updatePermissions(Player player) {
         UUID playerId = player.getUniqueId();
 

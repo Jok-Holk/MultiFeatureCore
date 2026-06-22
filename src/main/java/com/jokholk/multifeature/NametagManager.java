@@ -6,6 +6,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class NametagManager {
+
     private final RankSystem rankSystem;
 
     public NametagManager(RankSystem rankSystem) {
@@ -13,6 +14,7 @@ public class NametagManager {
     }
 
     public void updateNametag(Player player) {
+
         Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
         String rank = rankSystem.getRank(player);
@@ -26,10 +28,9 @@ public class NametagManager {
             team = board.registerNewTeam(teamName);
         }
 
-        team.setPrefix(color + "[" + rank + "] " + color);
-        team.setSuffix("§r");
+        team.setPrefix(color + "[" + rank + "] ");
 
-        // Xóa khỏi team cũ
+        // XÓA KHỎI MỌI TEAM CŨ
         for (Team t : board.getTeams()) {
             if (t.hasEntry(player.getName())) {
                 t.removeEntry(player.getName());
@@ -38,7 +39,7 @@ public class NametagManager {
 
         team.addEntry(player.getName());
 
-        // Cập nhật cho tất cả người chơi
+        // ➤ BẮT BUỘC: tất cả phải dùng main scoreboard
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.setScoreboard(board);
         }
@@ -55,3 +56,4 @@ public class NametagManager {
         }
     }
 }
+

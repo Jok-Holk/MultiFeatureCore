@@ -15,15 +15,25 @@ rank:
 
   permissions:
     GUEST:
-    - "multifeature.travel"
+      - "multifeature.travel"
+      - "multifeature.checkpoint.save"
+      - "multifeature.checkpoint.load"
+      - "multifeature.checkpoint.rename"
 
     BUILDER:
       - "multifeature.travel"
+      - "multifeature.checkpoint.save"
+      - "multifeature.checkpoint.load"
+      - "multifeature.checkpoint.rename"
+      - "multifeature.heightlock"
+      - "multifeature.measure"
+      - "multifeature.glass"
       - "minecraft.command.gamemode"
       - "minecraft.command.time"
       - "minecraft.command.effect"
       - "minecraft.command.clear"
       - "worldedit.*"
+      - "voxelsniper.*"
 
     ADMIN:
       - "*"
