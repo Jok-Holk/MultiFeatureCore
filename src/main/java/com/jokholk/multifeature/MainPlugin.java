@@ -63,6 +63,12 @@ public class MainPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new SpeedFlyListener(this), this);
         getServer().getPluginManager().registerEvents(new KitsListener(), this);
         getServer().getPluginManager().registerEvents(new HorseListener(), this);
+        getServer().getPluginManager().registerEvents(new ExcaliburListener(this), this);
+        getServer().getPluginManager().registerEvents(new RagnarokListener(this), this);
+        getServer().getPluginManager().registerEvents(new IgnisListener(this), this);
+        getServer().getPluginManager().registerEvents(new GraveListener(this), this);
+        getServer().getPluginManager().registerEvents(new VerdantListener(this), this);
+        getServer().getPluginManager().registerEvents(new VoidBowListener(this), this);
 
         // ─── Commands ───
         registerCmd("travel",     new TravelCommand(this));
@@ -77,6 +83,12 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmd("speedfly",       new SpeedFlyCommand(this));
         registerCmd("kits",           new KitsCommand());
         registerCmd("horse",          new HorseCommand(this));
+        registerCmdOnly("excalibur", new ExcaliburCommand(this));
+        registerCmdOnly("ragnarok",  new RagnarokCommand(this));
+        registerCmdOnly("ignis",     new IgnisCommand(this));
+        registerCmdOnly("grave",     new GraveCommand(this));
+        registerCmdOnly("verdant",   new VerdantCommand(this));
+        registerCmdOnly("void",      new VoidBowCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {

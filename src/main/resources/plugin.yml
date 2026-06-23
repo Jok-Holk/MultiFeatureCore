@@ -1,5 +1,5 @@
 name: MultiFeatureCore
-version: '4.9.4'
+version: '4.9.5'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
@@ -55,6 +55,30 @@ commands:
   horse:
     description: Summon your personal war horse
     usage: /horse <breed> [armor] [name]
+
+  excalibur:
+    description: Summon the Dark Excalibur
+    usage: /excalibur
+
+  ragnarok:
+    description: Summon the Ragnarok Axe
+    usage: /ragnarok
+
+  ignis:
+    description: Summon the Ignis Core
+    usage: /ignis
+
+  grave:
+    description: Summon the Grave Sovereign
+    usage: /grave
+
+  verdant:
+    description: Summon the Verdant Cipher
+    usage: /verdant
+
+  void:
+    description: Summon the Void Constellation
+    usage: /void
 
 permissions:
 
@@ -112,5 +136,29 @@ permissions:
 
   multifeature.horse:
     description: Summon a personal war horse
+    default: op
+
+  multifeature.excalibur:
+    description: Summon Dark Excalibur
+    default: op
+
+  multifeature.ragnarok:
+    description: Summon Ragnarok
+    default: op
+
+  multifeature.ignis:
+    description: Summon Ignis Core
+    default: op
+
+  multifeature.grave:
+    description: Summon Grave Sovereign
+    default: op
+
+  multifeature.verdant:
+    description: Summon Verdant Cipher
+    default: op
+
+  multifeature.void:
+    description: Summon Void Constellation
     default: op
 
