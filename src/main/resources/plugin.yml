@@ -1,10 +1,10 @@
-﻿name: MultiFeatureCore
-version: '4.4.0'
+name: MultiFeatureCore
+version: '4.5.0'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
 authors: [Jok Holk]
-description: A multi-feature core plugin â€” fast travel, rank system, height lock, and build measurement tools.
+description: A multi-feature core plugin - fast travel, rank system, height lock, and build measurement tools.
 website: https://jokholk.dev
 
 commands:
@@ -43,6 +43,10 @@ commands:
   abyssal:
     description: Summon the ABYSSAL SOVEREIGN trident
     usage: /abyssal
+
+  speedfly:
+    description: Toggle speed fly or set fly speed level
+    usage: /speedfly [1-5|tool]
 
 permissions:
 
@@ -88,4 +92,8 @@ permissions:
 
   multifeature.abyssal:
     description: Summon the Abyssal Sovereign trident
+    default: op
+
+  multifeature.speedfly:
+    description: Use SpeedFly and Speed Wing item
     default: op

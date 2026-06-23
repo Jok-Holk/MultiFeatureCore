@@ -32,6 +32,7 @@ rank:
       - "minecraft.command.time"
       - "minecraft.command.effect"
       - "minecraft.command.clear"
+      - "multifeature.speedfly"
       - "worldedit.*"
       - "voxelsniper.*"
 

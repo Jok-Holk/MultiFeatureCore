@@ -31,6 +31,9 @@ public class MainPlugin extends JavaPlugin implements Listener {
     // ─── Feature managers v4.1.0 ───
     private DayLengthManager  dayLengthManager;
 
+    // ─── Feature managers v4.5.0 ───
+    private SpeedFlyManager   speedFlyManager;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -47,6 +50,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
         heightLockManager = new HeightLockManager();
         measureManager    = new MeasureManager();
         dayLengthManager  = new DayLengthManager(this);
+        speedFlyManager   = new SpeedFlyManager();
 
         // ─── Listeners ───
         getServer().getPluginManager().registerEvents(this, this);
@@ -56,6 +60,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new HeightLockListener(this), this);
         getServer().getPluginManager().registerEvents(new MeasureListener(this), this);
         getServer().getPluginManager().registerEvents(new AbyssalTridentListener(this), this);
+        getServer().getPluginManager().registerEvents(new SpeedFlyListener(this), this);
 
         // ─── Commands ───
         registerCmd("travel",     new TravelCommand(this));
@@ -67,6 +72,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmdOnly("glass",      new GlassCommand(this));
         registerCmd("daylength",      new DayLengthCommand(this));
         registerCmdOnly("abyssal",    new AbyssalTridentCommand(this));
+        registerCmd("speedfly",       new SpeedFlyCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {
@@ -194,4 +200,5 @@ public class MainPlugin extends JavaPlugin implements Listener {
     public HeightLockManager  getHeightLockManager(){ return heightLockManager; }
     public MeasureManager     getMeasureManager()   { return measureManager; }
     public DayLengthManager   getDayLengthManager() { return dayLengthManager; }
+    public SpeedFlyManager    getSpeedFlyManager()  { return speedFlyManager; }
 }
