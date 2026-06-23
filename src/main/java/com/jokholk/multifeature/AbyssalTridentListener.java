@@ -201,8 +201,15 @@ public class AbyssalTridentListener implements Listener {
             applySplash(hitLoc, splashDamage, splashRadius, victim, trident);
         }
 
-        // Xóa entity trident sau khi xử lý để không rơi thành item
-        Bukkit.getScheduler().runTaskLater(plugin, trident::remove, 2L);
+        // Xóa entity trident + trả lại item cho chủ
+        ItemStack returnItem = trident.getItemStack().clone();
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            trident.remove();
+            Player shooter = Bukkit.getPlayer(shooterUUID);
+            if (shooter != null && shooter.isOnline()) {
+                giveBack(shooter, returnItem);
+            }
+        }, 2L);
     }
 
     // Gây dame cho các entity xung quanh điểm va chạm (trừ mục tiêu chính)

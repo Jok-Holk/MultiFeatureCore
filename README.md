@@ -126,6 +126,7 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
+| 4.9.1 | Fix Abyssal Sovereign: trident not returned to owner after hitting an entity |
 | 4.8.5 | Rename `/abyssal` → `/trident` |
 | 4.8.0 | Add `/horse`: personal war horse with owner lock, max stats, cosmetic armor |
 | 4.7.5 | Kits inventory check: confirm/cancel before clearing inventory |
