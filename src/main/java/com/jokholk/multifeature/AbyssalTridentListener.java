@@ -15,8 +15,10 @@ public class AbyssalTridentListener implements Listener {
 
     private final MainPlugin plugin;
     private final Map<UUID, UUID> trackedTridents = new HashMap<>();
+    // Item duoc store luc launch - truoc khi xoa khoi inventory, dam bao luon co item hop le
+    private final Map<UUID, ItemStack> storedItems = new HashMap<>();
 
-    // Dame trực tiếp khi trúng mục tiêu trong điều kiện bình thường
+    // Dame truc tiep khi trung muc tieu trong dieu kien binh thuong
     static final double BASE_DAMAGE = 40.0;
 
     public AbyssalTridentListener(MainPlugin plugin) {
@@ -24,7 +26,7 @@ public class AbyssalTridentListener implements Listener {
     }
 
     // ======================================================
-    // KIỂM TRA ITEM
+    // KIEM TRA ITEM
     // ======================================================
 
     private boolean isAbyssalTrident(ItemStack item) {
@@ -41,19 +43,19 @@ public class AbyssalTridentListener implements Listener {
         return last.contains(p.getUniqueId().toString());
     }
 
-    // Trả về true nếu entity đang trong nước hoặc mưa có tiếp xúc bầu trời
+    // Tra ve true neu entity dang trong nuoc hoac mua co tiep xuc bau troi
     private boolean isWetCondition(Entity entity, Location loc) {
         if (entity.isInWater()) return true;
         World world = loc.getWorld();
         if (world.hasStorm()) {
-            // Tiếp xúc bầu trời: entity ở ngang hoặc cao hơn block cao nhất tại XZ đó
+            // Tiep xuc bau troi: entity o ngang hoac cao hon block cao nhat tai XZ do
             return world.getHighestBlockYAt(loc) <= loc.getBlockY();
         }
         return false;
     }
 
     // ======================================================
-    // TRỪNG PHẠT KẺ TRỘM
+    // TRUNG PHAT KE TROM
     // ======================================================
 
     private void punishThief(Player p, ItemStack item) {
@@ -76,7 +78,7 @@ public class AbyssalTridentListener implements Listener {
     }
 
     // ======================================================
-    // CHẶN NHẶT TRỘM
+    // CHAN NHAT TROM
     // ======================================================
 
     @EventHandler
@@ -97,7 +99,7 @@ public class AbyssalTridentListener implements Listener {
     }
 
     // ======================================================
-    // PHÓNG TRIDENT → BOOST TỐC ĐỘ + TRACK
+    // PHONG TRIDENT -> BOOST TOC DO + TRACK
     // ======================================================
 
     @EventHandler
@@ -111,16 +113,18 @@ public class AbyssalTridentListener implements Listener {
             return;
         }
 
-        // Xóa item khỏi inventory kể cả Creative — bypass vanilla Creative behavior
+        // Xoa item khoi inventory ke ca Creative - bypass vanilla Creative behavior
+        // Store clone TRUOC khi xoa de dam bao item hop le khi can tra ve
         for (int i = 0; i < shooter.getInventory().getSize(); i++) {
             ItemStack slot = shooter.getInventory().getItem(i);
             if (isAbyssalTrident(slot)) {
+                storedItems.put(trident.getUniqueId(), slot.clone());
                 shooter.getInventory().setItem(i, null);
                 break;
             }
         }
 
-        // BASE_DAMAGE đặt ở đây; EntityDamageByEntityEvent sẽ override nếu wet
+        // BASE_DAMAGE dat o day; EntityDamageByEntityEvent se override neu wet
         trident.setVelocity(trident.getVelocity().multiply(3.0));
         trident.setDamage(BASE_DAMAGE);
 
@@ -130,8 +134,8 @@ public class AbyssalTridentListener implements Listener {
     }
 
     // ======================================================
-    // TRÚNG BLOCK → QUAY VỀ CHỦ
-    // Entity hit được xử lý ở EntityDamageByEntityEvent
+    // TRUNG BLOCK -> QUAY VE CHU
+    // Entity hit duoc xu ly o EntityDamageByEntityEvent
     // ======================================================
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -141,18 +145,17 @@ public class AbyssalTridentListener implements Listener {
         if (!trackedTridents.containsKey(trident.getUniqueId())) return;
 
         if (e.getHitEntity() == null) {
-            // Trúng block → xóa khỏi map và quay về
+            // Trung block -> xoa khoi map va quay ve
             UUID shooterUUID = trackedTridents.remove(trident.getUniqueId());
-            Player shooter = Bukkit.getPlayer(shooterUUID);
-            if (shooter != null && shooter.isOnline()) {
-                scheduleReturn(trident, shooter);
-            }
+            ItemStack returnItem = storedItems.remove(trident.getUniqueId());
+            if (returnItem == null) returnItem = trident.getItemStack().clone();
+            scheduleReturn(trident, shooterUUID, returnItem);
         }
-        // Trúng entity: giữ trong map để EntityDamageByEntityEvent xử lý dame + hiệu ứng
+        // Trung entity: giu trong map de EntityDamageByEntityEvent xu ly dame + hieu ung
     }
 
     // ======================================================
-    // TRÚNG ENTITY → DAME + HIỆU ỨNG THEO ĐIỀU KIỆN ƯỚT/KHÔ
+    // TRUNG ENTITY -> DAME + HIEU UNG THEO DIEU KIEN UOT/KHO
     // ======================================================
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -163,17 +166,21 @@ public class AbyssalTridentListener implements Listener {
         UUID shooterUUID = trackedTridents.remove(trident.getUniqueId());
         if (shooterUUID == null) return;
 
+        // Dung item da luu luc launch; fallback getItemStack neu lo thieu
+        ItemStack returnItem = storedItems.remove(trident.getUniqueId());
+        if (returnItem == null) returnItem = trident.getItemStack().clone();
+
         Entity victim = e.getEntity();
         Location hitLoc = victim.getLocation();
         boolean wet = isWetCondition(victim, hitLoc);
 
-        // Dame trực tiếp: x2 nếu ướt
+        // Dame truc tiep: x2 neu uot
         double effectiveDamage = wet ? BASE_DAMAGE * 2 : BASE_DAMAGE;
-        // Dame bắn tung tóe: 50% của dame trực tiếp
+        // Dame ban tung toe: 50% cua dame truc tiep
         double splashDamage    = effectiveDamage * 0.5;
-        // Phạm vi splash: 3×3 (r=1.5) thường, 6×6 (r=3.0) khi ướt
+        // Pham vi splash: 3x3 (r=1.5) thuong, 6x6 (r=3.0) khi uot
         double splashRadius    = wet ? 3.0 : 1.5;
-        // Nổ to hơn khi ướt
+        // No to hon khi uot
         float  explosionSize   = wet ? 6.0f : 3.5f;
 
         e.setDamage(effectiveDamage);
@@ -201,18 +208,18 @@ public class AbyssalTridentListener implements Listener {
             applySplash(hitLoc, splashDamage, splashRadius, victim, trident);
         }
 
-        // Xóa entity trident + trả lại item cho chủ
-        ItemStack returnItem = trident.getItemStack().clone();
+        // Xoa entity trident + tra lai item cho chu bang UUID (khong dung captured Player ref)
+        final ItemStack finalItem = returnItem;
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             trident.remove();
             Player shooter = Bukkit.getPlayer(shooterUUID);
             if (shooter != null && shooter.isOnline()) {
-                giveBack(shooter, returnItem);
+                giveBack(shooter, finalItem);
             }
         }, 2L);
     }
 
-    // Gây dame cho các entity xung quanh điểm va chạm (trừ mục tiêu chính)
+    // Gay dame cho cac entity xung quanh diem va cham (tru muc tieu chinh)
     private void applySplash(Location center, double damage, double radius, Entity exclude, Projectile source) {
         center.getWorld().getNearbyEntities(center, radius, radius, radius).stream()
                 .filter(ent -> ent != exclude && ent instanceof LivingEntity)
@@ -220,17 +227,30 @@ public class AbyssalTridentListener implements Listener {
     }
 
     // ======================================================
-    // QUAY NHANH VỀ CHỦ (chỉ khi trúng block)
+    // QUAY NHANH VE CHU (chi khi trung block)
     // ======================================================
 
-    private void scheduleReturn(Trident trident, Player shooter) {
-        ItemStack returnItem = trident.getItemStack().clone();
+    private void scheduleReturn(Trident trident, UUID shooterUUID, ItemStack returnItem) {
+        final int[] elapsed = {0};
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (!shooter.isOnline()) { cancel(); return; }
+                elapsed[0]++;
+                // Lookup player moi tick bang UUID - khong bi stale sau relog
+                Player shooter = Bukkit.getPlayer(shooterUUID);
 
+                // Timeout 80 tick (~4 giay) hoac player offline: tra ve neu co the roi don
+                if (elapsed[0] > 80 || shooter == null || !shooter.isOnline()) {
+                    trident.remove();
+                    if (shooter != null && shooter.isOnline()) {
+                        giveBack(shooter, returnItem);
+                    }
+                    cancel();
+                    return;
+                }
+
+                // Trident bi xoa boi server (chunk unload, v.v.)
                 if (!trident.isValid()) {
                     giveBack(shooter, returnItem);
                     cancel();
@@ -240,7 +260,8 @@ public class AbyssalTridentListener implements Listener {
                 Location tridentLoc = trident.getLocation();
                 Location targetLoc  = shooter.getLocation().add(0, 1, 0);
 
-                if (tridentLoc.distanceSquared(targetLoc) < 1.5) {
+                // Threshold 4.0 (~2 blocks) du rong cho velocity 1.75/tick khong overshoots
+                if (tridentLoc.distanceSquared(targetLoc) < 4.0) {
                     trident.remove();
                     giveBack(shooter, returnItem);
                     cancel();
@@ -261,7 +282,7 @@ public class AbyssalTridentListener implements Listener {
     }
 
     // ======================================================
-    // HIỆU ỨNG BIỂN SÂU — hoành tráng hơn khi ướt
+    // HIEU UNG BIEN SAU - hoanh trang hon khi uot
     // ======================================================
 
     private void spawnAbyssalEffects(Location loc, boolean wet) {
@@ -278,14 +299,14 @@ public class AbyssalTridentListener implements Listener {
             spawnFirework(fwLoc, wet);
         }
 
-        // IMPACT thay THUNDER: tiếng nổ sắc, ít bass hơn — không lấn át Guardian
+        // IMPACT thay THUNDER: tieng no sac, it bass hon - khong lan at Guardian
         world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT,
                 wet ? 0.5f : 0.35f, wet ? 0.7f : 0.9f);
 
-        // Elder Guardian là âm chính — full volume, pitch thấp xuống cho trầm hơn
+        // Elder Guardian la am chinh - full volume, pitch thap xuong cho tram hon
         world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_DEATH,
                 1.0f, wet ? 0.6f : 0.7f);
-        // AMBIENT tạo hậu cảnh biển sâu kéo dài sau DEATH
+        // AMBIENT tao hau canh bien sau keo dai sau DEATH
         world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_AMBIENT,
                 1.0f, wet ? 0.5f : 0.6f);
 

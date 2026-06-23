@@ -1,5 +1,5 @@
 ﻿name: MultiFeatureCore
-version: '4.9.1'
+version: '4.9.2'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
@@ -113,3 +113,4 @@ permissions:
   multifeature.horse:
     description: Summon a personal war horse
     default: op
+

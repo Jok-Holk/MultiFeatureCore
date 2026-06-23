@@ -1,4 +1,4 @@
-# MultiFeatureCore
+﻿# MultiFeatureCore
 
 Custom Bukkit/Paper plugin for a private **Purpur 26.1.2** server. Bundles fast travel, a rank system, builder tools, PvP kits, a personal war horse, and special weapons into one core plugin.
 
@@ -23,7 +23,7 @@ Five ranks: **GUEST -> BUILDER -> ADMIN -> OWNER -> DEVELOPER**
 Each rank has its own color prefix in chat, nametag, scoreboard, and join/quit messages. Ranks persist across restarts. OWNER gets a special entrance with lightning and a custom message.
 
 ### Fast Travel (`/travel`)
-GUI-based checkpoint system. Each player sets their own slot count (1–54). Save named checkpoints and teleport with a countdown that cancels on movement. Customize each checkpoint's icon with any Minecraft item.
+GUI-based checkpoint system. Each player sets their own slot count (1â€“54). Save named checkpoints and teleport with a countdown that cancels on movement. Customize each checkpoint's icon with any Minecraft item.
 - `/travel slots <1-54>` -- set how many slots you want (safe-checks your highest used slot)
 - `/travel icon <checkpointN> <material|reset>` -- set the icon for a slot (accepts `minecraft:` namespace format)
 
@@ -126,11 +126,12 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
+| 4.9.2 | Fix Abyssal Sovereign: block-hit trident return -- store item at launch, use UUID lookup, add 4s timeout, fix detection radius |
 | 4.9.1 | Fix Abyssal Sovereign: trident not returned to owner after hitting an entity |
-| 4.8.5 | Rename `/abyssal` → `/trident` |
+| 4.8.5 | Rename `/abyssal` â†’ `/trident` |
 | 4.8.0 | Add `/horse`: personal war horse with owner lock, max stats, cosmetic armor |
 | 4.7.5 | Kits inventory check: confirm/cancel before clearing inventory |
-| 4.7.0 | Per-player travel slot count (1–54) + per-checkpoint icon customization |
+| 4.7.0 | Per-player travel slot count (1â€“54) + per-checkpoint icon customization |
 | 4.6.0 | Add /kits: 9-kit PvP GUI with direct give; extend /speedfly to level 10; fix /glass Y offset |
 | 4.5.5 | Prevent duplicate special items: GodMace, Abyssal, Measure compass, Speed Wing |
 | 4.5.0 | Add /speedfly: speed-boosted flight toggle + Speed Wing feather item |
@@ -146,4 +147,4 @@ Output: `target/multifeaturecore-<version>.jar`
 | 2.1.0 | Rename `/menu` -> `/travel`, rework travel system |
 | 2.0.0 | Fast travel system rewrite |
 | 1.5.0 | Scoreboard -- right-side info panel showing name, rank, coordinates |
-| 1.0.0 | Initial release -- five-tier rank system (GUEST → DEVELOPER) with chat rank prefix and color-coded nametags |
+| 1.0.0 | Initial release -- five-tier rank system (GUEST â†’ DEVELOPER) with chat rank prefix and color-coded nametags |
