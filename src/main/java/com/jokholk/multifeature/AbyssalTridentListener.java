@@ -271,15 +271,20 @@ public class AbyssalTridentListener implements Listener {
             spawnFirework(fwLoc, wet);
         }
 
-        world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER,
-                wet ? 1.5f : 1f, wet ? 0.5f : 0.7f);
+        // IMPACT thay THUNDER: tiếng nổ sắc, ít bass hơn — không lấn át Guardian
+        world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT,
+                wet ? 0.5f : 0.35f, wet ? 0.7f : 0.9f);
+
+        // Elder Guardian là âm chính — full volume, pitch thấp xuống cho trầm hơn
         world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_DEATH,
-                wet ? 1.2f : 0.8f, 1.2f);
+                1.0f, wet ? 0.6f : 0.7f);
+        // AMBIENT tạo hậu cảnh biển sâu kéo dài sau DEATH
+        world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_AMBIENT,
+                1.0f, wet ? 0.5f : 0.6f);
 
         if (wet) {
-            // Âm thanh bổ sung khi ướt — vang hơn, dữ hơn
-            world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_HURT, 1f, 0.6f);
-            world.playSound(loc, Sound.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE, 1f, 0.8f);
+            world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_HURT, 1.0f, 0.5f);
+            world.playSound(loc, Sound.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE, 0.8f, 0.8f);
         }
     }
 
