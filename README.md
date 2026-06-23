@@ -1,4 +1,4 @@
-﻿# MultiFeatureCore
+# MultiFeatureCore
 
 Custom Bukkit/Paper plugin for a private **Purpur 26.1.2** server. Bundles fast travel, a rank system, builder tools, PvP kits, a personal war horse, and special weapons into one core plugin.
 

@@ -74,9 +74,9 @@ public class KitManager {
                     "§7Netherite armor + mace.",
                     "§7Density V, Wind Burst III.",
                     "§8Click to receive kit.");
-            case SPEAR_MASTER -> icon(Material.TRIDENT,           kit.displayName,
-                    "§7Chainmail armor + trident.",
-                    "§7Loyalty III, Channeling.",
+            case SPEAR_MASTER -> icon(Material.NETHERITE_SPEAR,   kit.displayName,
+                    "§7Iron armor + netherite spear.",
+                    "§7Sharpness V, Knockback II.",
                     "§8Click to receive kit.");
             case ARCHER       -> icon(Material.BOW,               kit.displayName,
                     "§7Leather armor + bow.",
@@ -413,20 +413,20 @@ public class KitManager {
     }
 
     // ────────────────────────────────────────────────────────────
-    //  Kit 3 — Spear Master  (chainmail, trident + water)
+    //  Kit 3 — Spear Master  (iron armor, netherite spear)
     // ────────────────────────────────────────────────────────────
 
     private static void giveSpearMaster(Player p) {
-        wearChainmail(p);
+        wearIron(p);
         p.getInventory().setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
         // Hotbar
-        set(p, 0, enc(new ItemStack(Material.TRIDENT),
-                Enchantment.LOYALTY, 3, Enchantment.CHANNELING, 1,
-                Enchantment.IMPALING, 5, Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
+        set(p, 0, enc(new ItemStack(Material.NETHERITE_SPEAR),
+                Enchantment.SHARPNESS, 5, Enchantment.KNOCKBACK, 2,
+                Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
         set(p, 1, enc(new ItemStack(Material.NETHERITE_SWORD),
                 Enchantment.SHARPNESS, 5, Enchantment.FIRE_ASPECT, 2,
                 Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
-        set(p, 2, new ItemStack(Material.WATER_BUCKET));
+        set(p, 2, pot(Material.POTION, PotionType.STRONG_SWIFTNESS));
         set(p, 3, shield());
         set(p, 4, new ItemStack(Material.TOTEM_OF_UNDYING));
         set(p, 5, new ItemStack(Material.TOTEM_OF_UNDYING));
@@ -440,7 +440,7 @@ public class KitManager {
         set(p, 12, pot(Material.POTION, PotionType.STRONG_REGENERATION));
         set(p, 13, pot(Material.POTION, PotionType.STRONG_SWIFTNESS));
         set(p, 14, pot(Material.POTION, PotionType.LONG_INVISIBILITY));
-        set(p, 15, new ItemStack(Material.WATER_BUCKET));
+        set(p, 15, pot(Material.POTION, PotionType.STRONG_SWIFTNESS));
         set(p, 16, new ItemStack(Material.MILK_BUCKET));
         set(p, 17, new ItemStack(Material.OBSIDIAN, 4));
         // Row 2
