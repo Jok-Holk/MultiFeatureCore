@@ -42,6 +42,9 @@ public class MeasureCommand implements CommandExecutor, TabCompleter {
         if (mm.isActive(p)) {
             mm.cancel(p);
             p.sendMessage("§7[Measure] Previous session cancelled.");
+        } else if (mm.hasCompass(p)) {
+            // Có compass nhưng không có session (ví dụ: server reload) — dọn sạch trước
+            mm.cancel(p);
         }
 
         switch (args[0].toLowerCase()) {

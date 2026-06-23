@@ -31,6 +31,11 @@ public class AbyssalTridentCommand implements CommandExecutor {
             return true;
         }
 
+        if (hasTrident(p)) {
+            p.sendMessage("§3You already carry the ABYSSAL SOVEREIGN. Check your inventory.");
+            return true;
+        }
+
         ItemStack trident = new ItemStack(Material.TRIDENT);
         ItemMeta m = trident.getItemMeta();
 
@@ -55,5 +60,16 @@ public class AbyssalTridentCommand implements CommandExecutor {
         p.sendMessage("§3The abyss grants you its sovereign weapon.");
 
         return true;
+    }
+
+    static boolean hasTrident(Player p) {
+        for (ItemStack slot : p.getInventory().getContents()) {
+            if (slot != null && slot.getType() == Material.TRIDENT
+                    && slot.hasItemMeta()
+                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

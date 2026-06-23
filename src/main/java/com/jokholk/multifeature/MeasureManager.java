@@ -193,8 +193,20 @@ public class MeasureManager {
         return COMPASS_NAME.equals(item.getItemMeta().getDisplayName());
     }
 
+    public boolean hasCompass(Player player) {
+        for (ItemStack slot : player.getInventory().getContents()) {
+            if (isMeasureCompass(slot)) return true;
+        }
+        return false;
+    }
+
     private void giveCompass(Player player, Mode mode, boolean p1Set) {
-        player.getInventory().addItem(buildCompass(mode, p1Set));
+        if (hasCompass(player)) {
+            // Cập nhật lore compass hiện có thay vì cho thêm cái mới
+            refreshCompassLore(player, p1Set);
+        } else {
+            player.getInventory().addItem(buildCompass(mode, p1Set));
+        }
     }
 
     private void refreshCompassLore(Player player, boolean p1Set) {

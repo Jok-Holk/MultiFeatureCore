@@ -35,6 +35,11 @@ public class GodMaceCommand implements CommandExecutor {
             return true;
         }
 
+        if (hasMace(p)) {
+            p.sendMessage("§6You already carry the GOD MACE. Check your inventory.");
+            return true;
+        }
+
         ItemStack mace = new ItemStack(Material.MACE);
         ItemMeta m = mace.getItemMeta();
 
@@ -56,5 +61,16 @@ public class GodMaceCommand implements CommandExecutor {
         p.sendMessage("§6The power of GOD has been granted.");
 
         return true;
+    }
+
+    static boolean hasMace(Player p) {
+        for (ItemStack slot : p.getInventory().getContents()) {
+            if (slot != null && slot.getType() == Material.MACE
+                    && slot.hasItemMeta()
+                    && "§x§F§B§D§A§0§0✦ GOD MACE ✦".equals(slot.getItemMeta().getDisplayName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
