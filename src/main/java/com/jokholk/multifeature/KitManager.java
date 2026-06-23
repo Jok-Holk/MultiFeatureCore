@@ -76,7 +76,7 @@ public class KitManager {
                     "§8Click to receive kit.");
             case SPEAR_MASTER -> icon(Material.NETHERITE_SPEAR,   kit.displayName,
                     "§7Iron armor + netherite spear.",
-                    "§7Sharpness V, Knockback II.",
+                    "§7Lunge III, Impaling V.",
                     "§8Click to receive kit.");
             case ARCHER       -> icon(Material.BOW,               kit.displayName,
                     "§7Leather armor + bow.",
@@ -421,7 +421,7 @@ public class KitManager {
         p.getInventory().setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
         // Hotbar
         set(p, 0, enc(new ItemStack(Material.NETHERITE_SPEAR),
-                Enchantment.SHARPNESS, 5, Enchantment.KNOCKBACK, 2,
+                Enchantment.LUNGE, 3, Enchantment.IMPALING, 5,
                 Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
         set(p, 1, enc(new ItemStack(Material.NETHERITE_SWORD),
                 Enchantment.SHARPNESS, 5, Enchantment.FIRE_ASPECT, 2,
