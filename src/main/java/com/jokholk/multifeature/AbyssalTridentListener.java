@@ -6,8 +6,6 @@ import org.bukkit.event.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -149,7 +147,15 @@ public class AbyssalTridentListener implements Listener {
             UUID shooterUUID = trackedTridents.remove(trident.getUniqueId());
             ItemStack returnItem = storedItems.remove(trident.getUniqueId());
             if (returnItem == null) returnItem = trident.getItemStack().clone();
-            scheduleReturn(trident, shooterUUID, returnItem);
+            final ItemStack finalBlockItem = returnItem;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                trident.remove();
+                Player shooter = Bukkit.getPlayer(shooterUUID);
+                if (shooter != null && shooter.isOnline()) {
+                    giveBack(shooter, finalBlockItem);
+                    shooter.playSound(shooter.getLocation(), Sound.ITEM_TRIDENT_RETURN, 1.0f, 1.2f);
+                }
+            }, 2L);
         }
         // Trung entity: giu trong map de EntityDamageByEntityEvent xu ly dame + hieu ung
     }
@@ -229,53 +235,6 @@ public class AbyssalTridentListener implements Listener {
     // ======================================================
     // QUAY NHANH VE CHU (chi khi trung block)
     // ======================================================
-
-    private void scheduleReturn(Trident trident, UUID shooterUUID, ItemStack returnItem) {
-        final int[] elapsed = {0};
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                elapsed[0]++;
-                // Lookup player moi tick bang UUID - khong bi stale sau relog
-                Player shooter = Bukkit.getPlayer(shooterUUID);
-
-                // Timeout 80 tick (~4 giay) hoac player offline: tra ve neu co the roi don
-                if (elapsed[0] > 80 || shooter == null || !shooter.isOnline()) {
-                    trident.remove();
-                    if (shooter != null && shooter.isOnline()) {
-                        giveBack(shooter, returnItem);
-                    }
-                    cancel();
-                    return;
-                }
-
-                // Trident bi xoa boi server (chunk unload, v.v.)
-                if (!trident.isValid()) {
-                    giveBack(shooter, returnItem);
-                    cancel();
-                    return;
-                }
-
-                Location tridentLoc = trident.getLocation();
-                Location targetLoc  = shooter.getLocation().add(0, 1, 0);
-
-                // Threshold 4.0 (~2 blocks) du rong cho velocity 1.75/tick khong overshoots
-                if (tridentLoc.distanceSquared(targetLoc) < 4.0) {
-                    trident.remove();
-                    giveBack(shooter, returnItem);
-                    cancel();
-                    return;
-                }
-
-                Vector dir = targetLoc.toVector()
-                        .subtract(tridentLoc.toVector())
-                        .normalize()
-                        .multiply(1.75);
-                trident.setVelocity(dir);
-            }
-        }.runTaskTimer(plugin, 3L, 1L);
-    }
 
     private void giveBack(Player shooter, ItemStack item) {
         shooter.getInventory().addItem(item);

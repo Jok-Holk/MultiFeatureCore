@@ -6,7 +6,7 @@
 
     <groupId>com.jokholk</groupId>
     <artifactId>multifeaturecore</artifactId>
-    <version>4.9.3</version>
+    <version>4.9.4</version>
     <packaging>jar</packaging>
 
     <name>MultiFeatureCore</name>

@@ -719,10 +719,10 @@ public class KitManager {
                 List.of("§7Density V  §7Breach IV  §7Wind Burst III  §7Mending"),
                 Enchantment.DENSITY, 5, Enchantment.BREACH, 4,
                 Enchantment.WIND_BURST, 3, Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
-        set(p, 2, named(Material.TRIDENT, "§b§lSpear of Justice",
-                List.of("§7Loyalty III  §7Channeling  §7Impaling V  §7Mending"),
-                Enchantment.LOYALTY, 3, Enchantment.CHANNELING, 1,
-                Enchantment.IMPALING, 5, Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
+        set(p, 2, named(Material.NETHERITE_SPEAR, "§b§lSpear of Justice",
+                List.of("§7Lunge III  §7Impaling V  §7Unbreaking III  §7Mending"),
+                Enchantment.LUNGE, 3, Enchantment.IMPALING, 5,
+                Enchantment.UNBREAKING, 3, Enchantment.MENDING, 1));
         set(p, 3, named(Material.BOW, "§e§lHeaven's Arrow",
                 List.of("§7Power V  §7Flame I  §7Infinity  §7Punch II"),
                 Enchantment.POWER, 5, Enchantment.FLAME, 1,
