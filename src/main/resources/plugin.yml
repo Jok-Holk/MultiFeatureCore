@@ -1,5 +1,5 @@
 ﻿name: MultiFeatureCore
-version: '4.5.5'
+version: '4.8.5'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
@@ -10,7 +10,7 @@ website: https://jokholk.dev
 commands:
   travel:
     description: Fast travel system
-    usage: /travel [save|load|name|delete] [checkpoint1-9]
+    usage: /travel [save|load|name|delete|slots|icon] [args...]
 
   rank:
     description: Manage player ranks
@@ -40,13 +40,21 @@ commands:
     description: Get or set the Minecraft day cycle length in minutes
     usage: /daylength [<minutes>|reset]
 
-  abyssal:
+  trident:
     description: Summon the ABYSSAL SOVEREIGN trident
-    usage: /abyssal
+    usage: /trident
 
   speedfly:
     description: Toggle speed fly or set fly speed level
-    usage: /speedfly [1-5|tool]
+    usage: /speedfly [1-10|tool]
+
+  kits:
+    description: Open the PvP kit selection menu
+    usage: /kits [pvp]
+
+  horse:
+    description: Summon your personal war horse
+    usage: /horse <breed> [armor] [name]
 
 permissions:
 
@@ -90,10 +98,18 @@ permissions:
     description: Get or set day length
     default: op
 
-  multifeature.abyssal:
+  multifeature.trident:
     description: Summon the Abyssal Sovereign trident
     default: op
 
   multifeature.speedfly:
     description: Use SpeedFly and Speed Wing item
+    default: op
+
+  multifeature.kits:
+    description: Access PvP kit selection menu
+    default: op
+
+  multifeature.horse:
+    description: Summon a personal war horse
     default: op

@@ -49,13 +49,13 @@ public class SpeedFlyCommand implements CommandExecutor, TabCompleter {
                 sendUsage(p);
                 return true;
             }
-            if (speed < 1 || speed > 5) {
-                p.sendMessage("§cSpeed must be between §e1 §cand §e5§c.");
+            if (speed < 1 || speed > 10) {
+                p.sendMessage("§cSpeed must be between §e1 §cand §e10§c.");
                 return true;
             }
             mgr.setSpeed(p, speed);
             if (!mgr.isEnabled(p)) mgr.enable(p);
-            p.sendMessage("§aSpeedFly §2ON §7— speed set to §e" + speed + "§7x  §8(0." + speed + " fly speed)");
+            p.sendMessage("§aSpeedFly §2ON §7— speed set to §e" + speed + "§7x");
             return true;
         }
 
@@ -65,7 +65,7 @@ public class SpeedFlyCommand implements CommandExecutor, TabCompleter {
             if (on) {
                 int speed = mgr.getSpeed(p);
                 p.sendMessage("§aSpeedFly §2ON §7— current speed: §e" + speed + "§7x");
-                p.sendMessage("§7Change speed: §f/speedfly <1-5>  §8— examples: 1 (default)  2  3  4  5");
+                p.sendMessage("§7Change speed: §f/speedfly <1-10>  §8— examples: 1 (default)  5  10");
             } else {
                 p.sendMessage("§cSpeedFly §4OFF");
             }
@@ -77,13 +77,13 @@ public class SpeedFlyCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(Player p) {
-        p.sendMessage("§cUsage: §f/speedfly §7[1-5 | tool]");
+        p.sendMessage("§cUsage: §f/speedfly §7[1-10 | tool]");
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 1) {
-            return List.of("1", "2", "3", "4", "5", "tool").stream()
+            return List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "tool").stream()
                     .filter(s -> s.startsWith(args[0]))
                     .toList();
         }
@@ -111,7 +111,7 @@ public class SpeedFlyCommand implements CommandExecutor, TabCompleter {
         m.setDisplayName(FEATHER_NAME);
         m.setLore(List.of(
                 "§7Right-click §8— toggle SpeedFly on/off",
-                "§8Use §7/speedfly <1-5> §8to change speed"
+                "§8Use §7/speedfly <1-10> §8to change speed"
         ));
         m.setUnbreakable(true);
         feather.setItemMeta(m);

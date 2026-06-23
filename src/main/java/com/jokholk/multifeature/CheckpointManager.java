@@ -1,6 +1,7 @@
 package com.jokholk.multifeature;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -27,6 +28,61 @@ public class CheckpointManager {
         return YamlConfiguration.loadConfiguration(getFile(p));
     }
 
+    private void save(Player p, YamlConfiguration c) {
+        try {
+            c.save(getFile(p));
+        } catch (IOException e) {
+            plugin.getLogger().warning("Could not save checkpoint data for " + p.getName());
+        }
+    }
+
+    // ── Per-player slot count ─────────────────────────────────────────────────
+
+    public int getMaxSlots(Player p) {
+        return getConfig(p).getInt("max-slots", 9);
+    }
+
+    public void setMaxSlots(Player p, int slots) {
+        YamlConfiguration c = getConfig(p);
+        c.set("max-slots", slots);
+        save(p, c);
+    }
+
+    /** Returns the highest slot number with saved location data for this player. */
+    public int getHighestUsedSlot(Player p) {
+        YamlConfiguration c = getConfig(p);
+        int highest = 0;
+        for (String key : c.getKeys(false)) {
+            if (!key.startsWith("checkpoint")) continue;
+            try {
+                int n = Integer.parseInt(key.substring("checkpoint".length()));
+                if (c.contains(key + ".world")) highest = Math.max(highest, n);
+            } catch (NumberFormatException ignored) {}
+        }
+        return highest;
+    }
+
+    // ── Per-checkpoint icon ───────────────────────────────────────────────────
+
+    /** Returns the icon material for a slot: player's custom → global default → GRASS_BLOCK. */
+    public Material getIcon(Player p, String id) {
+        String stored = getConfig(p).getString(id + ".icon", null);
+        if (stored != null) {
+            Material mat = Material.matchMaterial(stored);
+            if (mat != null && mat.isItem()) return mat;
+        }
+        String def = plugin.getConfig().getString("travel.default-icon", "GRASS_BLOCK");
+        Material defMat = Material.matchMaterial(def);
+        return (defMat != null && defMat.isItem()) ? defMat : Material.GRASS_BLOCK;
+    }
+
+    /** Pass null to remove custom icon (revert to default). */
+    public void setIcon(Player p, String id, Material mat) {
+        YamlConfiguration c = getConfig(p);
+        c.set(id + ".icon", mat == null ? null : mat.getKey().toString());
+        save(p, c);
+    }
+
     public void saveCheckpoint(Player p, String id, String name) {
         YamlConfiguration c = getConfig(p);
         Location l = p.getLocation();
@@ -37,11 +93,7 @@ public class CheckpointManager {
         c.set(id + ".y", l.getY());
         c.set(id + ".z", l.getZ());
 
-        try {
-            c.save(getFile(p));
-        } catch (IOException e) {
-            plugin.getLogger().warning("Could not save checkpoint for " + p.getName());
-        }
+        save(p, c);
     }
 
     public Location loadCheckpoint(Player p, String id) {
@@ -101,11 +153,7 @@ public class CheckpointManager {
 
         c.set(id, null);
 
-        try {
-            c.save(getFile(p));
-        } catch (IOException e) {
-            plugin.getLogger().warning("Could not delete checkpoint");
-        }
+        save(p, c);
     }
 
 

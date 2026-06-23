@@ -24,7 +24,8 @@ public class GlassCommand implements CommandExecutor {
             return true;
         }
 
-        Block block = p.getLocation().getBlock();
+        // Y-1 = block dưới chân hitbox (feet Y = surface + 1 trong Bukkit)
+        Block block = p.getLocation().subtract(0, 1, 0).getBlock();
         block.setType(Material.GLASS);
 
         p.sendMessage("§7Placed §fglass §7at §e"

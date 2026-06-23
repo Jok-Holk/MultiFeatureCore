@@ -14,35 +14,44 @@ public class GUIManager {
 
     public static Inventory createMenu(Player p, CheckpointManager cm) {
 
-        Inventory gui = Bukkit.createInventory(null, 9, "Fast Travel");
+        int maxSlots = cm.getMaxSlots(p);
+        int guiRows  = Math.max(1, (int) Math.ceil(maxSlots / 9.0));
+        int guiSize  = guiRows * 9;
 
-        for (int i = 1; i <= 9; i++) {
+        Inventory gui = Bukkit.createInventory(null, guiSize, "Fast Travel");
 
+        for (int i = 1; i <= maxSlots; i++) {
             String id = "checkpoint" + i;
 
-            ItemStack item = new ItemStack(Material.GRASS_BLOCK);
+            ItemStack item = new ItemStack(cm.getIcon(p, id));
             ItemMeta m = item.getItemMeta();
 
-            String name = cm.getName(p, id);
-            m.setDisplayName("§a" + name);
+            m.setDisplayName("§a" + cm.getName(p, id));
 
             List<String> lore = new ArrayList<>();
             lore.add("§7ID: " + id);
 
             org.bukkit.Location l = cm.loadCheckpoint(p, id);
-
             if (l != null) {
-                lore.add("§f" + l.getBlockX() + ", "
-                        + l.getBlockY() + ", "
-                        + l.getBlockZ());
+                lore.add("§f" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
             } else {
                 lore.add("§cNot set");
             }
 
             m.setLore(lore);
             item.setItemMeta(m);
-
             gui.setItem(i - 1, item);
+        }
+
+        // Filler cho các ô thừa trong row cuối
+        if (maxSlots < guiSize) {
+            ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+            ItemMeta fm = filler.getItemMeta();
+            fm.setDisplayName(" ");
+            filler.setItemMeta(fm);
+            for (int i = maxSlots; i < guiSize; i++) {
+                gui.setItem(i, filler);
+            }
         }
 
         return gui;

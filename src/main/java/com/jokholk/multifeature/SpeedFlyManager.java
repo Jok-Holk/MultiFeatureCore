@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public class SpeedFlyManager {
 
-    // 0.1f per level: 1=vanilla, 5=5x vanilla
-    private static final float[] SPEED = { 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f };
+    // 0.1f per level: 1=vanilla, 10=max (1.0f Bukkit cap)
+    private static final float[] SPEED = { 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
 
     private final Map<UUID, Boolean> enabled          = new HashMap<>();
     private final Map<UUID, Integer> speeds           = new HashMap<>();
@@ -26,7 +26,7 @@ public class SpeedFlyManager {
     }
 
     public void setSpeed(Player p, int speed) {
-        speeds.put(p.getUniqueId(), Math.max(1, Math.min(5, speed)));
+        speeds.put(p.getUniqueId(), Math.max(1, Math.min(10, speed)));
         if (isEnabled(p)) p.setFlySpeed(SPEED[getSpeed(p)]);
     }
 
@@ -72,6 +72,6 @@ public class SpeedFlyManager {
     }
 
     public static float getSpeedFloat(int level) {
-        return SPEED[Math.max(1, Math.min(5, level))];
+        return SPEED[Math.max(1, Math.min(10, level))];
     }
 }

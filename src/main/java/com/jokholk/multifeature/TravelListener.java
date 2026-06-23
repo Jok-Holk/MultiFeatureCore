@@ -26,6 +26,9 @@ public class TravelListener implements Listener {
         Player p = (Player) e.getWhoClicked();
         int slot = e.getSlot() + 1;
 
+        // Bỏ qua filler (ô ngoài maxSlots)
+        if (slot > plugin.getCheckpointManager().getMaxSlots(p)) return;
+
         p.performCommand("travel load checkpoint" + slot);
     }
 }

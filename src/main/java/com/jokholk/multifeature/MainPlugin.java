@@ -61,6 +61,8 @@ public class MainPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new MeasureListener(this), this);
         getServer().getPluginManager().registerEvents(new AbyssalTridentListener(this), this);
         getServer().getPluginManager().registerEvents(new SpeedFlyListener(this), this);
+        getServer().getPluginManager().registerEvents(new KitsListener(), this);
+        getServer().getPluginManager().registerEvents(new HorseListener(), this);
 
         // ─── Commands ───
         registerCmd("travel",     new TravelCommand(this));
@@ -71,8 +73,10 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmdOnly("godmace",    new GodMaceCommand(this));
         registerCmdOnly("glass",      new GlassCommand(this));
         registerCmd("daylength",      new DayLengthCommand(this));
-        registerCmdOnly("abyssal",    new AbyssalTridentCommand(this));
+        registerCmdOnly("trident",    new AbyssalTridentCommand(this));
         registerCmd("speedfly",       new SpeedFlyCommand(this));
+        registerCmd("kits",           new KitsCommand());
+        registerCmd("horse",          new HorseCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {

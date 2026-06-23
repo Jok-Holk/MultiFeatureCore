@@ -1,6 +1,7 @@
 package com.jokholk.multifeature;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,26 @@ public class TravelCommand implements CommandExecutor, TabCompleter {
     public TravelCommand(MainPlugin plugin) {
         this.plugin = plugin;
     }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private boolean isValidId(String id, int max) {
+        if (!id.startsWith("checkpoint")) return false;
+        try {
+            int n = Integer.parseInt(id.substring("checkpoint".length()));
+            return n >= 1 && n <= max;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private List<String> checkpointList(int max) {
+        List<String> list = new ArrayList<>();
+        for (int i = 1; i <= max; i++) list.add("checkpoint" + i);
+        return list;
+    }
+
+    // ── onCommand ─────────────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd,
@@ -54,22 +75,24 @@ public class TravelCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            int max = cm.getMaxSlots(p);
+
             if (args.length < 2) {
-                p.sendMessage("§cUsage: /travel save <checkpoint1-9> [name]");
+                p.sendMessage("§cUsage: /travel save <checkpoint1-" + max + "> [name]");
                 return true;
             }
 
             String input = args[1];
             String id;
 
-            if (input.matches("checkpoint[1-9]")) {
+            if (isValidId(input, max)) {
                 id = input;
             } else {
                 String found = cm.findIdByName(p, input);
                 if (found != null) {
                     id = found;
                 } else {
-                    p.sendMessage("§cInvalid checkpoint ID! Use checkpoint1 → checkpoint9");
+                    p.sendMessage("§cInvalid checkpoint ID. Use checkpoint1 → checkpoint" + max);
                     return true;
                 }
             }
@@ -150,15 +173,17 @@ public class TravelCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            int max = cm.getMaxSlots(p);
+
             if (args.length < 2) {
-                p.sendMessage("§cUsage: /travel delete <checkpoint1-9>");
+                p.sendMessage("§cUsage: /travel delete <checkpoint1-" + max + ">");
                 return true;
             }
 
             String id = args[1];
 
-            if (!id.matches("checkpoint[1-9]")) {
-                p.sendMessage("§cYou must use checkpoint ID (checkpoint1-9)!");
+            if (!isValidId(id, max)) {
+                p.sendMessage("§cYou must use a valid checkpoint ID (checkpoint1-" + max + ")!");
                 return true;
             }
 
@@ -186,15 +211,17 @@ public class TravelCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            int max = cm.getMaxSlots(p);
+
             if (args.length < 3) {
-                p.sendMessage("§cUsage: /travel name <checkpoint1-9> <new name>");
+                p.sendMessage("§cUsage: /travel name <checkpoint1-" + max + "> <new name>");
                 return true;
             }
 
             String id = args[1];
 
-            if (!id.matches("checkpoint[1-9]")) {
-                p.sendMessage("§cYou can only rename using checkpoint ID (checkpoint1-9)!");
+            if (!isValidId(id, max)) {
+                p.sendMessage("§cYou can only rename using checkpoint ID (checkpoint1-" + max + ")!");
                 return true;
             }
 
@@ -211,15 +238,99 @@ public class TravelCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        // SLOTS -------------------------------------------------
+        if (sub.equalsIgnoreCase("slots")) {
+
+            int current = cm.getMaxSlots(p);
+
+            if (args.length < 2) {
+                p.sendMessage("§7Your travel slots: §e" + current + " §7(max 54)");
+                p.sendMessage("§7Usage: §f/travel slots <1-54>");
+                return true;
+            }
+
+            int newMax;
+            try {
+                newMax = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                p.sendMessage("§cInvalid number. Usage: /travel slots <1-54>");
+                return true;
+            }
+
+            if (newMax < 1 || newMax > 54) {
+                p.sendMessage("§cSlot count must be between §e1 §cand §e54§c.");
+                return true;
+            }
+
+            int highest = cm.getHighestUsedSlot(p);
+            if (newMax < highest) {
+                p.sendMessage("§cCannot reduce to §e" + newMax
+                        + "§c: you have a checkpoint at slot §e" + highest + "§c.");
+                p.sendMessage("§7Delete §fcheckpoint" + highest
+                        + " §7first: §f/travel delete checkpoint" + highest);
+                return true;
+            }
+
+            cm.setMaxSlots(p, newMax);
+            p.sendMessage("§aTravel slots set to §e" + newMax + "§a. Reopen §f/travel §ato see changes.");
+            return true;
+        }
+
+        // ICON --------------------------------------------------
+        if (sub.equalsIgnoreCase("icon")) {
+
+            if (!p.hasPermission("multifeature.checkpoint.rename")) {
+                p.sendMessage("§cYou don't have permission to customize checkpoint icons.");
+                return true;
+            }
+
+            int max = cm.getMaxSlots(p);
+
+            if (args.length < 3) {
+                p.sendMessage("§cUsage: /travel icon <checkpoint1-" + max + "> <material|reset>");
+                p.sendMessage("§7Example: §f/travel icon checkpoint1 minecraft:diamond_block");
+                return true;
+            }
+
+            String id = args[1];
+            if (!isValidId(id, max)) {
+                p.sendMessage("§cInvalid checkpoint ID (checkpoint1–checkpoint" + max + ")");
+                return true;
+            }
+
+            String matInput = args[2];
+
+            if (matInput.equalsIgnoreCase("reset")) {
+                cm.setIcon(p, id, null);
+                p.sendMessage("§aIcon for §e" + id + " §areset to default.");
+                return true;
+            }
+
+            Material mat = Material.matchMaterial(matInput);
+            if (mat == null || !mat.isItem()) {
+                p.sendMessage("§cUnknown material: §f" + matInput);
+                p.sendMessage("§7Try: §fminecraft:grass_block §7or §fDIAMOND_BLOCK");
+                return true;
+            }
+
+            cm.setIcon(p, id, mat);
+            p.sendMessage("§aIcon for §e" + id + " §aset to §e" + mat.getKey() + "§a.");
+            return true;
+        }
+
         // FALLBACK ----------------------------------------------
         p.sendMessage("§cUnknown subcommand. Usage:");
         p.sendMessage("§7/travel §8— open fast travel menu");
-        p.sendMessage("§7/travel save <checkpoint1-9> [name]");
+        p.sendMessage("§7/travel save <checkpoint1-N> [name]");
         p.sendMessage("§7/travel load <name or id>");
-        p.sendMessage("§7/travel name <checkpoint1-9> <new name>");
-        p.sendMessage("§7/travel delete <checkpoint1-9>");
+        p.sendMessage("§7/travel name <checkpoint1-N> <new name>");
+        p.sendMessage("§7/travel delete <checkpoint1-N>");
+        p.sendMessage("§7/travel slots <1-54> §8— set your slot count");
+        p.sendMessage("§7/travel icon <checkpoint> <material|reset> §8— set slot icon");
         return true;
     }
+
+    // ── Tab complete ──────────────────────────────────────────────────────────
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd,
@@ -228,25 +339,32 @@ public class TravelCommand implements CommandExecutor, TabCompleter {
         if (!(sender instanceof Player p)) return Collections.emptyList();
         if (!p.hasPermission("multifeature.travel")) return Collections.emptyList();
 
+        CheckpointManager cm = plugin.getCheckpointManager();
+
         if (args.length == 1) {
-            return List.of("save", "load", "name", "delete").stream()
+            return List.of("save", "load", "name", "delete", "slots", "icon").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
         }
 
         String sub = args[0].toLowerCase();
+        int max = cm.getMaxSlots(p);
 
         if (args.length == 2 && (sub.equals("save") || sub.equals("load")
-                || sub.equals("name") || sub.equals("delete"))) {
-            List<String> ids = new ArrayList<>();
-            for (int i = 1; i <= 9; i++) ids.add("checkpoint" + i);
-            return ids.stream()
+                || sub.equals("name") || sub.equals("delete") || sub.equals("icon"))) {
+            return checkpointList(max).stream()
                     .filter(s -> s.startsWith(args[1].toLowerCase()))
                     .collect(Collectors.toList());
         }
 
         if (args.length == 3 && sub.equals("delete")) {
             return List.of("confirm").stream()
+                    .filter(s -> s.startsWith(args[2].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (args.length == 3 && sub.equals("icon")) {
+            return List.of("reset").stream()
                     .filter(s -> s.startsWith(args[2].toLowerCase()))
                     .collect(Collectors.toList());
         }

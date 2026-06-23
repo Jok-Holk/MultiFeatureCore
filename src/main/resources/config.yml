@@ -1,6 +1,7 @@
 travel:
   title: "Fast Travel"
   size: 9
+  default-icon: GRASS_BLOCK
 
 checkpoint:
   countdown: 3          # Seconds before teleport
@@ -33,6 +34,8 @@ rank:
       - "minecraft.command.effect"
       - "minecraft.command.clear"
       - "multifeature.speedfly"
+      - "multifeature.kits"
+      - "multifeature.horse"
       - "worldedit.*"
       - "voxelsniper.*"
 
