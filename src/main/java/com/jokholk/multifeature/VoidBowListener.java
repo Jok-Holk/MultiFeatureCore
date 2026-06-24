@@ -114,6 +114,7 @@ public class VoidBowListener extends DivineWeaponListener {
 
         // Sau 3 ticks: ban mui ten
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!p.isOnline()) return;
             for (int i = 0; i < finalArrows; i++) {
                 // Spread ngau nhien
                 double spreadX = (Math.random() - 0.5) * 2 * finalAoe * 0.1;

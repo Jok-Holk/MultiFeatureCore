@@ -82,48 +82,63 @@ public class IgnisListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double radius  = 2 + 10 * ratio;   // 2-12
-        double length  = 10 + 50 * ratio;  // 10-60
-        double damage  = 10 + 30 * ratio;  // 10-40
+        double radius = 2 + 10 * ratio;   // 2-12
+        double length = 10 + 50 * ratio;  // 10-60
+        double damage = 10 + 30 * ratio;  // 10-40
 
         Location eye = p.getEyeLocation();
         Vector   dir = eye.getDirection().normalize();
+        double   r2  = radius * radius;
 
-        Set<LivingEntity> targets = new HashSet<>();
+        // Tinh bounding box chua toan bo cylinder de duyet 1 lan duy nhat
+        int ri    = (int) Math.ceil(radius);
         int steps = (int) length;
+        // Diem cuoi cylinder
+        Location tip = eye.clone().add(dir.clone().multiply(length));
 
-        for (int s = 1; s <= steps; s++) {
-            Location center = eye.clone().add(dir.clone().multiply(s));
+        int minX = (int) Math.floor(Math.min(eye.getX(), tip.getX()) - ri);
+        int maxX = (int) Math.ceil( Math.max(eye.getX(), tip.getX()) + ri);
+        int minY = (int) Math.floor(Math.min(eye.getY(), tip.getY()) - ri);
+        int maxY = (int) Math.ceil( Math.max(eye.getY(), tip.getY()) + ri);
+        int minZ = (int) Math.floor(Math.min(eye.getZ(), tip.getZ()) - ri);
+        int maxZ = (int) Math.ceil( Math.max(eye.getZ(), tip.getZ()) + ri);
 
-            // Pha cac block stone-tier trong cylinder
-            int ri = (int) Math.ceil(radius);
-            for (int dx = -ri; dx <= ri; dx++) {
-                for (int dy = -ri; dy <= ri; dy++) {
-                    for (int dz = -ri; dz <= ri; dz++) {
-                        if (dx*dx + dy*dy + dz*dz <= radius*radius) {
-                            Block block = center.clone().add(dx, dy, dz).getBlock();
-                            if (STONE_BLOCKS.contains(block.getType())) {
-                                breakBlockSilent(block);
-                            }
-                        }
+        var world = eye.getWorld();
+
+        // Pha blocks: duyet bbox mot lan, kiem tra khoang cach den axis
+        for (int bx = minX; bx <= maxX; bx++) {
+            for (int by = minY; by <= maxY; by++) {
+                for (int bz = minZ; bz <= maxZ; bz++) {
+                    // Khoang cach tu block den duong thang (axis)
+                    Vector toBlock = new Vector(bx - eye.getX(), by - eye.getY(), bz - eye.getZ());
+                    double proj = toBlock.dot(dir); // projection len axis
+                    if (proj < 0 || proj > length) continue; // ngoai doan thang
+                    double perpDist2 = toBlock.lengthSquared() - proj * proj;
+                    if (perpDist2 > r2) continue;
+
+                    Block block = world.getBlockAt(bx, by, bz);
+                    if (STONE_BLOCKS.contains(block.getType())) {
+                        breakBlockSilent(block);
                     }
                 }
             }
-
-            // Particle lua
-            center.getWorld().spawnParticle(Particle.FLAME, center, 5, 0.3, 0.3, 0.3, 0.05);
-
-            // Thu thap entities
-            center.getWorld().getNearbyEntities(center, radius, radius, radius).stream()
-                    .filter(e -> e instanceof LivingEntity && e != p)
-                    .map(e -> (LivingEntity) e)
-                    .forEach(targets::add);
-
-            // Firework moi 10 buoc
-            if (s % 10 == 0) {
-                spawnFirework(center, C1, C2, FireworkEffect.Type.BURST, false);
-            }
         }
+
+        // Particle lua doc axis (moi 3 buoc de giam entity spawn)
+        for (int s = 1; s <= steps; s += 3) {
+            Location pt = eye.clone().add(dir.clone().multiply(s));
+            world.spawnParticle(Particle.FLAME, pt, 8, 0.4, 0.4, 0.4, 0.05);
+            if (s % 12 == 0) spawnFirework(pt, C1, C2, FireworkEffect.Type.BURST, false);
+        }
+
+        // Entity query: 1 lan duy nhat giua cylinder
+        Location midPt = eye.clone().add(dir.clone().multiply(length / 2.0));
+        double halfLen = length / 2.0 + 1;
+        Set<LivingEntity> targets = new HashSet<>();
+        world.getNearbyEntities(midPt, halfLen + ri, ri, halfLen + ri).stream()
+                .filter(e -> e instanceof LivingEntity && e != p)
+                .map(e -> (LivingEntity) e)
+                .forEach(targets::add);
 
         for (LivingEntity target : targets) {
             target.damage(damage, p);

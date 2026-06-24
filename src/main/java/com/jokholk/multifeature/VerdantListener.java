@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -73,6 +74,13 @@ public class VerdantListener implements Listener {
         if (m == null || m.getLore() == null) return false;
         List<String> lore = m.getLore();
         return lore.get(lore.size() - 1).contains(p.getUniqueId().toString());
+    }
+
+    // ─── Cleanup on quit ───
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        modes.remove(e.getPlayer().getUniqueId());
     }
 
     // ─── Anti-theft ───

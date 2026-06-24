@@ -117,6 +117,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
             rankSystem.savePlayerRank(player);
         }
         dayLengthManager.shutdown();
+        Bukkit.getScheduler().cancelTasks(this);
     }
 
     // ─── Command registration helpers ───

@@ -75,35 +75,57 @@ public class RagnarokListener extends DivineWeaponListener {
         if (forward.lengthSquared() < 0.001) forward = new Vector(1, 0, 0);
         forward.normalize();
 
-        Vector right = forward.crossProduct(UP).normalize();
+        final Vector fwd   = forward;
+        final Vector right = fwd.crossProduct(UP).normalize();
 
         Location feet = p.getLocation();
         Set<LivingEntity> targets = new HashSet<>();
 
-        // Quet toan bo khoi trong vung quet hinh chu nhat
         int hw = (int) Math.ceil(halfWidth);
         int d  = (int) Math.ceil(depth);
-        for (int fwd = 0; fwd <= d; fwd++) {
-            for (int side = -hw; side <= hw; side++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    Location blockLoc = feet.clone()
-                            .add(forward.clone().multiply(fwd))
-                            .add(right.clone().multiply(side))
-                            .add(0, dy, 0);
-                    Block block = blockLoc.getBlock();
-                    breakBlockSilent(block);
-                }
 
-                // Thu thap entities tai cot doc nay
-                Location checkLoc = feet.clone()
-                        .add(forward.clone().multiply(fwd))
-                        .add(right.clone().multiply(side));
-                checkLoc.getWorld().getNearbyEntities(checkLoc, 1, 2, 1).stream()
-                        .filter(e -> e instanceof LivingEntity && e != p)
-                        .map(e -> (LivingEntity) e)
-                        .forEach(targets::add);
+        // Pha blocks: duyet bbox cua vung quet
+        int minX = (int) Math.floor(Math.min(
+                feet.getX() - hw * Math.abs(right.getX()) - d * Math.abs(fwd.getX()),
+                feet.getX() + hw * Math.abs(right.getX()) + d * Math.abs(fwd.getX()))) - 1;
+        int maxX = (int) Math.ceil(Math.max(
+                feet.getX() - hw * Math.abs(right.getX()) - d * Math.abs(fwd.getX()),
+                feet.getX() + hw * Math.abs(right.getX()) + d * Math.abs(fwd.getX()))) + 1;
+        int minZ = (int) Math.floor(Math.min(
+                feet.getZ() - hw * Math.abs(right.getZ()) - d * Math.abs(fwd.getZ()),
+                feet.getZ() + hw * Math.abs(right.getZ()) + d * Math.abs(fwd.getZ()))) - 1;
+        int maxZ = (int) Math.ceil(Math.max(
+                feet.getZ() - hw * Math.abs(right.getZ()) - d * Math.abs(fwd.getZ()),
+                feet.getZ() + hw * Math.abs(right.getZ()) + d * Math.abs(fwd.getZ()))) + 1;
+        int baseY = feet.getBlockY();
+
+        for (int bx = minX; bx <= maxX; bx++) {
+            for (int bz = minZ; bz <= maxZ; bz++) {
+                Vector toBlock = new Vector(bx - feet.getX(), 0, bz - feet.getZ());
+                double fwdDot  = toBlock.dot(fwd);
+                double sideDot = Math.abs(toBlock.dot(right));
+                if (fwdDot < 0 || fwdDot > depth || sideDot > halfWidth) continue;
+                for (int dy = -1; dy <= 1; dy++) {
+                    breakBlockSilent(feet.getWorld().getBlockAt(bx, baseY + dy, bz));
+                }
             }
         }
+
+        // Entity query: 1 lan duy nhat, loc bang dot product
+        Location sweepCenter = feet.clone()
+                .add(fwd.clone().multiply(depth / 2.0));
+        double queryHalfLen = depth / 2.0 + 2;
+        feet.getWorld().getNearbyEntities(sweepCenter, queryHalfLen, 3, queryHalfLen).stream()
+                .filter(e -> e instanceof LivingEntity && e != p)
+                .filter(e -> {
+                    Vector rel = e.getLocation().toVector().subtract(feet.toVector());
+                    rel.setY(0);
+                    double fwdDot2  = rel.dot(fwd);
+                    double sideDot2 = Math.abs(rel.dot(right));
+                    return fwdDot2 >= 0 && fwdDot2 <= depth + 1 && sideDot2 <= halfWidth + 1;
+                })
+                .map(e -> (LivingEntity) e)
+                .forEach(targets::add);
 
         // Gay sát thương cho entities
         for (LivingEntity target : targets) {
@@ -115,7 +137,7 @@ public class RagnarokListener extends DivineWeaponListener {
         for (int i = 0; i < fwCount; i++) {
             double sideOffset = -halfWidth + (2 * halfWidth * i / (fwCount - 1 + 0.001));
             Location fwLoc = feet.clone()
-                    .add(forward.clone().multiply(depth / 2.0))
+                    .add(fwd.clone().multiply(depth / 2.0))
                     .add(right.clone().multiply(sideOffset))
                     .add(0, 1, 0);
             spawnFirework(fwLoc, C1, C2, FireworkEffect.Type.STAR, false);

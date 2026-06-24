@@ -13,11 +13,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -104,13 +106,22 @@ public abstract class DivineWeaponListener implements Listener {
         }
     }
 
-    // ─── Cancel charge when switching item ───
+    // ─── Cancel charge when switching item or disconnecting ───
 
     @EventHandler
     public void onItemHeld(PlayerItemHeldEvent e) {
         if (chargeStart.containsKey(e.getPlayer().getUniqueId())) {
             cancelCharge(e.getPlayer());
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        UUID uid = e.getPlayer().getUniqueId();
+        if (chargeStart.containsKey(uid)) {
+            cancelCharge(e.getPlayer());
+        }
+        cooldowns.remove(uid);
     }
 
     // ─── Charge lifecycle ───
@@ -188,9 +199,17 @@ public abstract class DivineWeaponListener implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, fw::detonate, 1L);
     }
 
+    private static final Set<Material> UNBREAKABLE = Set.of(
+        Material.AIR, Material.CAVE_AIR, Material.VOID_AIR,
+        Material.BEDROCK, Material.BARRIER,
+        Material.COMMAND_BLOCK, Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK,
+        Material.STRUCTURE_BLOCK, Material.JIGSAW,
+        Material.END_PORTAL, Material.END_PORTAL_FRAME,
+        Material.NETHER_PORTAL
+    );
+
     protected void breakBlockSilent(Block block) {
-        Material t = block.getType();
-        if (t == Material.AIR || t == Material.BEDROCK || t == Material.BARRIER) return;
+        if (UNBREAKABLE.contains(block.getType())) return;
         block.setType(Material.AIR);
     }
 }

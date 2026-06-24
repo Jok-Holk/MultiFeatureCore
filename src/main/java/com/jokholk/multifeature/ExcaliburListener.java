@@ -83,6 +83,7 @@ public class ExcaliburListener extends DivineWeaponListener {
             final double finalL   = length;
             final double finalDmg = damagePerHit;
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!p.isOnline()) return;
                 beamDamage(p, finalL, finalW, finalDmg);
                 // Spawn 3 fireworks doc theo beam
                 Vector dir = p.getEyeLocation().getDirection().normalize();
