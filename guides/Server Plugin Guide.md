@@ -175,23 +175,33 @@ A trident that throws at 3× speed with massive damage.
 
 Right-click to **start charging**, right-click again to **release**. Hold longer for stronger effects. Cooldown equals your charge time.
 
-| Command | Weapon | Effect |
-|---|---|---|
-| `/excalibur` | Dark Excalibur | Darkness beam forward — width, length, and damage all scale with charge (up to 10s) |
-| `/ragnarok` | Ragnarok | Horizontal sweep in front — breaks blocks and damages all entities in the arc (5s) |
-| `/ignis` | Ignis Core | Forward drill cylinder — breaks stone-tier blocks, ignites all entities in the tunnel (8s) |
-| `/void` | Void Constellation | Ray-cast to target — fires 5–25 arrows with spread around the impact point (5s) |
-| `/nothan` | Divine Crossbow | Forward cone of divine force — staggers and weakens everything in range (4s) |
-| `/spear` | Spear of Justice | Lunge forward at high speed — hits every entity along your path with Slowness + Blindness; kicks Survival players (3s) |
+**`/excalibur` — Dark Excalibur**
+Darkness beam forward — width, length, and damage all scale with charge (up to 10s)
+
+**`/ragnarok` — Ragnarok**
+Horizontal sweep in front — breaks blocks and damages all entities in the arc (5s)
+
+**`/ignis` — Ignis Core**
+Forward drill cylinder — breaks stone-tier blocks, ignites all entities in the tunnel (8s)
+
+**`/void` — Void Constellation**
+Ray-cast to target — fires 5–25 arrows with spread around the impact point (5s)
+
+**`/nothan` — Divine Crossbow**
+Forward cone of divine force — staggers and weakens everything in range (4s)
+
+**`/spear` — Spear of Justice**
+Lunge forward at high speed — hits every entity along your path with Slowness + Blindness; kicks Survival players (3s)
 
 ## 🌿 Mode-Based Weapons
 
 **Sneak + right-click** to cycle the area size (1×1 → 3×3 → 5×5 → 9×9 → 15×15). **Right-click** to activate.
 
-| Command | Weapon | Effect |
-|---|---|---|
-| `/verdant` | Verdant Cipher | Tills all soil and instantly ripens all crops in the selected area |
-| `/grave` | Grave Sovereign | Digs a circle downward (depth 3–10 blocks depending on area), applies Wither + Slowness to nearby entities |
+**`/verdant` — Verdant Cipher**
+Tills all soil and instantly ripens all crops in the selected area
+
+**`/grave` — Grave Sovereign**
+Digs a circle downward (depth 3–10 blocks depending on area), applies Wither + Slowness to nearby entities
 
 
 ▬▬▬▬▬▬▬▬▬▬▬▬ MSG 5 / VN — Rank + Language + Travel ▬▬▬▬▬▬▬▬▬▬▬▬
@@ -370,20 +380,30 @@ Nhấp chuột phải để phóng bản thân lên cao. Rơi trúng người ch
 
 Nhấp chuột phải để **bắt đầu nạp**, nhấp lại để **phóng**. Nạp càng lâu hiệu lực càng mạnh. Thời gian hồi chiêu bằng thời gian nạp.
 
-| Lệnh | Vũ Khí | Hiệu Lực |
-|---|---|---|
-| `/excalibur` | Dark Excalibur | Chùm bóng tối về phía trước — độ rộng, chiều dài, sát thương tăng theo charge (tối đa 10 giây) |
-| `/ragnarok` | Ragnarok | Quét ngang phía trước — phá block và sát thương tất cả entity trong vòng cung (5 giây) |
-| `/ignis` | Ignis Core | Khoan trụ về phía trước — phá block đá, đốt cháy mọi entity trong đường hầm (8 giây) |
-| `/void` | Void Constellation | Chiếu tia đến mục tiêu — bắn 5–25 mũi tên toả ra xung quanh điểm va chạm (5 giây) |
-| `/nothan` | Divine Crossbow | Nón lực thần thánh về phía trước — làm choáng và suy yếu mọi thứ trong tầm (4 giây) |
-| `/spear` | Spear of Justice | Lao người về phía trước tốc độ cao — đánh trúng mọi entity trên đường đi với Slowness + Blindness; kick người chơi Survival (3 giây) |
+**`/excalibur` — Dark Excalibur**
+Chùm bóng tối về phía trước — độ rộng, chiều dài, sát thương tăng theo charge (tối đa 10 giây)
+
+**`/ragnarok` — Ragnarok**
+Quét ngang phía trước — phá block và sát thương tất cả entity trong vòng cung (5 giây)
+
+**`/ignis` — Ignis Core**
+Khoan trụ về phía trước — phá block đá, đốt cháy mọi entity trong đường hầm (8 giây)
+
+**`/void` — Void Constellation**
+Chiếu tia đến mục tiêu — bắn 5–25 mũi tên toả ra xung quanh điểm va chạm (5 giây)
+
+**`/nothan` — Divine Crossbow**
+Nón lực thần thánh về phía trước — làm choáng và suy yếu mọi thứ trong tầm (4 giây)
+
+**`/spear` — Spear of Justice**
+Lao người về phía trước tốc độ cao — đánh trúng mọi entity trên đường đi với Slowness + Blindness; kick người chơi Survival (3 giây)
 
 ## 🌿 Vũ Khí Điều Chỉnh Vùng
 
 **Sneak + chuột phải** để đổi kích thước vùng (1×1 → 3×3 → 5×5 → 9×9 → 15×15). **Chuột phải** để kích hoạt.
 
-| Lệnh | Vũ Khí | Hiệu Lực |
-|---|---|---|
-| `/verdant` | Verdant Cipher | Cày toàn bộ đất và làm chín tức thì tất cả cây trồng trong vùng đã chọn |
-| `/grave` | Grave Sovereign | Đào vòng tròn xuống sâu (sâu 3–10 block tuỳ vùng), áp Wither + Slowness cho entity xung quanh |
+**`/verdant` — Verdant Cipher**
+Cày toàn bộ đất và làm chín tức thì tất cả cây trồng trong vùng đã chọn
+
+**`/grave` — Grave Sovereign**
+Đào vòng tròn xuống sâu (sâu 3–10 block tuỳ vùng), áp Wither + Slowness cho entity xung quanh
