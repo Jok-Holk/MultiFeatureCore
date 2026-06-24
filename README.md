@@ -88,7 +88,7 @@ Ten legendary weapons, each UUID-locked to its owner. Anyone else who picks one 
 
 | Command | Item | Mechanic |
 |---|---|---|
-| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Right-click to lunge forward at high speed; applies Slowness + Blindness + +30 damage on hit; golden particle trail during lunge; kicks SURVIVAL player on hit; 3s cooldown |
+| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Charge 3s -> lunge forward at high speed; hits ALL entities along the path (2.5 block radius); +15-45 damage + Slowness III + Blindness + Glowing per target; golden particle trail during lunge; kicks SURVIVAL player on contact; charge visual: golden ring + swirl tightening over time |
 | `/verdant` | NETHERITE\_HOE -- Verdant Cipher | Shift+right-click to cycle area (1x1 -> 3x3 -> 5x5 -> 9x9 -> 15x15); right-click to till soil and ripen crops |
 
 **God weapons** (separate from the above, have their own mechanics):
