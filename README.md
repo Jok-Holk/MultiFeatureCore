@@ -1,6 +1,6 @@
 # MultiFeatureCore
 
-Custom Bukkit/Paper plugin for a private **Purpur 26.1.2** server. Bundles fast travel, a rank system, builder tools, PvP kits, a personal war horse, and special weapons into one core plugin.
+Custom Bukkit/Paper plugin for a private **Purpur 26.1.2** server. Bundles fast travel, a rank system, bilingual language support, builder tools, PvP kits, a personal war horse, and ten special weapons into one core plugin.
 
 ---
 
@@ -17,10 +17,15 @@ Custom Bukkit/Paper plugin for a private **Purpur 26.1.2** server. Bundles fast 
 
 ## Features
 
+### Language System (`/language`)
+Each player chooses their preferred language. All plugin messages display in that language. Persists across restarts.
+- `/language english` -- switch to English
+- `/language vietnamese` -- switch to Vietnamese
+
 ### Rank System
 Five ranks: **GUEST -> BUILDER -> ADMIN -> OWNER -> DEVELOPER**
 
-Each rank has its own color prefix in chat, nametag, scoreboard, and join/quit messages. Ranks persist across restarts. OWNER gets a special entrance with lightning and a custom message.
+Each rank has its own color prefix in chat, nametag, scoreboard, and join/quit messages. Ranks persist across restarts. OWNER gets a special entrance with lightning and a custom message. All rank-related messages respect each player's language setting.
 
 ### Fast Travel (`/travel`)
 GUI-based checkpoint system. Each player sets their own slot count (1-54). Save named checkpoints and teleport with a countdown that cancels on movement. Customize each checkpoint's icon with any Minecraft item.
@@ -65,19 +70,33 @@ Spawn a personal war horse bound to your UUID. Other players cannot ride it. All
 - `/horse dismiss` -- despawn your current horse
 - `/horse confirm` / `/horse cancel` -- handle the replace-existing-horse prompt
 
-### Divine Weapons (`/excalibur` `/ragnarok` `/ignis` `/grave` `/verdant` `/void`)
-Six legendary weapons, each UUID-locked to its owner. Anyone else who picks one up gets kicked. ADMIN/OWNER/DEVELOPER only.
+### Divine Weapons
+Ten legendary weapons, each UUID-locked to its owner. Anyone else who picks one up gets kicked. ADMIN/OWNER/DEVELOPER only. Each weapon has a custom resource-pack model linked via `setItemModel`.
 
-All weapons except Verdant use a **charge-and-release** mechanic: right-click once to start charging (with visual firework effects), right-click again to release the ability. Charge longer for stronger effects. Cooldown is proportional to charge time.
+**Charge-and-release weapons** (right-click once to charge, again to release):
 
 | Command | Item | Mechanic |
 |---|---|---|
-| `/excalibur` | NETHERITE_SWORD — Dark Excalibur | Charge 10s → multi-wave darkness beam (width + length + damage scale); full charge broadcasts server-wide |
-| `/ragnarok` | NETHERITE_AXE — Ragnarok | Charge 5s → horizontal sweep in front, breaks blocks + damages all entities in the arc |
-| `/ignis` | NETHERITE_PICKAXE — Ignis Core | Charge 8s → forward cylinder drill, breaks stone-tier blocks, ignites entities |
-| `/grave` | NETHERITE_SHOVEL — Grave Sovereign | Charge 8s → downward circle, breaks terrain, applies Wither II to nearby entities |
-| `/verdant` | NETHERITE_HOE — Verdant Cipher | Shift+right-click to cycle area (1×1 → 3×3 → 5×5 → 9×9 → 15×15); right-click to till soil and ripen crops |
-| `/void` | BOW — Void Constellation | Charge 5s → ray-cast to target, summons particle ring, fires 5–25 arrows with spread |
+| `/excalibur` | NETHERITE\_SWORD -- Dark Excalibur | Charge 10s -> multi-wave darkness beam; width, length, and damage scale with charge; full charge broadcasts server-wide |
+| `/ragnarok` | NETHERITE\_AXE -- Ragnarok | Charge 5s -> horizontal sweep in front, breaks blocks + damages all entities in the arc |
+| `/ignis` | NETHERITE\_PICKAXE -- Ignis Core | Charge 8s -> forward cylinder drill, breaks stone-tier blocks, ignites entities |
+| `/grave` | NETHERITE\_SHOVEL -- Grave Sovereign | Charge 8s -> downward circle, breaks terrain, applies Wither II to nearby entities |
+| `/void` | BOW -- Void Constellation | Charge 5s -> ray-cast to target, summons particle ring, fires 5-25 arrows with spread |
+| `/nothan` | CROSSBOW -- Divine Crossbow | Charge 4s -> forward cone of divine force, stagger + weaken targets in range; cone angle and damage scale with charge |
+
+**Direct-use weapons** (throw or right-click):
+
+| Command | Item | Mechanic |
+|---|---|---|
+| `/spear` | TRIDENT -- Spear of Justice | Throw at 4x speed; pierces through enemies; applies Slowness + Blindness on hit; golden particle trail; owner-locked via Loyalty 3 return |
+| `/verdant` | NETHERITE\_HOE -- Verdant Cipher | Shift+right-click to cycle area (1x1 -> 3x3 -> 5x5 -> 9x9 -> 15x15); right-click to till soil and ripen crops |
+
+**God weapons** (separate from the above, have their own mechanics):
+
+| Command | Item | Mechanic |
+|---|---|---|
+| `/godmace` | MACE -- GOD MACE | Right-click launch + falling-strike verdict |
+| `/trident` | TRIDENT -- Abyssal Sovereign | 3x-speed throw + AoE + wet bonus |
 
 ### Glass Shortcut (`/glass`)
 Places a glass block at your feet instantly -- for temporary scaffolding.
@@ -94,6 +113,7 @@ Control how long a Minecraft day takes in real minutes.
 
 | Command | Description | Permission |
 |---|---|---|
+| `/language <english\|vietnamese>` | Set preferred language | any player |
 | `/travel` | Open fast travel GUI | `multifeature.travel` |
 | `/travel slots <1-54>` | Set personal slot count | `multifeature.travel` |
 | `/travel icon <checkpoint> <material\|reset>` | Set checkpoint icon | `multifeature.checkpoint.rename` |
@@ -115,18 +135,31 @@ Control how long a Minecraft day takes in real minutes.
 | `/grave` | Summon Grave Sovereign | ADMIN/OWNER/DEVELOPER |
 | `/verdant` | Summon Verdant Cipher | ADMIN/OWNER/DEVELOPER |
 | `/void` | Summon Void Constellation | ADMIN/OWNER/DEVELOPER |
+| `/spear` | Summon Spear of Justice | ADMIN/OWNER/DEVELOPER |
+| `/nothan` | Summon Divine Crossbow | ADMIN/OWNER/DEVELOPER |
 
 ---
 
 ## Rank Permissions
 
-| Rank | Permissions |
-|---|---|
-| GUEST | Travel, checkpoints -- forced Adventure mode |
-| BUILDER | + heightlock, measure, glass, speedfly, kits, horse, worldedit.\*, voxelsniper.\* |
-| ADMIN | All (`*`) |
-| OWNER | All (`*`) |
-| DEVELOPER | All (`*`) |
+| Rank | Color | Permissions |
+|---|---|---|
+| GUEST | gray | Travel, checkpoints -- forced Adventure mode |
+| BUILDER | green | + heightlock, measure, glass, speedfly, kits, horse, worldedit.\*, voxelsniper.\* |
+| ADMIN | yellow | All (`*`) |
+| OWNER | red | All (`*`) + special join/quit message + lightning sound |
+| DEVELOPER | purple | All (`*`) |
+
+---
+
+## Resource Pack
+
+The `src/main/resources/pack-contents/` directory contains the resource pack for all divine weapons. Copy the contents of `pack-contents/` to your server's resource pack and reload.
+
+- Pack format: 55 (supported formats 46-99)
+- All 10 divine weapons have custom models under `assets/multifeature/models/item/`
+- Textures under `assets/multifeature/textures/item/`
+- Models are linked in-game via `ItemMeta.setItemModel(NamespacedKey)` -- no minecraft namespace overrides needed
 
 ---
 
@@ -146,13 +179,15 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
+| 5.0.0 | Bilingual language system (/language english\|vietnamese); resource pack model links for all 10 divine weapons (setItemModel); package modularization into 7 subpackages (divine/, rank/, travel/, scoreboard/, tools/, kits/, horse/) |
+| 4.9.6 | Full weapon overhaul + 2 new divine weapons: Spear of Justice (piercing trident, 4x speed, slow+blind) and Divine Crossbow (charge cone, golden burst, stagger+weaken) |
 | 4.9.5 | Add 6 Divine Weapons: Excalibur, Ragnarok, Ignis Core, Grave Sovereign, Verdant Cipher, Void Constellation -- all UUID-locked, ADMIN+ only, shared charge/release mechanic |
-| 4.9.4 | Fix Abyssal block-hit re-embed: replace fly-back animation with immediate item return; fix Pantheon kit Spear of Justice (TRIDENT -> NETHERITE_SPEAR) |
-| 4.9.3 | Fix Spear Master kit: TRIDENT -> NETHERITE_SPEAR, correct armor tier, LUNGE+IMPALING enchants for right-click thrust |
+| 4.9.4 | Fix Abyssal block-hit re-embed: replace fly-back animation with immediate item return; fix Pantheon kit Spear of Justice (TRIDENT -> NETHERITE\_SPEAR) |
+| 4.9.3 | Fix Spear Master kit: TRIDENT -> NETHERITE\_SPEAR, correct armor tier, LUNGE+IMPALING enchants for right-click thrust |
 | 4.9.2 | Fix Abyssal Sovereign: block-hit trident return -- store item at launch, use UUID lookup, add 4s timeout, fix detection radius |
 | 4.9.1 | Fix Abyssal Sovereign: trident not returned to owner after hitting an entity |
-| 4.8.5 | Rename `/abyssal` -> `/trident` |
-| 4.8.0 | Add `/horse`: personal war horse with owner lock, max stats, cosmetic armor |
+| 4.8.5 | Rename /abyssal -> /trident |
+| 4.8.0 | Add /horse: personal war horse with owner lock, max stats, cosmetic armor |
 | 4.7.5 | Kits inventory check: confirm/cancel before clearing inventory |
 | 4.7.0 | Per-player travel slot count (1-54) + per-checkpoint icon customization |
 | 4.6.0 | Add /kits: 9-kit PvP GUI with direct give; extend /speedfly to level 10; fix /glass Y offset |
@@ -161,13 +196,13 @@ Output: `target/multifeaturecore-<version>.jar`
 | 4.4.0 | Abyssal Sovereign sound rebalance: IMPACT replaces THUNDER, Elder Guardian dominant |
 | 4.3.5 | Abyssal Sovereign wet-condition system: double damage + wider splash AoE in water/rain |
 | 4.3.0 | Fix Abyssal Sovereign: inventory removal in Creative, trident return after entity hit |
-| 4.2.5 | Add FAVS (`voxelsniper.*`) permissions; fix JAR build (shade -> jar-plugin) |
-| 4.2.0 | Add Abyssal Sovereign trident; fix deprecated `DO_DAYLIGHT_CYCLE` API |
-| 4.1.0 | Add `/glass` and `/daylength` |
+| 4.2.5 | Add FAVS (voxelsniper.\*) permissions; fix JAR build (shade -> jar-plugin) |
+| 4.2.0 | Add Abyssal Sovereign trident; fix deprecated DO\_DAYLIGHT\_CYCLE API |
+| 4.1.0 | Add /glass and /daylength |
 | 4.0.0 | Major rewrite -- HeightLock, Measure, rank system overhaul |
 | 3.0.0 | Add GodMace weapon -- right-click launch upward, owner lock, falling strike on player below |
 | 2.1.1 | Fix scoreboard global state |
-| 2.1.0 | Rename `/menu` -> `/travel`, rework travel system |
+| 2.1.0 | Rename /menu -> /travel, rework travel system |
 | 2.0.0 | Fast travel system rewrite |
 | 1.5.0 | Scoreboard -- right-side info panel showing name, rank, coordinates |
 | 1.0.0 | Initial release -- five-tier rank system (GUEST -> DEVELOPER) with chat rank prefix and color-coded nametags |
