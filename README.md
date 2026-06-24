@@ -65,6 +65,20 @@ Spawn a personal war horse bound to your UUID. Other players cannot ride it. All
 - `/horse dismiss` -- despawn your current horse
 - `/horse confirm` / `/horse cancel` -- handle the replace-existing-horse prompt
 
+### Divine Weapons (`/excalibur` `/ragnarok` `/ignis` `/grave` `/verdant` `/void`)
+Six legendary weapons, each UUID-locked to its owner. Anyone else who picks one up gets kicked. ADMIN/OWNER/DEVELOPER only.
+
+All weapons except Verdant use a **charge-and-release** mechanic: right-click once to start charging (with visual firework effects), right-click again to release the ability. Charge longer for stronger effects. Cooldown is proportional to charge time.
+
+| Command | Item | Mechanic |
+|---|---|---|
+| `/excalibur` | NETHERITE_SWORD — Dark Excalibur | Charge 10s → multi-wave darkness beam (width + length + damage scale); full charge broadcasts server-wide |
+| `/ragnarok` | NETHERITE_AXE — Ragnarok | Charge 5s → horizontal sweep in front, breaks blocks + damages all entities in the arc |
+| `/ignis` | NETHERITE_PICKAXE — Ignis Core | Charge 8s → forward cylinder drill, breaks stone-tier blocks, ignites entities |
+| `/grave` | NETHERITE_SHOVEL — Grave Sovereign | Charge 8s → downward circle, breaks terrain, applies Wither II to nearby entities |
+| `/verdant` | NETHERITE_HOE — Verdant Cipher | Shift+right-click to cycle area (1×1 → 3×3 → 5×5 → 9×9 → 15×15); right-click to till soil and ripen crops |
+| `/void` | BOW — Void Constellation | Charge 5s → ray-cast to target, summons particle ring, fires 5–25 arrows with spread |
+
 ### Glass Shortcut (`/glass`)
 Places a glass block at your feet instantly -- for temporary scaffolding.
 
@@ -95,6 +109,12 @@ Control how long a Minecraft day takes in real minutes.
 | `/trident` | Summon ABYSSAL SOVEREIGN | ADMIN/OWNER/DEVELOPER |
 | `/horse <breed> [armor] [name]` | Spawn personal war horse | `multifeature.horse` |
 | `/horse dismiss` | Despawn your horse | `multifeature.horse` |
+| `/excalibur` | Summon Dark Excalibur | ADMIN/OWNER/DEVELOPER |
+| `/ragnarok` | Summon Ragnarok | ADMIN/OWNER/DEVELOPER |
+| `/ignis` | Summon Ignis Core | ADMIN/OWNER/DEVELOPER |
+| `/grave` | Summon Grave Sovereign | ADMIN/OWNER/DEVELOPER |
+| `/verdant` | Summon Verdant Cipher | ADMIN/OWNER/DEVELOPER |
+| `/void` | Summon Void Constellation | ADMIN/OWNER/DEVELOPER |
 
 ---
 
@@ -126,6 +146,9 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
+| 4.9.5 | Add 6 Divine Weapons: Excalibur, Ragnarok, Ignis Core, Grave Sovereign, Verdant Cipher, Void Constellation -- all UUID-locked, ADMIN+ only, shared charge/release mechanic |
+| 4.9.4 | Fix Abyssal block-hit re-embed: replace fly-back animation with immediate item return; fix Pantheon kit Spear of Justice (TRIDENT -> NETHERITE_SPEAR) |
+| 4.9.3 | Fix Spear Master kit: TRIDENT -> NETHERITE_SPEAR, correct armor tier, LUNGE+IMPALING enchants for right-click thrust |
 | 4.9.2 | Fix Abyssal Sovereign: block-hit trident return -- store item at launch, use UUID lookup, add 4s timeout, fix detection radius |
 | 4.9.1 | Fix Abyssal Sovereign: trident not returned to owner after hitting an entity |
 | 4.8.5 | Rename `/abyssal` â†’ `/trident` |
