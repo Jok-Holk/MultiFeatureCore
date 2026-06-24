@@ -5,279 +5,240 @@ import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.bukkit.event.block.Action;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GodMaceListener implements Listener {
 
     private final MainPlugin plugin;
 
-    // Người đang ở trạng thái “thần phán”
-    private final Set<UUID> smashMode = new HashSet<>();
+    private final Set<UUID>            smashMode   = new HashSet<>();
+    private final Map<UUID, BukkitTask> watcherTasks = new ConcurrentHashMap<>();
 
     public GodMaceListener(MainPlugin plugin) {
         this.plugin = plugin;
     }
 
-    // ======================================================
-    // KIỂM TRA ITEM
-    // ======================================================
+    // ─── Item checks ───
 
     private boolean isGodMace(ItemStack i) {
         if (i == null) return false;
         if (i.getType() != Material.MACE) return false;
         if (!i.hasItemMeta()) return false;
-
-        return "§x§F§B§D§A§0§0✦ GOD MACE ✦"
-                .equals(i.getItemMeta().getDisplayName());
+        return "§x§F§B§D§A§0§0✦ GOD MACE ✦".equals(i.getItemMeta().getDisplayName());
     }
 
     private boolean isOwner(Player p, ItemStack i) {
-
         ItemMeta m = i.getItemMeta();
+        if (m == null || m.getLore() == null) return false;
         List<String> lore = m.getLore();
-
-        if (lore == null) return false;
-
-        String last = lore.get(lore.size() - 1);
-
-        return last.contains(p.getUniqueId().toString());
+        return lore.get(lore.size() - 1).contains(p.getUniqueId().toString());
     }
 
-    // ======================================================
-    // TRỪNG PHẠT KẺ TRỘM
-    // ======================================================
+    // ─── Cleanup on quit ───
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        UUID uid = e.getPlayer().getUniqueId();
+        smashMode.remove(uid);
+        BukkitTask t = watcherTasks.remove(uid);
+        if (t != null) t.cancel();
+    }
+
+    // ─── Thief punishment ───
 
     private void punishThief(Player p, ItemStack i) {
-
-        // 1. Xóa trong inventory
         p.getInventory().remove(i);
-
-        // 2. Xóa mọi item rơi xung quanh
-        p.getWorld().getNearbyEntities(
-                p.getLocation(), 6, 6, 6
-        ).forEach(ent -> {
-
-            if (ent instanceof Item item) {
-                if (isGodMace(item.getItemStack())) {
-                    item.remove();
-                }
-            }
-
+        p.getWorld().getNearbyEntities(p.getLocation(), 6, 6, 6).forEach(ent -> {
+            if (ent instanceof Item item && isGodMace(item.getItemStack())) item.remove();
         });
-
-        // 3. Kick
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-
             if (p.isOnline()) {
-                p.kickPlayer(
-                        "§cThis relic does not belong to you\n" +
-                                "§6The gods reject your touch"
-                );
+                p.kickPlayer("§6✞ The gods do not share their instruments. §c✞\n§eFool. Your name is already forgotten.");
             }
-
         }, 1L);
     }
 
-    // ======================================================
-    // CHẶN NHẶT KHÔNG THUỘC CHỦ
-    // ======================================================
+    // ─── Anti-theft ───
 
     @EventHandler
     public void onPickup(EntityPickupItemEvent e) {
-
         ItemStack i = e.getItem().getItemStack();
-
         if (!isGodMace(i)) return;
-
-        // Mob nhặt → cancel, không kick
-        if (!(e.getEntity() instanceof Player p)) {
-            e.setCancelled(true);
-            return;
-        }
-
+        if (!(e.getEntity() instanceof Player p)) { e.setCancelled(true); return; }
         if (!isOwner(p, i)) {
-
             e.getItem().remove();
             e.setCancelled(true);
-
             punishThief(p, i);
         }
     }
 
-    // ======================================================
-    // CHUỘT PHẢI → KÍCH HOẠT SMASH
-    // ======================================================
+    // ─── Right-click: ascend ───
 
     @EventHandler
     public void onRightClick(PlayerInteractEvent e) {
-
         Action a = e.getAction();
-
-        if (a != Action.RIGHT_CLICK_AIR &&
-                a != Action.RIGHT_CLICK_BLOCK) return;
-
+        if (a != Action.RIGHT_CLICK_AIR && a != Action.RIGHT_CLICK_BLOCK) return;
         ItemStack i = e.getItem();
         if (!isGodMace(i)) return;
-
         Player p = e.getPlayer();
+        if (!isOwner(p, i)) { punishThief(p, i); return; }
 
-        // kiểm ownership
-        if (!isOwner(p, i)) {
-            punishThief(p, i);
-            return;
-        }
-
-        // bay lên
+        // Launch
         p.setVelocity(new Vector(0, 3.2, 0));
-
         smashMode.add(p.getUniqueId());
 
-        p.playSound(p.getLocation(),
-                Sound.ENTITY_ENDER_DRAGON_FLAP,
-                1f, 1f);
+        // ─── Launch VFX ───
+        Location loc = p.getLocation();
+        loc.getWorld().spawnParticle(Particle.CRIT,     loc.clone().add(0, 1, 0), 25, 0.4, 0.6, 0.4, 0.4);
+        loc.getWorld().spawnParticle(Particle.ENCHANT,  loc.clone().add(0, 0.5, 0), 20, 0.5, 1.0, 0.5, 0.5);
+        loc.getWorld().spawnParticle(Particle.END_ROD,  loc.clone().add(0, 0.2, 0), 10, 0.3, 0.1, 0.3, 0.1);
+        loc.getWorld().playSound(loc, Sound.ENTITY_ENDER_DRAGON_FLAP, 1f, 1.0f);
+        loc.getWorld().playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.6f, 1.3f);
 
         startWatcher(p);
-
         e.setCancelled(true);
     }
 
-    // ======================================================
-    // WATCHER – KHÔNG DỰA DAMAGE
-    // ======================================================
+    // ─── Watcher: falling trail + target detection ───
 
     private void startWatcher(Player p) {
+        UUID uid = p.getUniqueId();
+        BukkitTask old = watcherTasks.remove(uid);
+        if (old != null) old.cancel();
 
-        Bukkit.getScheduler().runTaskTimer(plugin, task -> {
+        BukkitTask task = new org.bukkit.scheduler.BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!p.isOnline() || !smashMode.contains(uid)) {
+                    cancel();
+                    watcherTasks.remove(uid);
+                    return;
+                }
 
-            if (!p.isOnline() ||
-                    !smashMode.contains(p.getUniqueId())) {
+                if (p.getVelocity().getY() < -0.25) {
+                    // ─── Falling trail ───
+                    Location pLoc = p.getLocation();
+                    pLoc.getWorld().spawnParticle(Particle.ENCHANT, pLoc.clone().add(0, 0.5, 0),
+                            5, 0.3, 0.4, 0.3, 0.2);
+                    pLoc.getWorld().spawnParticle(Particle.CRIT, pLoc.clone().add(0, 0.3, 0),
+                            3, 0.2, 0.2, 0.2, 0.1);
 
-                task.cancel();
-                return;
-            }
-
-            // đang rơi
-            if (p.getVelocity().getY() < -0.25) {
-
-                Player target = findTarget(p);
-
-                if (target != null) {
-                    executeJudgement(p, target);
-                    task.cancel();
+                    Player target = findTarget(p);
+                    if (target != null) {
+                        cancel();
+                        watcherTasks.remove(uid);
+                        executeJudgement(p, target);
+                    }
                 }
             }
-
-        }, 2L, 2L);
+        }.runTaskTimer(plugin, 2L, 2L);
+        watcherTasks.put(uid, task);
     }
 
-    // ======================================================
-    // TÌM MỤC TIÊU TRƯỚC MẶT
-    // ======================================================
+    // ─── Find nearby player ───
 
     private Player findTarget(Player p) {
-
-        for (Entity e :
-                p.getNearbyEntities(2.2, 3, 2.2)) {
-
-            if (e instanceof Player victim &&
-                    !victim.equals(p)) {
-
-                return victim;
-            }
+        for (Entity e : p.getNearbyEntities(2.2, 3, 2.2)) {
+            if (e instanceof Player victim && !victim.equals(p)) return victim;
         }
-
         return null;
     }
 
-    // ======================================================
-    // PHÁN QUYẾT THẦN THÁNH
-    // ======================================================
+    // ─── Divine Judgement ───
 
     private void executeJudgement(Player damager, Player victim) {
+        Location loc   = victim.getLocation();
+        World    world = loc.getWorld();
 
-        Location loc = victim.getLocation();
+        // Lightning × 3 at offset positions
+        world.strikeLightningEffect(loc);
+        world.strikeLightningEffect(loc.clone().add(1.5, 0,  0));
+        world.strikeLightningEffect(loc.clone().add(-1.5, 0, 0));
 
-        // Sét
-        loc.getWorld().strikeLightningEffect(loc);
-
-        // Pháo hoa thánh thần
-        for (int i = 0; i < 4; i++) {
-            spawnFirework(loc.clone().add(
-                    Math.cos(i * Math.PI/2) * 2,
-                    0,
-                    Math.sin(i * Math.PI/2) * 2
-            ));
+        // ─── Judgment VFX ───
+        // TOTEM burst
+        world.spawnParticle(Particle.TOTEM_OF_UNDYING, loc.clone().add(0, 1, 0), 80, 0.6, 1.0, 0.6, 0.5);
+        // CRIT rain
+        world.spawnParticle(Particle.CRIT,             loc.clone().add(0, 2, 0), 40, 1.0, 0.8, 1.0, 0.4);
+        // ENCHANT shower
+        world.spawnParticle(Particle.ENCHANT,          loc.clone().add(0, 2.5, 0), 50, 1.2, 0.5, 1.2, 0.6);
+        // END_ROD ring
+        for (int i = 0; i < 12; i++) {
+            double angle = i * 2 * Math.PI / 12;
+            Location rLoc = loc.clone().add(Math.cos(angle) * 2.0, 0.5, Math.sin(angle) * 2.0);
+            world.spawnParticle(Particle.END_ROD, rLoc, 3, 0.1, 0.4, 0.1, 0.08);
         }
 
-        // Kick
+        // ─── Judgment fireworks ───
+        spawnFirework(loc.clone().add(0, 0.5, 0), FireworkEffect.Type.BURST);
+        for (int i = 0; i < 6; i++) {
+            final int fi = i;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                double angle = fi * Math.PI / 3;
+                spawnFirework(loc.clone().add(Math.cos(angle) * 2.5, 0.5, Math.sin(angle) * 2.5),
+                        FireworkEffect.Type.STAR);
+            }, fi * 2L);
+        }
+
+        // ─── Judgment sounds ───
+        world.playSound(loc, Sound.ITEM_TOTEM_USE,              1.0f, 0.8f);
+        world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 0.7f);
+        world.playSound(loc, Sound.ENTITY_ENDER_DRAGON_GROWL,   0.8f, 0.5f);
+
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-
             if (victim.isOnline()) {
-
                 victim.kickPlayer(
-                        "§6✞ YOU HAVE BEEN JUDGED BY GOD ✞\n\n" +
-                                "§eReturn if you dare..."
+                        "§6§l✞ GOD MACE — DIVINE VERDICT ✞\n" +
+                        "§eYou were weighed.\n" +
+                        "§6You were found wanting.\n" +
+                        "§cReturn if you dare."
                 );
             }
-
         }, 1L);
 
         smashMode.remove(damager.getUniqueId());
     }
 
-    // ======================================================
-    // CHỐNG FALL DAMAGE
-    // ======================================================
+    // ─── Fall damage immunity ───
 
     @EventHandler
     public void onFall(EntityDamageEvent e) {
-
-        if (!(e.getEntity() instanceof Player p))
-            return;
-
-        if (e.getCause() ==
-                EntityDamageEvent.DamageCause.FALL &&
+        if (!(e.getEntity() instanceof Player p)) return;
+        if (e.getCause() == EntityDamageEvent.DamageCause.FALL &&
                 smashMode.contains(p.getUniqueId())) {
-
             e.setCancelled(true);
             smashMode.remove(p.getUniqueId());
         }
     }
 
-    // ======================================================
-    // FIREWORK VÀNG CAM + STAR
-    // ======================================================
+    // ─── Firework helpers ───
 
-    private void spawnFirework(Location loc) {
-
-        Firework fw =
-                loc.getWorld().spawn(loc, Firework.class);
-
+    private void spawnFirework(Location loc, FireworkEffect.Type type) {
+        Firework fw = loc.getWorld().spawn(loc, Firework.class);
         var meta = fw.getFireworkMeta();
-
         meta.addEffect(
                 FireworkEffect.builder()
-                        .withColor(Color.YELLOW, Color.ORANGE)
-                        .with(FireworkEffect.Type.STAR)
+                        .withColor(Color.YELLOW, Color.ORANGE, Color.WHITE)
+                        .with(type)
                         .trail(true)
                         .flicker(true)
                         .build()
         );
-
         meta.setPower(0);
         fw.setFireworkMeta(meta);
-
-        Bukkit.getScheduler().runTaskLater(
-                plugin, fw::detonate, 1L
-        );
+        Bukkit.getScheduler().runTaskLater(plugin, fw::detonate, 1L);
     }
 }

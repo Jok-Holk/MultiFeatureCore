@@ -5,6 +5,8 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -24,10 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * VerdantListener — cong cu nong nghiep, khong dung charge mechanic.
- * Shift+Right-click: doi mode; Right-click: ap dung mode tai vi tri nham.
- */
 public class VerdantListener implements Listener {
 
     private final MainPlugin plugin;
@@ -36,13 +34,11 @@ public class VerdantListener implements Listener {
     private static final int[]    RADII      = {0, 1, 2, 4, 7};
     private static final String[] MODE_NAMES = {"1x1", "3x3", "5x5", "9x9", "15x15"};
 
-    // Cac mat do cay trong duoc lam chin
     private static final Set<Material> CROPS = Set.of(
             Material.WHEAT, Material.CARROTS, Material.POTATOES,
             Material.BEETROOTS, Material.NETHER_WART
     );
 
-    // Cay co / hoa duoc xoa
     private static final Set<Material> GRASS_VARIANTS = Set.of(
             Material.SHORT_GRASS, Material.TALL_GRASS,
             Material.FERN, Material.LARGE_FERN,
@@ -56,8 +52,8 @@ public class VerdantListener implements Listener {
             Material.ROSE_BUSH, Material.PEONY
     );
 
-    private static final Color C1 = Color.fromRGB(0,   150, 0);
-    private static final Color C2 = Color.fromRGB(100, 200, 0);
+    private static final Color C1 = Color.fromRGB(0,   180, 0);
+    private static final Color C2 = Color.fromRGB(120, 255, 0);
 
     public VerdantListener(MainPlugin plugin) {
         this.plugin = plugin;
@@ -100,7 +96,7 @@ public class VerdantListener implements Listener {
             e.setCancelled(true);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (p.isOnline()) {
-                    p.kickPlayer("§cThis power was never yours.");
+                    p.kickPlayer("§2This cipher was written for one hand only.\n§aThe land rejects you.");
                 }
             }, 1L);
         }
@@ -123,15 +119,16 @@ public class VerdantListener implements Listener {
         UUID uid = p.getUniqueId();
 
         if (p.isSneaking()) {
-            // Doi mode
             int mode = modes.getOrDefault(uid, 0);
             mode = (mode + 1) % RADII.length;
             modes.put(uid, mode);
-            p.sendMessage("§2Mode: §a" + MODE_NAMES[mode]);
+            // Mode switch: green sparkle + message
+            p.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, p.getLocation().clone().add(0, 1, 0),
+                    8, 0.5, 0.5, 0.5, 0);
+            p.sendMessage("§2§l🌿 §aArea: §2" + MODE_NAMES[mode] + " §a— right-click to till and ripen.");
             return;
         }
 
-        // Ap dung mode
         int radius = RADII[modes.getOrDefault(uid, 0)];
 
         Location center;
@@ -153,7 +150,6 @@ public class VerdantListener implements Listener {
                 if (type == Material.GRASS_BLOCK || type == Material.DIRT) {
                     block.setType(Material.FARMLAND);
                 } else if (CROPS.contains(type)) {
-                    // Lam chin cay trong
                     var data = block.getBlockData();
                     if (data instanceof Ageable ageable) {
                         ageable.setAge(ageable.getMaximumAge());
@@ -165,14 +161,32 @@ public class VerdantListener implements Listener {
             }
         }
 
-        // Spawn 2-3 firework nho o trung tam
+        // ─── VFX ───
+        center.getWorld().playSound(center, Sound.BLOCK_GRASS_BREAK, 0.7f, 1.1f);
+
+        // HAPPY_VILLAGER spreading outward in spiral
+        int pCount = Math.max(8, radius * radius * 3);
+        for (int i = 0; i < pCount; i++) {
+            double angle = Math.random() * 2 * Math.PI;
+            double r2    = Math.random() * (radius + 0.5);
+            Location loc = center.clone().add(Math.cos(angle) * r2, 0.5, Math.sin(angle) * r2);
+            center.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, loc, 1, 0.1, 0.2, 0.1, 0);
+        }
+        // SPORE_BLOSSOM_AIR floating softly
+        center.getWorld().spawnParticle(Particle.SPORE_BLOSSOM_AIR, center.clone().add(0, 1, 0),
+                Math.max(10, radius * 5), radius * 0.6f, 0.5f, radius * 0.6f, 0.02f);
+        // Cherry leaves drift (optional, 1.20+)
+        if (radius >= 2) {
+            center.getWorld().spawnParticle(Particle.CHERRY_LEAVES, center.clone().add(0, 1.5, 0),
+                    radius * 4, radius * 0.5f, 0.4f, radius * 0.5f, 0.02f);
+        }
+
+        // Fireworks at center
         int fwCount = radius == 0 ? 1 : Math.min(3, 1 + radius / 3);
         for (int i = 0; i < fwCount; i++) {
-            double angle = i * 2 * Math.PI / fwCount;
-            double r2 = radius * 0.4;
-            Location fwLoc = center.clone().add(
-                    Math.cos(angle) * r2, 1.0, Math.sin(angle) * r2
-            );
+            double angle = i * 2 * Math.PI / Math.max(1, fwCount);
+            double r2    = radius * 0.4;
+            Location fwLoc = center.clone().add(Math.cos(angle) * r2, 1.0, Math.sin(angle) * r2);
             spawnFirework(fwLoc);
         }
     }
@@ -185,6 +199,7 @@ public class VerdantListener implements Listener {
                 FireworkEffect.builder()
                         .withColor(C1, C2)
                         .with(FireworkEffect.Type.BURST)
+                        .flicker(false)
                         .build()
         );
         fw.setFireworkMeta(meta);

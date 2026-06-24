@@ -69,6 +69,8 @@ public class MainPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new GraveListener(this), this);
         getServer().getPluginManager().registerEvents(new VerdantListener(this), this);
         getServer().getPluginManager().registerEvents(new VoidBowListener(this), this);
+        getServer().getPluginManager().registerEvents(new SpearListener(this), this);
+        getServer().getPluginManager().registerEvents(new NothanListener(this), this);
 
         // ─── Commands ───
         registerCmd("travel",     new TravelCommand(this));
@@ -89,6 +91,8 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmdOnly("grave",     new GraveCommand(this));
         registerCmdOnly("verdant",   new VerdantCommand(this));
         registerCmdOnly("void",      new VoidBowCommand(this));
+        registerCmdOnly("spear",     new SpearCommand(this));
+        registerCmdOnly("nothan",    new NothanCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {

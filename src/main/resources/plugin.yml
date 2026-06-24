@@ -1,5 +1,5 @@
 name: MultiFeatureCore
-version: '4.9.5'
+version: '4.9.6'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
@@ -79,6 +79,14 @@ commands:
   void:
     description: Summon the Void Constellation
     usage: /void
+
+  spear:
+    description: Summon the Spear of Justice
+    usage: /spear
+
+  nothan:
+    description: Summon the Divine Crossbow
+    usage: /nothan
 
 permissions:
 
@@ -160,5 +168,13 @@ permissions:
 
   multifeature.void:
     description: Summon Void Constellation
+    default: op
+
+  multifeature.spear:
+    description: Summon Spear of Justice
+    default: op
+
+  multifeature.nothan:
+    description: Summon Divine Crossbow
     default: op
 
