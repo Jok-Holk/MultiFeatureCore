@@ -88,7 +88,7 @@ Ten legendary weapons, each UUID-locked to its owner. Anyone else who picks one 
 
 | Command | Item | Mechanic |
 |---|---|---|
-| `/spear` | TRIDENT -- Spear of Justice | Throw at 4x speed; pierces through enemies; applies Slowness + Blindness on hit; golden particle trail; owner-locked via Loyalty 3 return |
+| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Right-click to lunge forward at high speed; applies Slowness + Blindness + +30 damage on hit; golden particle trail during lunge; kicks SURVIVAL player on hit; 3s cooldown |
 | `/verdant` | NETHERITE\_HOE -- Verdant Cipher | Shift+right-click to cycle area (1x1 -> 3x3 -> 5x5 -> 9x9 -> 15x15); right-click to till soil and ripen crops |
 
 **God weapons** (separate from the above, have their own mechanics):

@@ -36,22 +36,20 @@ public class SpearCommand implements CommandExecutor {
             return true;
         }
 
-        ItemStack spear = new ItemStack(Material.TRIDENT);
+        ItemStack spear = new ItemStack(Material.NETHERITE_SPEAR);
         ItemMeta m = spear.getItemMeta();
 
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§eCast into the world §7at the moment §eorder demanded a champion.",
+                "§eCast by the will of order §7at the moment the world demanded a champion.",
                 "§7It has never §emissed. §7Not once. §eNot in ten thousand years.",
-                "§eThrow §7to pierce through — §ejustice does not stop for one offender.",
+                "§eRight-click §7to lunge forward — §ejustice closes the distance in an instant.",
                 "§7Enemies struck §eare slowed and blinded §7— they cannot flee the verdict.",
                 "§8Owner: §7" + p.getUniqueId()
         ));
 
         m.setUnbreakable(true);
-        m.addEnchant(Enchantment.UNBREAKING,  10, true);
-        m.addEnchant(Enchantment.LOYALTY,      3, true);
-        m.addEnchant(Enchantment.IMPALING,     5, true);
+        m.addEnchant(Enchantment.UNBREAKING, 10, true);
         m.setItemModel(new NamespacedKey("multifeature", "item/spear_of_justice"));
 
         spear.setItemMeta(m);
@@ -63,7 +61,7 @@ public class SpearCommand implements CommandExecutor {
 
     static boolean hasSpear(Player p) {
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.TRIDENT
+            if (slot != null && slot.getType() == Material.NETHERITE_SPEAR
                     && slot.hasItemMeta()
                     && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
                 return true;
