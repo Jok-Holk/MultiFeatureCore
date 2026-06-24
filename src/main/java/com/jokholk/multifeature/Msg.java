@@ -845,6 +845,10 @@ public enum Msg {
         "§8§l† §7GRAVE SOVEREIGN §8§l† §r§8has awakened — §7death walks among you.",
         "§8§l† §7GRAVE SOVEREIGN §8§l† §r§8đã thức tỉnh — §7thần chết đang đi giữa các bạn."
     ),
+    GRAVE_MODE(
+        "§8§l† §7Grave area: §8%area% §7— right-click to open the abyss.",
+        "§8§l† §7Vùng mộ: §8%area% §7— click chuột phải để mở vực thẳm."
+    ),
 
     // ──────────────────────────────────────────────────────────
     //  Verdant Cipher

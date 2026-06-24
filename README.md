@@ -73,29 +73,29 @@ Spawn a personal war horse bound to your UUID. Other players cannot ride it. All
 ### Divine Weapons
 Ten legendary weapons, each UUID-locked to its owner. Anyone else who picks one up gets kicked. ADMIN/OWNER/DEVELOPER only. Each weapon has a custom resource-pack model linked via `setItemModel`.
 
-**Charge-and-release weapons** (right-click once to charge, again to release):
+**Charge-and-release** (right-click once to start charging, again to release):
 
 | Command | Item | Mechanic |
 |---|---|---|
 | `/excalibur` | NETHERITE\_SWORD -- Dark Excalibur | Charge 10s -> multi-wave darkness beam; width, length, and damage scale with charge; full charge broadcasts server-wide |
 | `/ragnarok` | NETHERITE\_AXE -- Ragnarok | Charge 5s -> horizontal sweep in front, breaks blocks + damages all entities in the arc |
 | `/ignis` | NETHERITE\_PICKAXE -- Ignis Core | Charge 8s -> forward cylinder drill, breaks stone-tier blocks, ignites entities |
-| `/grave` | NETHERITE\_SHOVEL -- Grave Sovereign | Charge 8s -> downward circle, breaks terrain, applies Wither II to nearby entities |
 | `/void` | BOW -- Void Constellation | Charge 5s -> ray-cast to target, summons particle ring, fires 5-25 arrows with spread |
-| `/nothan` | CROSSBOW -- Divine Crossbow | Charge 4s -> forward cone of divine force, stagger + weaken targets in range; cone angle and damage scale with charge |
+| `/nothan` | CROSSBOW -- Divine Crossbow | Charge 4s -> forward cone of divine force; stagger + weaken targets in range; cone angle and damage scale with charge |
+| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Charge 3s -> lunge forward at high speed; hits ALL entities along the path (2.5 block radius); +15-45 damage + Slowness III + Blindness + Glowing; golden particle trail during lunge; kicks SURVIVAL player on contact |
 
-**Direct-use weapons** (throw or right-click):
-
-| Command | Item | Mechanic |
-|---|---|---|
-| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Charge 3s -> lunge forward at high speed; hits ALL entities along the path (2.5 block radius); +15-45 damage + Slowness III + Blindness + Glowing per target; golden particle trail during lunge; kicks SURVIVAL player on contact; charge visual: golden ring + swirl tightening over time |
-| `/verdant` | NETHERITE\_HOE -- Verdant Cipher | Shift+right-click to cycle area (1x1 -> 3x3 -> 5x5 -> 9x9 -> 15x15); right-click to till soil and ripen crops |
-
-**God weapons** (separate from the above, have their own mechanics):
+**Mode-based** (sneak+right-click to cycle area, right-click to activate):
 
 | Command | Item | Mechanic |
 |---|---|---|
-| `/godmace` | MACE -- GOD MACE | Right-click launch + falling-strike verdict |
+| `/verdant` | NETHERITE\_HOE -- Verdant Cipher | Cycle area 1x1 -> 3x3 -> 5x5 -> 9x9 -> 15x15; right-click to till soil and ripen crops in selected area |
+| `/grave` | NETHERITE\_SHOVEL -- Grave Sovereign | Cycle area 1x1 -> 3x3 -> 5x5 -> 9x9 -> 15x15 (with depth 3-10 blocks); right-click to dig a circle downward, apply Wither II + Slowness to nearby entities, soul particle storm |
+
+**God weapons** (owner-locked; their own interaction mechanic):
+
+| Command | Item | Mechanic |
+|---|---|---|
+| `/godmace` | MACE -- GOD MACE | Right-click launch upward + falling-strike verdict |
 | `/trident` | TRIDENT -- Abyssal Sovereign | 3x-speed throw + AoE + wet bonus |
 
 ### Glass Shortcut (`/glass`)
@@ -179,8 +179,8 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
-| 5.0.0 | Bilingual language system (/language english\|vietnamese); resource pack model links for all 10 divine weapons (setItemModel); package modularization into 7 subpackages (divine/, rank/, travel/, scoreboard/, tools/, kits/, horse/) |
-| 4.9.6 | Full weapon overhaul + 2 new divine weapons: Spear of Justice (piercing trident, 4x speed, slow+blind) and Divine Crossbow (charge cone, golden burst, stagger+weaken) |
+| 5.0.0 | Bilingual language system (/language english\|vietnamese); resource pack model links for all 10 divine weapons (setItemModel); package modularization into 7 subpackages; Spear of Justice rewritten to charge-and-release lunge with path AoE; Grave Sovereign rewritten to mode-based area control (sneak+click to cycle 1x1->15x15) |
+| 4.9.6 | Full weapon overhaul + 2 new divine weapons: Spear of Justice and Divine Crossbow (No Than) |
 | 4.9.5 | Add 6 Divine Weapons: Excalibur, Ragnarok, Ignis Core, Grave Sovereign, Verdant Cipher, Void Constellation -- all UUID-locked, ADMIN+ only, shared charge/release mechanic |
 | 4.9.4 | Fix Abyssal block-hit re-embed: replace fly-back animation with immediate item return; fix Pantheon kit Spear of Justice (TRIDENT -> NETHERITE\_SPEAR) |
 | 4.9.3 | Fix Spear Master kit: TRIDENT -> NETHERITE\_SPEAR, correct armor tier, LUNGE+IMPALING enchants for right-click thrust |
