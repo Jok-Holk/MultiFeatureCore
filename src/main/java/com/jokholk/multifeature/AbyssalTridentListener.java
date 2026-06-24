@@ -6,6 +6,8 @@ import org.bukkit.event.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -15,9 +17,9 @@ public class AbyssalTridentListener implements Listener {
     private final MainPlugin plugin;
     private final Map<UUID, UUID>       trackedTridents = new HashMap<>();
     private final Map<UUID, ItemStack>  storedItems     = new HashMap<>();
-    // Pierce mechanic: velocity truoc khi trident vao mob, set entities da bi xuyen qua
     private final Map<UUID, Vector>     savedVelocities = new HashMap<>();
     private final Map<UUID, Set<UUID>>  hitEntities     = new HashMap<>();
+    private final Map<UUID, BukkitTask> trailTasks      = new HashMap<>();
 
     static final double BASE_DAMAGE = 40.0;
 
@@ -123,6 +125,7 @@ public class AbyssalTridentListener implements Listener {
         trident.setVelocity(trident.getVelocity().multiply(3.0));
         trident.setDamage(BASE_DAMAGE);
         trackedTridents.put(trident.getUniqueId(), shooter.getUniqueId());
+        startTrail(trident);
 
         shooter.playSound(shooter.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_AMBIENT, 0.7f, 0.8f);
     }
@@ -151,12 +154,18 @@ public class AbyssalTridentListener implements Listener {
 
         } else {
             // Trung block -> ket thuc hanh trinh, tra ve cho chu
+            stopTrail(tridentId);
             hitEntities.remove(tridentId);
             savedVelocities.remove(tridentId);
             UUID shooterUUID = trackedTridents.remove(tridentId);
             ItemStack returnItem = storedItems.remove(tridentId);
             if (returnItem == null) returnItem = trident.getItemStack().clone();
             final ItemStack finalItem = returnItem;
+
+            Location impactLoc = trident.getLocation();
+            spawnImpactBurst(impactLoc);
+            startStuckGlow(impactLoc);
+
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 trident.remove();
                 Player shooter = Bukkit.getPlayer(shooterUUID);
@@ -263,6 +272,72 @@ public class AbyssalTridentListener implements Listener {
             world.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_HURT, 1.0f, 0.5f);
             world.playSound(loc, Sound.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE, 0.8f, 0.8f);
         }
+    }
+
+    // ======================================================
+    // TRAIL KHI BAY + EFFECT KHI CAM BLOCK
+    // ======================================================
+
+    private void startTrail(Trident trident) {
+        UUID id = trident.getUniqueId();
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!trident.isValid() || !trackedTridents.containsKey(id)) {
+                    trailTasks.remove(id);
+                    cancel();
+                    return;
+                }
+                spawnFlyingTrail(trident);
+            }
+        }.runTaskTimer(plugin, 0L, 2L);
+        trailTasks.put(id, task);
+    }
+
+    private void stopTrail(UUID tridentId) {
+        BukkitTask t = trailTasks.remove(tridentId);
+        if (t != null) t.cancel();
+    }
+
+    private void spawnFlyingTrail(Trident trident) {
+        Location loc = trident.getLocation();
+        World world = loc.getWorld();
+        Vector vel = trident.getVelocity();
+
+        // Offset phia sau trident de trail nhin tu nhien hon
+        Location behind = vel.lengthSquared() > 0.01
+                ? loc.clone().subtract(vel.clone().normalize().multiply(0.35))
+                : loc.clone();
+
+        // Giot nuoc keo theo phia sau
+        world.spawnParticle(Particle.FALLING_WATER, behind, 4, 0.07, 0.07, 0.07, 0);
+        // Lua than linh xanh lan do
+        world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 2, 0.06, 0.06, 0.06, 0.015);
+        // Tia sang dot ngot nhan khong gian
+        world.spawnParticle(Particle.END_ROD, loc, 1, 0.04, 0.04, 0.04, 0.03);
+    }
+
+    private void spawnImpactBurst(Location loc) {
+        World world = loc.getWorld();
+        // Burst nuoc
+        world.spawnParticle(Particle.FALLING_WATER, loc, 20, 0.25, 0.25, 0.25, 0.1);
+        // Tia sang va lua than nho
+        world.spawnParticle(Particle.END_ROD,        loc,  8, 0.3,  0.4,  0.3,  0.08);
+        world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 6, 0.2,  0.2,  0.2,  0.04);
+    }
+
+    private void startStuckGlow(Location impactLoc) {
+        // Hieu ung nhe bam ~1.5 giay sau khi cam vao block
+        new BukkitRunnable() {
+            int ticks = 0;
+            @Override
+            public void run() {
+                if (ticks >= 6) { cancel(); return; }
+                impactLoc.getWorld().spawnParticle(Particle.DRIPPING_WATER,   impactLoc, 3, 0.12, 0.12, 0.12, 0);
+                impactLoc.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, impactLoc, 1, 0.08, 0.08, 0.08, 0);
+                ticks++;
+            }
+        }.runTaskTimer(plugin, 2L, 5L);
     }
 
     private void spawnFirework(Location loc, boolean wet) {
