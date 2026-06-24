@@ -1,6 +1,7 @@
 travel:
   title: "Fast Travel"
   size: 9
+  default-icon: GRASS_BLOCK
 
 checkpoint:
   countdown: 3          # Seconds before teleport
@@ -15,15 +16,28 @@ rank:
 
   permissions:
     GUEST:
-    - "multifeature.travel"
+      - "multifeature.travel"
+      - "multifeature.checkpoint.save"
+      - "multifeature.checkpoint.load"
+      - "multifeature.checkpoint.rename"
 
     BUILDER:
       - "multifeature.travel"
+      - "multifeature.checkpoint.save"
+      - "multifeature.checkpoint.load"
+      - "multifeature.checkpoint.rename"
+      - "multifeature.heightlock"
+      - "multifeature.measure"
+      - "multifeature.glass"
       - "minecraft.command.gamemode"
       - "minecraft.command.time"
       - "minecraft.command.effect"
       - "minecraft.command.clear"
+      - "multifeature.speedfly"
+      - "multifeature.kits"
+      - "multifeature.horse"
       - "worldedit.*"
+      - "voxelsniper.*"
 
     ADMIN:
       - "*"

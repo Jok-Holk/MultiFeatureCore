@@ -1,5 +1,12 @@
 package com.jokholk.multifeature;
 
+import com.jokholk.multifeature.divine.*;
+import com.jokholk.multifeature.rank.*;
+import com.jokholk.multifeature.travel.*;
+import com.jokholk.multifeature.scoreboard.*;
+import com.jokholk.multifeature.tools.*;
+import com.jokholk.multifeature.kits.*;
+import com.jokholk.multifeature.horse.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -23,6 +30,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
     private NametagManager     nametagManager;
     private CheckpointManager  checkpointManager;
     private ScoreboardSettings scoreSettings;
+    private LanguageManager    languageManager;
 
     // ─── Feature managers v4.0.0 ───
     private HeightLockManager heightLockManager;
@@ -41,6 +49,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
 
         // ─── Core systems ───
         rankSystem        = new RankSystem(this);
+        languageManager   = new LanguageManager(this);
         scoreboardManager = new ScoreboardManager(rankSystem);
         nametagManager    = new NametagManager(rankSystem);
         scoreSettings     = new ScoreboardSettings(this);
@@ -77,25 +86,27 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmd("rank",       new RankCommand(this));
         registerCmd("heightlock", new HeightLockCommand(this));
         registerCmd("measure",    new MeasureCommand(this));
+        registerCmd("speedfly",   new SpeedFlyCommand(this));
+        registerCmd("kits",       new KitsCommand());
+        registerCmd("horse",      new HorseCommand(this));
+        registerCmd("language",   new LanguageCommand(languageManager));
         registerCmdOnly("scoreboard", new ScoreboardCommand(this));
         registerCmdOnly("godmace",    new GodMaceCommand(this));
         registerCmdOnly("glass",      new GlassCommand(this));
-        registerCmd("daylength",      new DayLengthCommand(this));
+        registerCmdOnly("daylength",  new DayLengthCommand(this));
         registerCmdOnly("trident",    new AbyssalTridentCommand(this));
-        registerCmd("speedfly",       new SpeedFlyCommand(this));
-        registerCmd("kits",           new KitsCommand());
-        registerCmd("horse",          new HorseCommand(this));
-        registerCmdOnly("excalibur", new ExcaliburCommand(this));
-        registerCmdOnly("ragnarok",  new RagnarokCommand(this));
-        registerCmdOnly("ignis",     new IgnisCommand(this));
-        registerCmdOnly("grave",     new GraveCommand(this));
-        registerCmdOnly("verdant",   new VerdantCommand(this));
-        registerCmdOnly("void",      new VoidBowCommand(this));
-        registerCmdOnly("spear",     new SpearCommand(this));
-        registerCmdOnly("nothan",    new NothanCommand(this));
+        registerCmdOnly("excalibur",  new ExcaliburCommand(this));
+        registerCmdOnly("ragnarok",   new RagnarokCommand(this));
+        registerCmdOnly("ignis",      new IgnisCommand(this));
+        registerCmdOnly("grave",      new GraveCommand(this));
+        registerCmdOnly("verdant",    new VerdantCommand(this));
+        registerCmdOnly("void",       new VoidBowCommand(this));
+        registerCmdOnly("spear",      new SpearCommand(this));
+        registerCmdOnly("nothan",     new NothanCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {
+            languageManager.load(player.getUniqueId());
             rankSystem.updatePermissions(player);
             setDefaultGamemode(player);
             if (scoreSettings.isEnabled(player)) scoreboardManager.updateScoreboard(player);
@@ -146,6 +157,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
+        languageManager.load(player.getUniqueId());
         rankSystem.updatePermissions(player);
         setDefaultGamemode(player);
         nametagManager.updateNametag(player);
@@ -164,12 +176,18 @@ public class MainPlugin extends JavaPlugin implements Listener {
         String rank      = rankSystem.getRank(player);
         String rankColor = rankSystem.getRankColor(player);
 
+        // Suppress default message, broadcast per-viewer language
+        event.joinMessage(null);
         if (rank.equals("OWNER")) {
-            event.joinMessage(net.kyori.adventure.text.Component.text(rankColor + "GOD HAS COME"));
             playLightningSound();
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                viewer.sendMessage(Msg.JOIN_OWNER.fmt(viewer, "color", rankColor));
+            }
         } else {
-            event.joinMessage(net.kyori.adventure.text.Component.text(
-                    rankColor + "[" + rank + "] " + player.getName() + " joined the game"));
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                viewer.sendMessage(Msg.JOIN_PLAYER.fmt(viewer,
+                        "color", rankColor, "rank", rank, "name", player.getName()));
+            }
         }
     }
 
@@ -181,12 +199,21 @@ public class MainPlugin extends JavaPlugin implements Listener {
         String rank      = rankSystem.getRank(player);
         String rankColor = rankSystem.getRankColor(player);
 
+        // Suppress default message, broadcast per-viewer language
+        event.quitMessage(null);
         if (rank.equals("OWNER")) {
-            event.quitMessage(net.kyori.adventure.text.Component.text(rankColor + "GOD HAS LEFT"));
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                // Include the quitting player themselves in the loop (they see it before disconnect)
+                viewer.sendMessage(Msg.QUIT_OWNER.fmt(viewer, "color", rankColor));
+            }
         } else {
-            event.quitMessage(net.kyori.adventure.text.Component.text(
-                    rankColor + "[" + rank + "] " + player.getName() + " left the game"));
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                viewer.sendMessage(Msg.QUIT_PLAYER.fmt(viewer,
+                        "color", rankColor, "rank", rank, "name", player.getName()));
+            }
         }
+
+        languageManager.unload(player.getUniqueId());
     }
 
     // ─── Utilities ───

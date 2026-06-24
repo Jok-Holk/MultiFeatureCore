@@ -1,35 +1,102 @@
 name: MultiFeatureCore
-version: '2.1.0'
+version: '5.0.0'
 main: com.jokholk.multifeature.MainPlugin
-api-version: '1.21.7'
-load: STARTUP
+api-version: '26.1'
 
 authors: [Jok Holk]
-description: A multi-feature core plugin providing personal fast travel, customizable ranks, chat prefix, nametag, and toggleable scoreboard.
+description: A multi-feature core plugin - fast travel, rank system, height lock, and build measurement tools.
 website: https://jokholk.dev
 
 commands:
   travel:
     description: Fast travel system
-    usage: /travel [save|load|name|delete]
+    usage: /travel [save|load|name|delete|slots|icon] [args...]
 
   rank:
     description: Manage player ranks
     usage: /rank <player> <rank>
 
   scoreboard:
-    description: Toggle scoreboard
-    usage: scoreboard [on|off]
+    description: Toggle personal scoreboard
+    usage: /scoreboard [on|off]
+
+  godmace:
+    description: Summon the GOD MACE
+    usage: /godmace
+
+  heightlock:
+    description: Lock your Y level for precision building
+    usage: /heightlock [<y>|on|off]
+
+  measure:
+    description: Measure distances and find center points using a compass
+    usage: /measure <distance|center>
+
+  glass:
+    description: Place a glass block at your current position
+    usage: /glass
+
+  daylength:
+    description: Get or set the Minecraft day cycle length in minutes
+    usage: /daylength [<minutes>|reset]
+
+  trident:
+    description: Summon the ABYSSAL SOVEREIGN trident
+    usage: /trident
+
+  speedfly:
+    description: Toggle speed fly or set fly speed level
+    usage: /speedfly [1-10|tool]
+
+  kits:
+    description: Open the PvP kit selection menu
+    usage: /kits [pvp]
+
+  horse:
+    description: Summon your personal war horse
+    usage: /horse <breed> [armor] [name]
+
+  excalibur:
+    description: Summon the Dark Excalibur
+    usage: /excalibur
+
+  ragnarok:
+    description: Summon the Ragnarok Axe
+    usage: /ragnarok
+
+  ignis:
+    description: Summon the Ignis Core
+    usage: /ignis
+
+  grave:
+    description: Summon the Grave Sovereign
+    usage: /grave
+
+  verdant:
+    description: Summon the Verdant Cipher
+    usage: /verdant
+
+  void:
+    description: Summon the Void Constellation
+    usage: /void
+
+  spear:
+    description: Summon the Spear of Justice
+    usage: /spear
+
+  nothan:
+    description: Summon the Divine Crossbow
+    usage: /nothan
+
+  language:
+    description: Set your preferred language
+    usage: /language <english|vietnamese>
 
 permissions:
 
   multifeature.travel:
     description: Access fast travel system
     default: true
-
-  multifeature.admin:
-    description: Manage ranks
-    default: op
 
   multifeature.checkpoint.save:
     description: Save checkpoints
@@ -42,3 +109,80 @@ permissions:
   multifeature.checkpoint.rename:
     description: Rename checkpoints
     default: true
+
+  multifeature.admin:
+    description: Manage player ranks
+    default: op
+
+  multifeature.godmace:
+    description: Summon GOD MACE
+    default: op
+
+  multifeature.heightlock:
+    description: Lock Y level
+    default: op
+
+  multifeature.measure:
+    description: Use measurement compass tools
+    default: op
+
+  multifeature.glass:
+    description: Place glass block at current position
+    default: op
+
+  multifeature.daylength:
+    description: Get or set day length
+    default: op
+
+  multifeature.trident:
+    description: Summon the Abyssal Sovereign trident
+    default: op
+
+  multifeature.speedfly:
+    description: Use SpeedFly and Speed Wing item
+    default: op
+
+  multifeature.kits:
+    description: Access PvP kit selection menu
+    default: op
+
+  multifeature.horse:
+    description: Summon a personal war horse
+    default: op
+
+  multifeature.excalibur:
+    description: Summon Dark Excalibur
+    default: op
+
+  multifeature.ragnarok:
+    description: Summon Ragnarok
+    default: op
+
+  multifeature.ignis:
+    description: Summon Ignis Core
+    default: op
+
+  multifeature.grave:
+    description: Summon Grave Sovereign
+    default: op
+
+  multifeature.verdant:
+    description: Summon Verdant Cipher
+    default: op
+
+  multifeature.void:
+    description: Summon Void Constellation
+    default: op
+
+  multifeature.spear:
+    description: Summon Spear of Justice
+    default: op
+
+  multifeature.nothan:
+    description: Summon Divine Crossbow
+    default: op
+
+  multifeature.language:
+    description: Change language preference
+    default: true
+

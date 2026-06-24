@@ -10,11 +10,68 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f810471-c1fc-45f3-ac61-17e371fb27d4" name="Changes" comment="2.1.0&#10;- Rename command /menu to /travel&#10;- Rework TravelCommand and TravelListener classes&#10;- Update plugin.yml and permissions (multifeature.menu → multifeature.travel)&#10;- Improve fallback messages and command feedback">
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/AbyssalTridentCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/AbyssalTridentListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ChatListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/CheckpointManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/DayLengthCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/DayLengthManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/DivineWeaponListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ExcaliburCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ExcaliburListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GUIManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GlassCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GodMaceCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GodMaceListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GraveCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/GraveListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/HeightLockCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/HeightLockListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/HeightLockManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/HorseCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/HorseListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/HorseManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/IgnisCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/IgnisListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/KitManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/KitsCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/KitsListener.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MainPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MenuCommand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MeasureCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MeasureListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/MeasureManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NametagManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NothanCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/NothanListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RagnarokCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RagnarokListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/RankCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/ScoreboardSettings.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/SpearCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/SpearListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/SpeedFlyCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/SpeedFlyListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/SpeedFlyManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/TravelCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/TravelListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/VerdantCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/VerdantListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/VoidBowCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jokholk/multifeature/VoidBowListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/ChatListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/GUIManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/MainPlugin.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/NametagManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankCommand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/RankSystem.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/jokholk/multifeature/ScoreboardManager.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
     </list>
@@ -85,7 +142,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.33813.25" />
       </set>
     </attachedChunks>
   </component>
