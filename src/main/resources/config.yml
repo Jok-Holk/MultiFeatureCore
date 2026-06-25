@@ -1,3 +1,8 @@
+resource-pack:
+  url: ""       # URL public đến file .zip (để trống = tắt)
+  sha1: ""      # SHA-1 hex của file zip (để trống = bỏ qua kiểm tra)
+  required: false  # true = bắt buộc player phải nhận
+
 travel:
   title: "Fast Travel"
   size: 9

@@ -173,6 +173,16 @@ public class MainPlugin extends JavaPlugin implements Listener {
             player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         }
 
+        // Resource pack push (1 giây sau khi join để login hoàn tất)
+        String rpUrl = config.getString("resource-pack.url", "");
+        if (!rpUrl.isEmpty()) {
+            String  rpSha1     = config.getString("resource-pack.sha1", "");
+            boolean rpRequired = config.getBoolean("resource-pack.required", false);
+            Bukkit.getScheduler().runTaskLater(this, () -> {
+                if (player.isOnline()) player.setResourcePack(rpUrl, rpSha1, rpRequired);
+            }, 20L);
+        }
+
         String rank      = rankSystem.getRank(player);
         String rankColor = rankSystem.getRankColor(player);
 
