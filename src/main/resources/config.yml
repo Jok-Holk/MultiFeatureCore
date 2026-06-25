@@ -1,6 +1,6 @@
 resource-pack:
-  url: ""       # URL public đến file .zip (để trống = tắt)
-  sha1: ""      # SHA-1 hex của file zip (để trống = bỏ qua kiểm tra)
+  url: ""       # Để trống = dùng URL mặc định trong code; điền vào để override
+  sha1: ""      # Để trống = dùng SHA1 mặc định trong code; điền vào để override
   required: false  # true = bắt buộc player phải nhận
 
 travel:
