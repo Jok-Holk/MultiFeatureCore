@@ -116,12 +116,12 @@ public class SpearListener extends DivineWeaponListener {
         world.playSound(origin, Sound.ITEM_TRIDENT_THROW,            1f, 0.7f + (float)(ratio * 0.5f));
         world.playSound(origin, Sound.ENTITY_PLAYER_ATTACK_SWEEP,    1f, 0.6f);
 
-        // Lunge velocity: scales 1.6 → 3.4 with charge
-        double power = 1.6 + 1.8 * ratio;
-        p.setVelocity(dir.multiply(power).add(new Vector(0, 0.18, 0)));
+        // Lunge velocity: scales 16 → 34 with charge
+        double power = 16 + 18 * ratio;
+        p.setVelocity(dir.multiply(power).add(new Vector(0, 0.3, 0)));
 
         // Path AoE runnable
-        double extraDamage = 15 + 30 * ratio;
+        double extraDamage = 45 + 90 * ratio;
         int slowTicks  = (int)(40 + 100 * ratio);  // 2s → 7s
         int blindTicks = (int)(30 +  70 * ratio);  // 1.5s → 5s
 

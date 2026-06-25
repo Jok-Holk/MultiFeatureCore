@@ -99,7 +99,7 @@ public class VoidBowListener extends DivineWeaponListener {
         int    arrowCount = (int)(5 + 20 * ratio);
         double range      = BASE_RANGE + 50 * ratio;
         double aoeRadius  = 3 + 7 * ratio;
-        double arrowDmg   = BASE_ARROW_DMG + 4 * ratio;
+        double arrowDmg   = 24 + 36 * ratio; // 24 → 60 per arrow
 
         Location eye  = p.getEyeLocation();
         Vector   dir  = eye.getDirection().normalize();
@@ -155,9 +155,9 @@ public class VoidBowListener extends DivineWeaponListener {
                         .add(new Vector(spreadX, 0, spreadZ));
 
                 if (arrowDir.lengthSquared() > 0.001) {
-                    arrowDir.normalize().multiply(3.0);
+                    arrowDir.normalize().multiply(6.0);
                 } else {
-                    arrowDir = dir.clone().multiply(3.0);
+                    arrowDir = dir.clone().multiply(6.0);
                 }
 
                 final Vector finalVelocity = arrowDir;

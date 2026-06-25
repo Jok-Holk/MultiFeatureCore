@@ -105,7 +105,7 @@ public class RagnarokListener extends DivineWeaponListener {
     protected void castSkill(Player p, double ratio, double chargedSecs) {
         double halfWidth = 8 + 22 * ratio;   // 8 → 30 blocks wide on each side
         double depth     = 5 + 17 * ratio;   // 5 → 22 blocks deep
-        double damage    = 15 + 35 * ratio;  // 15 → 50 damage
+        double damage    = 45 + 105 * ratio; // 45 → 150 damage
 
         Vector forward = p.getLocation().getDirection();
         forward.setY(0);
@@ -118,30 +118,20 @@ public class RagnarokListener extends DivineWeaponListener {
         Location feet  = p.getLocation();
         World    world = feet.getWorld();
 
-        // ─── Block destruction upfront ───
-        int hw    = (int) Math.ceil(halfWidth);
-        int d     = (int) Math.ceil(depth);
+        // ─── Block destruction: step directly along fwd and right vectors ───
+        // Bước với step 0.7 block để đảm bảo không bỏ sót ô nào trong vùng quét
         int baseY = feet.getBlockY();
-
-        int minX = (int) Math.floor(Math.min(
-                feet.getX() - hw * Math.abs(right.getX()) - d * Math.abs(fwd.getX()),
-                feet.getX() + hw * Math.abs(right.getX()) + d * Math.abs(fwd.getX()))) - 1;
-        int maxX = (int) Math.ceil(Math.max(
-                feet.getX() - hw * Math.abs(right.getX()) - d * Math.abs(fwd.getX()),
-                feet.getX() + hw * Math.abs(right.getX()) + d * Math.abs(fwd.getX()))) + 1;
-        int minZ = (int) Math.floor(Math.min(
-                feet.getZ() - hw * Math.abs(right.getZ()) - d * Math.abs(fwd.getZ()),
-                feet.getZ() + hw * Math.abs(right.getZ()) + d * Math.abs(fwd.getZ()))) - 1;
-        int maxZ = (int) Math.ceil(Math.max(
-                feet.getZ() - hw * Math.abs(right.getZ()) - d * Math.abs(fwd.getZ()),
-                feet.getZ() + hw * Math.abs(right.getZ()) + d * Math.abs(fwd.getZ()))) + 1;
-
-        for (int bx = minX; bx <= maxX; bx++) {
-            for (int bz = minZ; bz <= maxZ; bz++) {
-                Vector toBlock = new Vector(bx - feet.getX(), 0, bz - feet.getZ());
-                double fwdDot  = toBlock.dot(fwd);
-                double sideDot = Math.abs(toBlock.dot(right));
-                if (fwdDot < 0 || fwdDot > depth || sideDot > halfWidth) continue;
+        Set<String> brokenKeys = new HashSet<>();
+        double step = 0.7;
+        for (double fi = 0; fi <= depth; fi += step) {
+            for (double si = -halfWidth; si <= halfWidth; si += step) {
+                Location bLoc = feet.clone()
+                        .add(fwd.clone().multiply(fi))
+                        .add(right.clone().multiply(si));
+                int bx = bLoc.getBlockX();
+                int bz = bLoc.getBlockZ();
+                String key = bx + "," + bz;
+                if (!brokenKeys.add(key)) continue; // đã phá rồi
                 for (int dy = -1; dy <= 2; dy++) {
                     breakBlockSilent(world.getBlockAt(bx, baseY + dy, bz));
                 }

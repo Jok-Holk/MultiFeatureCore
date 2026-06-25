@@ -98,8 +98,8 @@ public class NothanListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double range  = 10 + 15 * ratio;
-        double damage = 10 + 20 * ratio;
+        double range  = 15 + 22 * ratio; // 15 → 37 blocks
+        double damage = 30 + 60 * ratio; // 30 → 90 damage
         int    sickTicks = (int)(40 + 80 * ratio);
 
         Location eye  = p.getEyeLocation();
