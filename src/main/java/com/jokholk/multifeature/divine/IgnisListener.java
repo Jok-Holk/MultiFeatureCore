@@ -29,23 +29,6 @@ public class IgnisListener extends DivineWeaponListener {
     private static final Color C1 = Color.fromRGB(255, 100, 0);
     private static final Color C2 = Color.fromRGB(255, 200, 0);
 
-    private static final Set<Material> STONE_BLOCKS = Set.of(
-            Material.STONE, Material.COBBLESTONE,
-            Material.GRANITE, Material.POLISHED_GRANITE,
-            Material.DIORITE, Material.POLISHED_DIORITE,
-            Material.ANDESITE, Material.POLISHED_ANDESITE,
-            Material.DEEPSLATE, Material.COBBLED_DEEPSLATE,
-            Material.GRAVEL,
-            Material.COAL_ORE, Material.DEEPSLATE_COAL_ORE,
-            Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE,
-            Material.COPPER_ORE, Material.DEEPSLATE_COPPER_ORE,
-            Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE,
-            Material.REDSTONE_ORE, Material.DEEPSLATE_REDSTONE_ORE,
-            Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE,
-            Material.LAPIS_ORE, Material.DEEPSLATE_LAPIS_ORE,
-            Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE,
-            Material.NETHER_GOLD_ORE, Material.NETHER_QUARTZ_ORE
-    );
 
     public IgnisListener(MainPlugin plugin) {
         super(plugin);
@@ -128,10 +111,7 @@ public class IgnisListener extends DivineWeaponListener {
                     if (proj < 0 || proj > length) continue;
                     double perpDist2 = toBlock.lengthSquared() - proj * proj;
                     if (perpDist2 > r2) continue;
-                    Block block = world.getBlockAt(bx, by, bz);
-                    if (STONE_BLOCKS.contains(block.getType())) {
-                        breakBlockSilent(block);
-                    }
+                    breakBlockSilent(world.getBlockAt(bx, by, bz));
                 }
             }
         }

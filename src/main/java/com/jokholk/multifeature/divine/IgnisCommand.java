@@ -1,6 +1,8 @@
 package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -14,6 +16,7 @@ import java.util.List;
 public class IgnisCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§6§l🔥 IGNIS CORE §6§l🔥";
+    static final float  CONSUME_SECS = 8.0f;
 
     private final MainPlugin plugin;
 
@@ -45,18 +48,21 @@ public class IgnisCommand implements CommandExecutor {
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
                 "§7Struck from the heartfire of the world's §6first §7forge.",
-                "§6Stone remembers §7the flame that shaped it. §6This does not forget.",
-                "§eRight-click §7to heat the core | §eRight-click §7again to drill.",
+                "§6Nothing stands §7before the core. §6Not stone. §7Not ore. §6Not flesh.",
+                "§8Hold §6right-click §8to heat the core — §6release §8to drill.",
+                "§6Drills through all blocks §7(except bedrock) and §6ignites §7everything in the tunnel.",
                 "§8Owner: §7" + p.getUniqueId()
         ));
         m.setUnbreakable(true);
-        m.addEnchant(Enchantment.EFFICIENCY,   5, true);
-        m.addEnchant(Enchantment.FORTUNE,      3, true);
-        m.addEnchant(Enchantment.UNBREAKING,   3, true);
-        m.addEnchant(Enchantment.MENDING,      1, true);
-        m.addEnchant(Enchantment.FIRE_ASPECT,  2, true);
+        m.addEnchant(Enchantment.EFFICIENCY,  5, true);
+        m.addEnchant(Enchantment.FORTUNE,     3, true);
+        m.addEnchant(Enchantment.UNBREAKING,  3, true);
+        m.addEnchant(Enchantment.MENDING,     1, true);
+        m.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
         m.setItemModel(new NamespacedKey("multifeature", "item/ignis_core"));
         pick.setItemMeta(m);
+        pick.setData(DataComponentTypes.CONSUMABLE,
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
 
         p.getInventory().addItem(pick);
         p.sendMessage(Msg.IGNIS_GIVEN.get(p));

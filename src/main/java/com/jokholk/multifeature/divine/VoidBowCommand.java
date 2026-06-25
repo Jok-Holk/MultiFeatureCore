@@ -1,6 +1,8 @@
 package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -14,6 +16,7 @@ import java.util.List;
 public class VoidBowCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§9§l✦ VOID CONSTELLATION ✦";
+    static final float  CONSUME_SECS = 5.0f;
 
     private final MainPlugin plugin;
 
@@ -46,7 +49,8 @@ public class VoidBowCommand implements CommandExecutor {
         m.setLore(List.of(
                 "§7Do not draw the string. §9Draw the space between stars.",
                 "§9The void does not miss. §7It was never aiming §9at you.",
-                "§3Right-click §8to charge the constellation | §3Right-click §8again to fire.",
+                "§8Hold §3right-click §8to pull the constellation — §3release §8to fire.",
+                "§35–25 arrows §7converge on the target point from a §9void portal.",
                 "§8Owner: §7" + p.getUniqueId()
         ));
         m.setUnbreakable(true);
@@ -56,6 +60,9 @@ public class VoidBowCommand implements CommandExecutor {
         m.addEnchant(Enchantment.INFINITY,   1, true);
         m.setItemModel(new NamespacedKey("multifeature", "item/void_constellation"));
         bow.setItemMeta(m);
+        // Consumable overrides vanilla bow draw — prevents vanilla arrow firing
+        bow.setData(DataComponentTypes.CONSUMABLE,
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
 
         p.getInventory().addItem(bow);
         p.sendMessage(Msg.VOID_GIVEN.get(p));

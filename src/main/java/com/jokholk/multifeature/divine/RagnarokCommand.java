@@ -1,6 +1,8 @@
 package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -14,6 +16,7 @@ import java.util.List;
 public class RagnarokCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§c§l⚡ RAGNAROK §c§l⚡";
+    static final float  CONSUME_SECS = 5.0f;
 
     private final MainPlugin plugin;
 
@@ -46,16 +49,19 @@ public class RagnarokCommand implements CommandExecutor {
         m.setLore(List.of(
                 "§7Born the day the sky fractured and gods drew their last breath.",
                 "§cEvery swing §7echoes the sound of a dying world.",
-                "§cRight-click §7to charge the storm | §cRight-click §7again to sweep.",
+                "§8Hold §cright-click §8to charge the storm — §crelease §8to sweep.",
+                "§cBreaks all blocks §7and §cdestroys everything §7in its path.",
                 "§8Owner: §7" + p.getUniqueId()
         ));
         m.setUnbreakable(true);
-        m.addEnchant(Enchantment.SHARPNESS,   5, true);
-        m.addEnchant(Enchantment.EFFICIENCY,  5, true);
-        m.addEnchant(Enchantment.UNBREAKING,  3, true);
-        m.addEnchant(Enchantment.MENDING,     1, true);
+        m.addEnchant(Enchantment.SHARPNESS,  5, true);
+        m.addEnchant(Enchantment.EFFICIENCY, 5, true);
+        m.addEnchant(Enchantment.UNBREAKING, 3, true);
+        m.addEnchant(Enchantment.MENDING,    1, true);
         m.setItemModel(new NamespacedKey("multifeature", "item/ragnarok"));
         axe.setItemMeta(m);
+        axe.setData(DataComponentTypes.CONSUMABLE,
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
 
         p.getInventory().addItem(axe);
         p.sendMessage(Msg.RAGNAROK_GIVEN.get(p));

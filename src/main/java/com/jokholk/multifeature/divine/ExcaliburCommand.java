@@ -1,6 +1,8 @@
 package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -13,7 +15,8 @@ import java.util.List;
 
 public class ExcaliburCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§4§l≪ Dark Excalibur ≫";
+    static final String DISPLAY_NAME  = "§4§l≪ Dark Excalibur ≫";
+    static final float  CONSUME_SECS  = 10.0f; // matches ExcaliburListener.MAX_CHARGE
 
     private final MainPlugin plugin;
 
@@ -46,15 +49,18 @@ public class ExcaliburCommand implements CommandExecutor {
         m.setLore(List.of(
                 "§8Light abandoned it. Now it drinks shadow for sustenance.",
                 "§4Every king who wielded it. §8Fell. §4Eventually.",
-                "§4Right-click §8to draw the dark | §4Right-click §8again to release.",
+                "§8Hold §4right-click §8to raise the blade — §4release §8to slam.",
+                "§4Everything §8in the shockwave §4dies. No drops. No mercy.",
                 "§8Owner: §7" + p.getUniqueId()
         ));
         m.setUnbreakable(true);
-        m.addEnchant(Enchantment.SHARPNESS,   5, true);
-        m.addEnchant(Enchantment.UNBREAKING,  3, true);
-        m.addEnchant(Enchantment.MENDING,     1, true);
+        m.addEnchant(Enchantment.SHARPNESS,  5, true);
+        m.addEnchant(Enchantment.UNBREAKING, 3, true);
+        m.addEnchant(Enchantment.MENDING,    1, true);
         m.setItemModel(new NamespacedKey("multifeature", "item/dark_excalibur"));
         sword.setItemMeta(m);
+        sword.setData(DataComponentTypes.CONSUMABLE,
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
 
         p.getInventory().addItem(sword);
         p.sendMessage(Msg.EXCALIBUR_GIVEN.get(p));

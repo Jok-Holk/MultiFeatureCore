@@ -1,6 +1,8 @@
 package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -14,6 +16,7 @@ import java.util.List;
 public class SpearCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§e§l⚖ SPEAR OF JUSTICE ⚖";
+    static final float  CONSUME_SECS = 3.0f;
 
     private final MainPlugin plugin;
 
@@ -38,21 +41,21 @@ public class SpearCommand implements CommandExecutor {
 
         ItemStack spear = new ItemStack(Material.NETHERITE_SPEAR);
         ItemMeta m = spear.getItemMeta();
-
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
                 "§eCast by the will of order §7at the moment the world demanded a champion.",
                 "§7It has never §emissed. §7Not once. §eNot in ten thousand years.",
-                "§eRight-click §7to lunge forward — §ejustice closes the distance in an instant.",
-                "§7Enemies struck §eare slowed and blinded §7— they cannot flee the verdict.",
+                "§8Hold §eright-click §8to aim — §erelease §8to lunge forward at full force.",
+                "§7Hits §eevery entity §7along the path. §eSlowness + Blindness. §7Kicks Survival players.",
                 "§8Owner: §7" + p.getUniqueId()
         ));
-
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.UNBREAKING, 10, true);
         m.setItemModel(new NamespacedKey("multifeature", "item/spear_of_justice"));
-
         spear.setItemMeta(m);
+        // Consumable overrides vanilla spear lunge — our listener handles the lunge
+        spear.setData(DataComponentTypes.CONSUMABLE,
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
 
         p.getInventory().addItem(spear);
         p.sendMessage(Msg.SPEAR_GIVEN.get(p));

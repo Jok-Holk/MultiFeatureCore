@@ -3,6 +3,7 @@ import com.jokholk.multifeature.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.event.Event;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,15 +26,18 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Abstract base class for all divine weapons that use a charge-and-release mechanic.
+ * Base class for all charge-and-release divine weapons.
+ * Mechanic: HOLD right-click to charge, RELEASE to cast.
+ * Requires the item to have a CONSUMABLE data component (consumeSeconds = maxChargeSecs)
+ * so that isHandRaised() returns true while holding.
  */
 public abstract class DivineWeaponListener implements Listener {
 
     protected final MainPlugin plugin;
 
-    private final Map<UUID, Long>        chargeStart  = new HashMap<>();
-    private final Map<UUID, BukkitTask>  chargeTasks  = new HashMap<>();
-    private final Map<UUID, Long>        cooldowns    = new HashMap<>();
+    private final Map<UUID, Long>       chargeStart = new HashMap<>();
+    private final Map<UUID, BukkitTask> chargeTasks = new HashMap<>();
+    private final Map<UUID, Long>       cooldowns   = new HashMap<>();
 
     protected DivineWeaponListener(MainPlugin plugin) {
         this.plugin = plugin;
@@ -43,8 +48,8 @@ public abstract class DivineWeaponListener implements Listener {
     protected abstract double  getMaxChargeSecs();
     protected abstract double  getCdMultiplier();
     protected abstract String  getTheftKickMessage(Player victim);
-    protected abstract void onChargeVisual(Player p, double ratio);
-    protected abstract void castSkill(Player p, double ratio, double chargedSecs);
+    protected abstract void    onChargeVisual(Player p, double ratio);
+    protected abstract void    castSkill(Player p, double ratio, double chargedSecs);
 
     // ─── Anti-theft ───
 
@@ -62,44 +67,55 @@ public abstract class DivineWeaponListener implements Listener {
             e.getItem().remove();
             e.setCancelled(true);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (p.isOnline()) {
-                    p.kickPlayer(getTheftKickMessage(p));
-                }
+                if (p.isOnline()) p.kickPlayer(getTheftKickMessage(p));
             }, 1L);
         }
     }
 
-    // ─── Right-click to charge / release ───
+    // ─── Hold right-click = charge, release = cast ───
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         var action = e.getAction();
-        boolean isRightClick = action == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
-                || action == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
-        if (!isRightClick) return;
+        boolean isRight = action == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+                       || action == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
+        if (!isRight) return;
 
         ItemStack held = e.getItem();
         if (!isWeapon(held)) return;
 
-        e.setCancelled(true);
+        // Prevent block interaction (stripping, tilling, placing, etc.)
+        e.setUseInteractedBlock(Event.Result.DENY);
+
         Player p = e.getPlayer();
+
+        // Already charging — ignore repeated interact packets
+        if (chargeStart.containsKey(p.getUniqueId())) return;
 
         if (cooldowns.containsKey(p.getUniqueId())) {
             long remaining = cooldowns.get(p.getUniqueId()) - System.currentTimeMillis();
             if (remaining > 0) {
-                // Format cooldown message using player's language
-                Language lang = LanguageManager.getLang(p);
-                String raw = Msg.DIVINE_COOLDOWN.get(lang);
-                p.sendMessage(raw.formatted(remaining / 1000.0));
+                p.sendMessage(Msg.DIVINE_COOLDOWN.get(p).formatted(remaining / 1000.0));
+                e.setUseItemInHand(Event.Result.DENY);
                 return;
-            } else {
-                cooldowns.remove(p.getUniqueId());
             }
+            cooldowns.remove(p.getUniqueId());
         }
 
-        if (!chargeStart.containsKey(p.getUniqueId())) {
-            startCharge(p);
-        } else {
+        startCharge(p);
+        // Item use NOT cancelled — the Consumable component starts naturally,
+        // which makes isHandRaised() return true while the player holds right-click.
+    }
+
+    // Fires when the consumable duration completes = max charge reached
+    @EventHandler
+    public void onConsume(PlayerItemConsumeEvent e) {
+        Player p = e.getPlayer();
+        ItemStack item = e.getItem();
+        if (!isWeapon(item)) return;
+        if (!isOwner(p, item)) return;
+        e.setCancelled(true);
+        if (chargeStart.containsKey(p.getUniqueId())) {
             releaseCharge(p);
         }
     }
@@ -116,9 +132,7 @@ public abstract class DivineWeaponListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         UUID uid = e.getPlayer().getUniqueId();
-        if (chargeStart.containsKey(uid)) {
-            cancelCharge(e.getPlayer());
-        }
+        if (chargeStart.containsKey(uid)) cancelCharge(e.getPlayer());
         cooldowns.remove(uid);
     }
 
@@ -127,7 +141,6 @@ public abstract class DivineWeaponListener implements Listener {
     private void startCharge(Player p) {
         UUID uid = p.getUniqueId();
         chargeStart.put(uid, System.currentTimeMillis());
-        p.sendMessage(Msg.DIVINE_CHARGING.get(p));
 
         final int[] ticks = {0};
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
@@ -135,18 +148,30 @@ public abstract class DivineWeaponListener implements Listener {
                 cancelCharge(p);
                 return;
             }
-            ticks[0]++;
-            if (ticks[0] % 5 == 0) {
+
+            int t = ++ticks[0];
+
+            // After 3-tick warmup: detect release by checking isHandRaised()
+            // isHandRaised() is true only while the consumable use-action is active.
+            // When the player releases right-click it drops to false.
+            if (t > 3 && !p.isHandRaised()) {
+                releaseCharge(p);
+                return;
+            }
+
+            if (t % 5 == 0) {
                 onChargeVisual(p, getChargeRatio(uid));
             }
-            if (ticks[0] >= (int)(getMaxChargeSecs() * 20)) {
+
+            // Safety net: release at max charge if consume event didn't fire
+            if (t >= (int)(getMaxChargeSecs() * 20)) {
                 releaseCharge(p);
             }
         }, 1L, 1L);
         chargeTasks.put(uid, task);
     }
 
-    private void releaseCharge(Player p) {
+    protected void releaseCharge(Player p) {
         UUID uid = p.getUniqueId();
         Long startMs = chargeStart.remove(uid);
         BukkitTask task = chargeTasks.remove(uid);
@@ -185,13 +210,11 @@ public abstract class DivineWeaponListener implements Listener {
         Firework fw = loc.getWorld().spawn(loc, Firework.class);
         var meta = fw.getFireworkMeta();
         meta.setPower(0);
-        meta.addEffect(
-                FireworkEffect.builder()
-                        .withColor(c1, c2)
-                        .with(type)
-                        .trail(trail)
-                        .build()
-        );
+        meta.addEffect(FireworkEffect.builder()
+                .withColor(c1, c2)
+                .with(type)
+                .trail(trail)
+                .build());
         fw.setFireworkMeta(meta);
         Bukkit.getScheduler().runTaskLater(plugin, fw::detonate, 1L);
     }
