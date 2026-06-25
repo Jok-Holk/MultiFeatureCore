@@ -176,9 +176,9 @@ public class MainPlugin extends JavaPlugin implements Listener {
         // Resource pack push (1 giây sau khi join để login hoàn tất)
         // Config override trước, fallback về URL mặc định trong code
         String rpUrl = config.getString("resource-pack.url",
-                "https://github.com/Jok-Holk/MultiFeatureCore/releases/download/resourcepack-v1/multifeature-pack.zip");
+                "https://github.com/Jok-Holk/MultiFeatureCore/releases/download/resourcepack-v2/multifeature-pack.zip");
         String rpSha1 = config.getString("resource-pack.sha1",
-                "816ae3d2e2fc45922163f304cfa08c2586f50726");
+                "3bf81686ab75fc77e110975c823790b861877d4f");
         boolean rpRequired = config.getBoolean("resource-pack.required", false);
         if (!rpUrl.isEmpty()) {
             Bukkit.getScheduler().runTaskLater(this, () -> {
