@@ -727,6 +727,19 @@ public enum Msg {
     ),
 
     // ──────────────────────────────────────────────────────────
+    //  Divine Debug (test-only: gives all divine weapons at once)
+    // ──────────────────────────────────────────────────────────
+
+    DIVINEDEBUG_NO_PERM(
+        "§cYou don't have permission to use this debug command.",
+        "§cBạn không có quyền dùng lệnh debug này."
+    ),
+    DIVINEDEBUG_GIVEN(
+        "§d[DivineDebug] §7All divine weapons have been given (skipped any you already hold).",
+        "§d[DivineDebug] §7Đã trao tất cả thần khí (bỏ qua món bạn đã có)."
+    ),
+
+    // ──────────────────────────────────────────────────────────
     //  Excalibur
     // ──────────────────────────────────────────────────────────
 

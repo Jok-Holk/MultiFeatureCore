@@ -88,6 +88,10 @@ commands:
     description: Summon the Divine Crossbow
     usage: /nothan
 
+  divinedebug:
+    description: Debug tool - summon all divine weapons at once
+    usage: /divinedebug
+
   language:
     description: Set your preferred language
     usage: /language <english|vietnamese>
@@ -180,6 +184,10 @@ permissions:
 
   multifeature.nothan:
     description: Summon Divine Crossbow
+    default: op
+
+  multifeature.divinedebug:
+    description: Debug tool - summon all divine weapons at once
     default: op
 
   multifeature.language:
