@@ -179,6 +179,7 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
+| 5.0.1 | Divine weapons hold-release mechanic + cinematic effects + major power buff; Grave Sovereign mode-based area control; resource pack auto-push on join with hardcoded URL fallback; items/item/ folder for MC 1.21.4+ item model system |
 | 5.0.0 | Bilingual language system (/language english\|vietnamese); resource pack model links for all 10 divine weapons (setItemModel); package modularization into 7 subpackages; Spear of Justice rewritten to charge-and-release lunge with path AoE; Grave Sovereign rewritten to mode-based area control (sneak+click to cycle 1x1->15x15) |
 | 4.9.6 | Full weapon overhaul + 2 new divine weapons: Spear of Justice and Divine Crossbow (No Than) |
 | 4.9.5 | Add 6 Divine Weapons: Excalibur, Ragnarok, Ignis Core, Grave Sovereign, Verdant Cipher, Void Constellation -- all UUID-locked, ADMIN+ only, shared charge/release mechanic |
