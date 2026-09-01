@@ -71,6 +71,13 @@ public class VoidBowCommand implements CommandExecutor {
                 Consumable.consumable().consumeSeconds(CONSUME_SECS).animation(ItemUseAnimation.NONE).build());
 
         p.getInventory().addItem(bow);
+        // Vanilla still requires >=1 arrow in inventory to draw a bow at all
+        // (Infinity only skips consuming it, not the "must possess one" gate)
+        // -- our own firing is fully scripted and never touches real arrows,
+        // so a single arrow here satisfies that check permanently.
+        if (!p.getInventory().containsAtLeast(new ItemStack(Material.ARROW), 1)) {
+            p.getInventory().addItem(new ItemStack(Material.ARROW, 1));
+        }
         p.sendMessage(Msg.VOID_GIVEN.get(p));
         return true;
     }

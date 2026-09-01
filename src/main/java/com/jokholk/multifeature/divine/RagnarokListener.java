@@ -103,11 +103,10 @@ public class RagnarokListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        // Was a deep forward zone (like Ignis's beam), hard to aim -- now a
-        // wide horizontal swipe right in front of the player instead: width
-        // still scales with charge, depth stays short and mostly fixed.
+        // A rectangle straight in front of the player: full width scales with
+        // charge, depth stays short and mostly fixed, projecting forward only.
         double halfWidth = 12 + 30 * ratio; // 12 → 42 blocks wide on each side
-        double depth     = 3 + 2 * ratio;   // 3 → 5 blocks deep
+        double depth     = 3 + 2 * ratio;   // 3 → 5 blocks deep, forward only
         double damage    = 40 + 80 * ratio; // 40 → 120 damage
 
         Vector forward = p.getLocation().getDirection();

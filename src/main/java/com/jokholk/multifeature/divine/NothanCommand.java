@@ -64,6 +64,13 @@ public class NothanCommand implements CommandExecutor {
                 Consumable.consumable().consumeSeconds(CONSUME_SECS).animation(ItemUseAnimation.NONE).build());
 
         p.getInventory().addItem(crossbow);
+        // Vanilla still requires >=1 arrow in inventory to load a crossbow at
+        // all -- our firing is fully scripted and stripChargedProjectiles()
+        // (in NothanListener) prevents vanilla from ever really consuming it,
+        // so a single arrow here satisfies that check permanently.
+        if (!p.getInventory().containsAtLeast(new ItemStack(Material.ARROW), 1)) {
+            p.getInventory().addItem(new ItemStack(Material.ARROW, 1));
+        }
         p.sendMessage(Msg.NOTHAN_GIVEN.get(p));
         return true;
     }
