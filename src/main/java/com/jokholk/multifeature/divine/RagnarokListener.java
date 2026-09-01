@@ -21,16 +21,18 @@ import java.util.List;
 public class RagnarokListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE      = 5.0;
-    static final double MAX_HALF_WIDTH  = 5.0;  // full width 5 -> 10
-    static final double MAX_DEPTH       = 5.0;  // depth 2 -> 5
-    static final double MAX_DAMAGE      = 40.0; // reduced from 120
+    static final double MAX_HALF_WIDTH  = 8.0;  // full width 8 -> 16
+    static final double MAX_DEPTH       = 8.0;  // depth 3 -> 8
+    static final double MAX_DAMAGE      = 40.0;
     private static final double MIN_COOLDOWN = 6.0;
 
-    // Box height: baseY + MIN_DY .. baseY + MAX_DY (4 blocks tall), shared by
-    // block destruction, the entity hitbox and the particle fill so the zone
-    // is an actual 3D box, not a flat rectangle painted on the ground.
-    private static final int MIN_DY = -1;
-    private static final int MAX_DY = 2;
+    // Box height: baseY + MIN_DY .. baseY + MAX_DY, shared by block
+    // destruction, the entity hitbox and the particle fill so the zone is an
+    // actual 3D box, not a flat rectangle painted on the ground. Starts
+    // exactly at the player's feet (dy=0 is the feet block, "height 1") and
+    // reaches 9 blocks above that -- 10 blocks tall total.
+    private static final int MIN_DY = 0;
+    private static final int MAX_DY = 9;
 
     // Log blocks give their real wood item (type-correct, via getDrops so any
     // future enchant like Silk Touch is respected) straight into the
@@ -131,9 +133,9 @@ public class RagnarokListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double halfWidth = 2.5 + 2.5 * ratio; // 2.5 → 5 (full width 5 → 10)
-        double depth     = 2 + 3 * ratio;     // 2 → 5 blocks deep, forward only
-        double damage    = 20 + 20 * ratio;   // 20 → 40 damage
+        double halfWidth = 4 + 4 * ratio; // 4 → 8 (full width 8 → 16)
+        double depth     = 3 + 5 * ratio; // 3 → 8 blocks deep, forward only
+        double damage    = 20 + 20 * ratio; // 20 → 40 damage
 
         Vector forward = p.getLocation().getDirection();
         forward.setY(0);
@@ -187,7 +189,12 @@ public class RagnarokListener extends DivineWeaponListener {
         // ─── height), not just a flat layer painted on the ground ───
         int fSteps = 5;
         int sSteps = 5;
-        double[] yLayers = { MIN_DY + 0.2, (MIN_DY + MAX_DY) / 2.0, MAX_DY - 0.2 };
+        double[] yLayers = {
+            MIN_DY + 0.2,
+            MIN_DY + (MAX_DY - MIN_DY) / 3.0,
+            MIN_DY + (MAX_DY - MIN_DY) * 2.0 / 3.0,
+            MAX_DY - 0.2
+        };
         for (double yOff : yLayers) {
             for (int i = 0; i <= fSteps; i++) {
                 double fPos = depth * i / fSteps;

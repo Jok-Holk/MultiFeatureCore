@@ -22,7 +22,9 @@ import java.util.Set;
 public class IgnisListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE  = 8.0;
+    static final double MIN_RADIUS  = 1.0;
     static final double MAX_RADIUS  = 4.0;
+    static final double MIN_LENGTH  = 5.0;
     static final double MAX_LENGTH  = 20.0;
     static final double MAX_DAMAGE  = 40.0;
     private static final double MIN_COOLDOWN = 5.0;
@@ -129,8 +131,8 @@ public class IgnisListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double radius = 2 + 2 * ratio;   // 2 → 4 blocks (nerfed again, max halved from 8)
-        double length = 10 + 10 * ratio; // 10 → 20 blocks (nerfed again, max halved from 40)
+        double radius = MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * ratio; // 1 → 4 blocks
+        double length = MIN_LENGTH + (MAX_LENGTH - MIN_LENGTH) * ratio; // 5 → 20 blocks
         double damage = 10 + 30 * ratio; // 10 → 40 (damage unchanged, only the destruction radius/length was nerfed)
 
         Location eye = p.getEyeLocation();
