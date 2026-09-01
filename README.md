@@ -137,7 +137,7 @@ Control how long a Minecraft day takes in real minutes.
 | `/void` | Summon Void Constellation | ADMIN/OWNER/DEVELOPER |
 | `/spear` | Summon Spear of Justice | ADMIN/OWNER/DEVELOPER |
 | `/nothan` | Summon Divine Crossbow | ADMIN/OWNER/DEVELOPER |
-| `/coreupdate` | Download the latest plugin jar and shut the server down for restart | console, OWNER, or DEVELOPER |
+| `/coreupdate <now\|0\|1-10>` | Download the latest plugin jar and restart after a countdown (minutes) | console, OWNER, or DEVELOPER |
 
 ---
 
@@ -164,13 +164,17 @@ The `src/main/resources/pack-contents/` directory contains the resource pack for
 
 ---
 
-## Self-Update (`/coreupdate`)
+## Self-Update (`/coreupdate <now|0|1-10>`)
 
-Lets an OWNER, DEVELOPER, or the server console push a new build to production without a manual file copy.
+Lets an OWNER, DEVELOPER, or the server console push a new build to production without a manual file copy. A delay argument is always required -- there's no default:
+
+- `now` or `0` -- apply immediately.
+- `1`-`10` -- schedule a countdown, in minutes, before the restart.
 
 1. Every push to `master` runs `.github/workflows/release.yml`: it builds the plugin with Maven and publishes the jar to the GitHub release tagged `latest`, under a fixed filename (`multifeaturecore.jar`) so the download link never changes between versions.
-2. Running `/coreupdate` downloads that jar from the URL in `update.jar-url` (`config.yml`), writes it to a temp file next to the currently-running jar, sanity-checks the response (HTTP 200, size > 1 KB), then atomically replaces the running jar on disk.
-3. It then calls `Bukkit.shutdown()`. The command does **not** attempt to hot-swap the loaded plugin classes or relaunch the process itself -- it relies entirely on however the server is run to bring it back up (e.g. a Docker `restart: unless-stopped` policy). If the server isn't run under something that auto-restarts, it will stay down until started manually.
+2. Running `/coreupdate <delay>` downloads that jar from the URL in `update.jar-url` (`config.yml`) to a temp file and sanity-checks the response (HTTP 200, size > 1 KB) *before* touching anything else -- a failed download never disrupts players.
+3. Once the download is verified, it broadcasts a countdown to every online player in their own language: a warning at each full minute down to 1, then at 30s and 10s, then every second from 9 down to 1. At 0, it atomically replaces the running jar on disk and calls `Bukkit.shutdown()`.
+4. The command does **not** attempt to hot-swap the loaded plugin classes or relaunch the process itself -- it relies entirely on however the server is run to bring it back up (e.g. a Docker `restart: unless-stopped` policy). If the server isn't run under something that auto-restarts, it will stay down until started manually.
 
 Uses `https://.../releases/download/latest/multifeaturecore.jar` -- the direct tag URL, not the `/releases/latest/download/...` alias, since that alias resolves to whichever release in the whole repo is currently flagged "latest" and can be hijacked by publishing an unrelated release (e.g. the resource pack).
 

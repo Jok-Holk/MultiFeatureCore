@@ -9,8 +9,8 @@ website: https://jokholk.dev
 
 commands:
   coreupdate:
-    description: Download the latest plugin jar and shut the server down for restart
-    usage: /coreupdate
+    description: Download the latest plugin jar and restart after a countdown
+    usage: /coreupdate <now|0|1-10>
 
   travel:
     description: Fast travel system

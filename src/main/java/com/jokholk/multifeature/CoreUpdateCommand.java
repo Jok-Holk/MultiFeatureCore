@@ -25,6 +25,11 @@ import java.time.Duration;
  * Relies on an external process supervisor (systemd, a restart loop, etc.)
  * to bring the server back up with the new jar — this command does NOT
  * attempt to hot-swap the running plugin classes.
+ *
+ * Usage: /coreupdate <now|0|1-10>
+ * "now"/"0" applies the update immediately; 1-10 schedules a countdown (in
+ * minutes) with broadcast warnings before the server restarts. There is no
+ * default — a delay must always be specified explicitly.
  */
 public class CoreUpdateCommand implements CommandExecutor {
 
@@ -46,6 +51,28 @@ public class CoreUpdateCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length < 1) {
+            sender.sendMessage(Msg.CORE_UPDATE_USAGE.get(senderLang(sender)));
+            return true;
+        }
+
+        String arg = args[0].toLowerCase();
+        int delayMinutes;
+        if (arg.equals("now") || arg.equals("0")) {
+            delayMinutes = 0;
+        } else {
+            try {
+                delayMinutes = Integer.parseInt(arg);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(Msg.CORE_UPDATE_USAGE.get(senderLang(sender)));
+                return true;
+            }
+            if (delayMinutes < 1 || delayMinutes > 10) {
+                sender.sendMessage(Msg.CORE_UPDATE_USAGE.get(senderLang(sender)));
+                return true;
+            }
+        }
+
         String jarUrl = plugin.getConfig().getString("update.jar-url", "");
         if (jarUrl.isEmpty()) {
             sender.sendMessage("§cupdate.jar-url is not set in config.yml.");
@@ -65,9 +92,10 @@ public class CoreUpdateCommand implements CommandExecutor {
             return true;
         }
 
-        sender.sendMessage("§7[Update] Downloading new jar from " + jarUrl + " ...");
+        sender.sendMessage(Msg.CORE_UPDATE_DOWNLOADING.get(senderLang(sender)));
         plugin.getLogger().info("[Update] Downloading new jar from " + jarUrl);
 
+        final int finalDelayMinutes = delayMinutes;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Path tempFile;
             try {
@@ -101,45 +129,101 @@ public class CoreUpdateCommand implements CommandExecutor {
                     Files.deleteIfExists(tempFile);
                     return;
                 }
-
-                boolean replacedNow = true;
-                try {
-                    Files.move(tempFile, currentJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException lockEx) {
-                    // Windows refuses to replace a jar that the running JVM still
-                    // has open (no FILE_SHARE_DELETE) — Linux allows this fine
-                    // (rename() doesn't care that a process has the old inode
-                    // open), so this only bites local Windows test servers.
-                    // Fall back to a detached helper that waits for this process
-                    // to fully exit, then performs the move itself.
-                    if (isWindows()) {
-                        scheduleWindowsDelayedReplace(tempFile, currentJar.toPath());
-                        replacedNow = false;
-                    } else {
-                        throw lockEx;
-                    }
-                }
-                final boolean finalReplacedNow = replacedNow;
-
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.sendMessage("§d[Update] New plugin jar downloaded — server restarting now.");
-                    }
-                    if (finalReplacedNow) {
-                        plugin.getLogger().info("[Update] New jar in place, shutting down for restart.");
-                    } else {
-                        plugin.getLogger().info("[Update] Jar is locked (Windows) — a helper will replace it "
-                                + "once this process exits. Shutting down for restart.");
-                    }
-                    Bukkit.shutdown();
-                });
             } catch (Exception e) {
-                logAndTell(sender, "§cUpdate failed: " + e.getMessage());
+                logAndTell(sender, "§cDownload failed: " + e.getMessage());
                 try { Files.deleteIfExists(tempFile); } catch (Exception ignored) {}
+                return;
             }
+
+            // Download is staged and verified — only now start warning players
+            // and counting down, so a failed download never disrupts anyone.
+            Bukkit.getScheduler().runTask(plugin, () ->
+                    startCountdown(finalDelayMinutes, tempFile, currentJar.toPath()));
         });
 
         return true;
+    }
+
+    private void startCountdown(int delayMinutes, Path tempFile, Path currentJar) {
+        if (delayMinutes <= 0) {
+            applyUpdateAndShutdown(tempFile, currentJar);
+            return;
+        }
+
+        broadcastMinutes(delayMinutes);
+        final int[] secondsLeft = { delayMinutes * 60 };
+
+        Bukkit.getScheduler().runTaskTimer(plugin, task -> {
+            secondsLeft[0]--;
+            int s = secondsLeft[0];
+
+            if (s <= 0) {
+                task.cancel();
+                applyUpdateAndShutdown(tempFile, currentJar);
+                return;
+            }
+
+            if (s > 30 && s % 60 == 0) {
+                broadcastMinutes(s / 60);
+            } else if (s == 30 || s == 10) {
+                broadcastSeconds(s);
+            } else if (s <= 9) {
+                broadcastSeconds(s);
+            }
+        }, 20L, 20L);
+    }
+
+    private void broadcastMinutes(int minutes) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendMessage(Msg.CORE_UPDATE_COUNTDOWN_MIN.fmt(p, "n", minutes));
+        }
+        plugin.getLogger().info("[Update] Restarting in " + minutes + " minute(s).");
+    }
+
+    private void broadcastSeconds(int seconds) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendMessage(Msg.CORE_UPDATE_COUNTDOWN_SEC.fmt(p, "n", seconds));
+        }
+        plugin.getLogger().info("[Update] Restarting in " + seconds + " second(s).");
+    }
+
+    private void applyUpdateAndShutdown(Path tempFile, Path currentJar) {
+        boolean replacedNow = true;
+        try {
+            Files.move(tempFile, currentJar, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException lockEx) {
+            // Windows refuses to replace a jar that the running JVM still has
+            // open (no FILE_SHARE_DELETE) — Linux allows this fine (rename()
+            // doesn't care that a process has the old inode open), so this
+            // only bites local Windows test servers.
+            if (isWindows()) {
+                try {
+                    scheduleWindowsDelayedReplace(tempFile, currentJar);
+                    replacedNow = false;
+                } catch (IOException e) {
+                    plugin.getLogger().warning("[Update] Windows fallback failed: " + e.getMessage());
+                    return;
+                }
+            } else {
+                plugin.getLogger().warning("[Update] Failed to replace jar: " + lockEx.getMessage());
+                return;
+            }
+        }
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendMessage(Msg.CORE_UPDATE_RESTARTING.get(p));
+        }
+        if (replacedNow) {
+            plugin.getLogger().info("[Update] New jar in place, shutting down for restart.");
+        } else {
+            plugin.getLogger().info("[Update] Jar is locked (Windows) — a helper will replace it "
+                    + "once this process exits. Shutting down for restart.");
+        }
+        Bukkit.shutdown();
+    }
+
+    private Language senderLang(CommandSender sender) {
+        return sender instanceof Player p ? LanguageManager.getLang(p) : Language.ENGLISH;
     }
 
     private void logAndTell(CommandSender sender, String message) {

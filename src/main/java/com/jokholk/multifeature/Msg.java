@@ -951,6 +951,31 @@ public enum Msg {
     ),
 
     // ──────────────────────────────────────────────────────────
+    //  /coreupdate
+    // ──────────────────────────────────────────────────────────
+
+    CORE_UPDATE_USAGE(
+        "§cUsage: /coreupdate <now|0|1-10> -- 0/now updates immediately, 1-10 schedules a countdown in minutes.",
+        "§cCách dùng: /coreupdate <now|0|1-10> -- 0/now cập nhật ngay, 1-10 đếm ngược theo phút."
+    ),
+    CORE_UPDATE_DOWNLOADING(
+        "§7[Update] Downloading the new build...",
+        "§7[Update] Đang tải bản cập nhật mới..."
+    ),
+    CORE_UPDATE_COUNTDOWN_MIN(
+        "§d[Update] §fServer will restart in §e%n% minute(s)§f to apply an update.",
+        "§d[Update] §fServer sẽ khởi động lại sau §e%n% phút§f để cập nhật."
+    ),
+    CORE_UPDATE_COUNTDOWN_SEC(
+        "§d[Update] §fServer will restart in §e%n% second(s)§f to apply an update.",
+        "§d[Update] §fServer sẽ khởi động lại sau §e%n% giây§f để cập nhật."
+    ),
+    CORE_UPDATE_RESTARTING(
+        "§d[Update] §fRestarting now to apply the update!",
+        "§d[Update] §fĐang khởi động lại để cập nhật!"
+    ),
+
+    // ──────────────────────────────────────────────────────────
     //  Abyssal Sovereign (Trident)
     // ──────────────────────────────────────────────────────────
 
