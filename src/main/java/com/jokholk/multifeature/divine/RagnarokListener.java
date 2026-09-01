@@ -7,7 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,8 +23,32 @@ public class RagnarokListener extends DivineWeaponListener {
     static final double MAX_CHARGE      = 5.0;
     static final double MAX_HALF_WIDTH  = 5.0;  // full width 5 -> 10
     static final double MAX_DEPTH       = 5.0;  // depth 2 -> 5
-    static final double MAX_DAMAGE      = 120.0;
+    static final double MAX_DAMAGE      = 40.0; // reduced from 120
     private static final double MIN_COOLDOWN = 6.0;
+
+    // Box height: baseY + MIN_DY .. baseY + MAX_DY (4 blocks tall), shared by
+    // block destruction, the entity hitbox and the particle fill so the zone
+    // is an actual 3D box, not a flat rectangle painted on the ground.
+    private static final int MIN_DY = -1;
+    private static final int MAX_DY = 2;
+
+    // Log blocks give their real wood item (type-correct, via getDrops so any
+    // future enchant like Silk Touch is respected) straight into the
+    // player's inventory instead of just vanishing.
+    private void breakBlockWithDrops(Player p, Block block, ItemStack tool) {
+        if (Tag.LOGS.isTagged(block.getType())) {
+            for (ItemStack drop : block.getDrops(tool)) {
+                giveOrDrop(p, drop);
+            }
+        }
+        breakBlockSilent(block);
+    }
+
+    private void giveOrDrop(Player p, ItemStack stack) {
+        for (ItemStack extra : p.getInventory().addItem(stack).values()) {
+            p.getWorld().dropItemNaturally(p.getLocation(), extra);
+        }
+    }
 
     private static final Color  C1  = Color.fromRGB(255, 80,  0);
     private static final Color  C2  = Color.fromRGB(255, 200, 0);
@@ -107,7 +133,7 @@ public class RagnarokListener extends DivineWeaponListener {
     protected void castSkill(Player p, double ratio, double chargedSecs) {
         double halfWidth = 2.5 + 2.5 * ratio; // 2.5 → 5 (full width 5 → 10)
         double depth     = 2 + 3 * ratio;     // 2 → 5 blocks deep, forward only
-        double damage    = 40 + 80 * ratio;   // 40 → 120 damage
+        double damage    = 20 + 20 * ratio;   // 20 → 40 damage
 
         Vector forward = p.getLocation().getDirection();
         forward.setY(0);
@@ -120,11 +146,13 @@ public class RagnarokListener extends DivineWeaponListener {
         Location feet  = p.getLocation();
         World    world = feet.getWorld();
         int      baseY = feet.getBlockY();
+        ItemStack axeStack = p.getInventory().getItemInMainHand();
 
         double queryHalf = Math.max(halfWidth, depth) + 2;
 
         // ─── Block destruction: scan the small bounding box, test each ───
-        // ─── candidate block's LOCAL (fwd/right) coordinates against the shape ───
+        // ─── candidate block's LOCAL (fwd/right) coordinates against the shape, ───
+        // ─── a full 3D box from baseY+MIN_DY to baseY+MAX_DY, not a flat plane. ───
         int minBx = (int) Math.floor(feet.getX() - queryHalf);
         int maxBx = (int) Math.ceil( feet.getX() + queryHalf);
         int minBz = (int) Math.floor(feet.getZ() - queryHalf);
@@ -136,8 +164,8 @@ public class RagnarokListener extends DivineWeaponListener {
                 double fd = dx * fwd.getX()   + dz * fwd.getZ();
                 double sd = dx * right.getX() + dz * right.getZ();
                 if (fd < 0 || fd > depth || sd < -halfWidth || sd > halfWidth) continue;
-                for (int dy = -1; dy <= 2; dy++) {
-                    breakBlockSilent(world.getBlockAt(bx, baseY + dy, bz));
+                for (int dy = MIN_DY; dy <= MAX_DY; dy++) {
+                    breakBlockWithDrops(p, world.getBlockAt(bx, baseY + dy, bz), axeStack);
                 }
             }
         }
@@ -147,20 +175,24 @@ public class RagnarokListener extends DivineWeaponListener {
         world.playSound(feet, Sound.ENTITY_LIGHTNING_BOLT_IMPACT,  0.9f, 0.6f);
         world.playSound(feet, Sound.ENTITY_GENERIC_EXPLODE,        0.8f, 0.8f);
 
-        // ─── One-shot particle burst covering the whole rectangle ───
-        int fSteps = 6;
-        int sSteps = 6;
-        for (int i = 0; i <= fSteps; i++) {
-            double fPos = depth * i / fSteps;
-            for (int j = -sSteps; j <= sSteps; j++) {
-                double sPos = halfWidth * j / sSteps;
-                Location pt = feet.clone()
-                        .add(fwd.clone().multiply(fPos))
-                        .add(right.clone().multiply(sPos));
-                world.spawnParticle(Particle.FLAME,       pt.clone().add(0, 0.1, 0), 4, 0.2, 0.5, 0.2, 0.05);
-                world.spawnParticle(Particle.LARGE_SMOKE, pt.clone().add(0, 1.0, 0), 2, 0.2, 0.4, 0.2, 0.02);
-                if ((i + j) % 3 == 0) {
-                    world.spawnParticle(Particle.ELECTRIC_SPARK, pt.clone().add(0, 0.8, 0), 2, 0.2, 0.3, 0.2, 0.06);
+        // ─── One-shot particle burst filling the whole box (width x depth x ───
+        // ─── height), not just a flat layer painted on the ground ───
+        int fSteps = 5;
+        int sSteps = 5;
+        double[] yLayers = { MIN_DY + 0.2, (MIN_DY + MAX_DY) / 2.0, MAX_DY - 0.2 };
+        for (double yOff : yLayers) {
+            for (int i = 0; i <= fSteps; i++) {
+                double fPos = depth * i / fSteps;
+                for (int j = -sSteps; j <= sSteps; j++) {
+                    double sPos = halfWidth * j / sSteps;
+                    Location pt = feet.clone()
+                            .add(fwd.clone().multiply(fPos))
+                            .add(right.clone().multiply(sPos))
+                            .add(0, yOff, 0);
+                    world.spawnParticle(Particle.FLAME, pt, 3, 0.2, 0.3, 0.2, 0.04);
+                    if ((i + j) % 3 == 0) {
+                        world.spawnParticle(Particle.ELECTRIC_SPARK, pt, 1, 0.15, 0.2, 0.15, 0.05);
+                    }
                 }
             }
         }
@@ -173,10 +205,12 @@ public class RagnarokListener extends DivineWeaponListener {
         spawnFirework(feet.clone().add(fwd.clone().multiply(depth * 0.5)).add(0, 1, 0),
                 C1, C2, FireworkEffect.Type.BURST, false);
 
-        // ─── Entity damage: same rectangle, instant ───
-        world.getNearbyEntities(feet, queryHalf, 3, queryHalf).stream()
+        // ─── Entity damage: same box, instant ───
+        world.getNearbyEntities(feet, queryHalf, MAX_DY - MIN_DY + 1, queryHalf).stream()
                 .filter(e -> e instanceof LivingEntity && e != p)
                 .filter(e -> {
+                    double relY = e.getLocation().getY() - baseY;
+                    if (relY < MIN_DY - 0.5 || relY > MAX_DY + 1.5) return false;
                     Vector rel = e.getLocation().toVector().subtract(feet.toVector());
                     rel.setY(0);
                     double fd = rel.dot(fwd);

@@ -30,9 +30,53 @@ public class IgnisListener extends DivineWeaponListener {
     private static final Color C1 = Color.fromRGB(255, 100, 0);
     private static final Color C2 = Color.fromRGB(255, 200, 0);
 
+    private static final Set<Material> ORES = Set.of(
+        Material.COAL_ORE, Material.DEEPSLATE_COAL_ORE,
+        Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE,
+        Material.COPPER_ORE, Material.DEEPSLATE_COPPER_ORE,
+        Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.NETHER_GOLD_ORE,
+        Material.REDSTONE_ORE, Material.DEEPSLATE_REDSTONE_ORE,
+        Material.LAPIS_ORE, Material.DEEPSLATE_LAPIS_ORE,
+        Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE,
+        Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE,
+        Material.NETHER_QUARTZ_ORE, Material.ANCIENT_DEBRIS
+    );
 
     public IgnisListener(MainPlugin plugin) {
         super(plugin);
+    }
+
+    // Ore blocks give their real, already-processed mineral straight into the
+    // player's inventory -- quantity comes from getDrops() so Fortune (or any
+    // other enchant on the pickaxe) scales it exactly like manual mining
+    // would. Raw ore is skipped entirely: Ignis is a fire weapon, so
+    // iron/copper/gold come out already smelted, same as a furnace would.
+    private void breakBlockWithOreDrops(Player p, Block block, ItemStack tool) {
+        if (ORES.contains(block.getType())) {
+            for (ItemStack drop : block.getDrops(tool)) {
+                giveOrDrop(p, smelted(drop));
+            }
+        }
+        breakBlockSilent(block);
+    }
+
+    private ItemStack smelted(ItemStack raw) {
+        Material smeltedType = switch (raw.getType()) {
+            case RAW_IRON   -> Material.IRON_INGOT;
+            case RAW_COPPER -> Material.COPPER_INGOT;
+            case RAW_GOLD   -> Material.GOLD_INGOT;
+            default -> null;
+        };
+        if (smeltedType == null) return raw;
+        ItemStack out = raw.clone();
+        out.setType(smeltedType);
+        return out;
+    }
+
+    private void giveOrDrop(Player p, ItemStack stack) {
+        for (ItemStack extra : p.getInventory().addItem(stack).values()) {
+            p.getWorld().dropItemNaturally(p.getLocation(), extra);
+        }
     }
 
     @Override
@@ -93,6 +137,7 @@ public class IgnisListener extends DivineWeaponListener {
         Vector   dir = eye.getDirection().normalize();
         double   r2  = radius * radius;
         World    world = eye.getWorld();
+        ItemStack pickStack = p.getInventory().getItemInMainHand();
 
         int ri    = (int) Math.ceil(radius);
         int steps = (int) length;
@@ -114,7 +159,7 @@ public class IgnisListener extends DivineWeaponListener {
                     if (proj < 0 || proj > length) continue;
                     double perpDist2 = toBlock.lengthSquared() - proj * proj;
                     if (perpDist2 > r2) continue;
-                    breakBlockSilent(world.getBlockAt(bx, by, bz));
+                    breakBlockWithOreDrops(p, world.getBlockAt(bx, by, bz), pickStack);
                 }
             }
         }
