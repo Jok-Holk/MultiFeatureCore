@@ -12,19 +12,15 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 public class RagnarokListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE      = 5.0;
-    static final double MAX_HALF_WIDTH  = 42.0;
-    static final double MAX_DEPTH       = 5.0;
+    static final double MAX_HALF_WIDTH  = 5.0;  // full width 5 -> 10
+    static final double MAX_DEPTH       = 5.0;  // depth 2 -> 5
     static final double MAX_DAMAGE      = 120.0;
     private static final double MIN_COOLDOWN = 6.0;
 
@@ -100,15 +96,18 @@ public class RagnarokListener extends DivineWeaponListener {
         }
     }
 
-    // ─── Cast: animated left→right sweep across the zone ───
+    // ─── Cast: one simple rectangle directly in front of the player ───
+    // No more animated multi-tick sweep across a wide arc -- that was both
+    // the source of a persistent "looks diagonal" visual complaint and far
+    // more complex than this skill needs. Just a small, fixed-shape zone
+    // straight ahead, instant block destruction + entity damage, one burst
+    // of effects.
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        // A rectangle straight in front of the player: full width scales with
-        // charge, depth stays short and mostly fixed, projecting forward only.
-        double halfWidth = 12 + 30 * ratio; // 12 → 42 blocks wide on each side
-        double depth     = 3 + 2 * ratio;   // 3 → 5 blocks deep, forward only
-        double damage    = 40 + 80 * ratio; // 40 → 120 damage
+        double halfWidth = 2.5 + 2.5 * ratio; // 2.5 → 5 (full width 5 → 10)
+        double depth     = 2 + 3 * ratio;     // 2 → 5 blocks deep, forward only
+        double damage    = 40 + 80 * ratio;   // 40 → 120 damage
 
         Vector forward = p.getLocation().getDirection();
         forward.setY(0);
@@ -120,22 +119,16 @@ public class RagnarokListener extends DivineWeaponListener {
 
         Location feet  = p.getLocation();
         World    world = feet.getWorld();
+        int      baseY = feet.getBlockY();
 
-        // ─── Block destruction: scan the world-space bounding box, test each ───
+        double queryHalf = Math.max(halfWidth, depth) + 2;
+
+        // ─── Block destruction: scan the small bounding box, test each ───
         // ─── candidate block's LOCAL (fwd/right) coordinates against the shape ───
-        // Stepping along the rotated fwd/right axes and rounding to the nearest
-        // block (the old approach) leaves gaps whenever the player doesn't face
-        // a cardinal direction, since consecutive rotated sample points can round
-        // to non-adjacent blocks -- the classic rotated-line aliasing/staircase
-        // artifact. Scanning the AABB and testing membership per-block has no
-        // such gaps, same pattern already used correctly by Ignis's beam.
-        int baseY = feet.getBlockY();
-        double blockQueryHalfX = Math.abs(fwd.getX()) * depth + Math.abs(right.getX()) * halfWidth + 1;
-        double blockQueryHalfZ = Math.abs(fwd.getZ()) * depth + Math.abs(right.getZ()) * halfWidth + 1;
-        int minBx = (int) Math.floor(feet.getX() - blockQueryHalfX);
-        int maxBx = (int) Math.ceil( feet.getX() + blockQueryHalfX);
-        int minBz = (int) Math.floor(feet.getZ() - blockQueryHalfZ);
-        int maxBz = (int) Math.ceil( feet.getZ() + blockQueryHalfZ);
+        int minBx = (int) Math.floor(feet.getX() - queryHalf);
+        int maxBx = (int) Math.ceil( feet.getX() + queryHalf);
+        int minBz = (int) Math.floor(feet.getZ() - queryHalf);
+        int maxBz = (int) Math.ceil( feet.getZ() + queryHalf);
         for (int bx = minBx; bx <= maxBx; bx++) {
             for (int bz = minBz; bz <= maxBz; bz++) {
                 double dx = (bx + 0.5) - feet.getX();
@@ -149,115 +142,59 @@ public class RagnarokListener extends DivineWeaponListener {
             }
         }
 
-        // ─── Initial impact sounds ───
+        // ─── Impact sounds ───
         world.playSound(feet, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 0.7f);
         world.playSound(feet, Sound.ENTITY_LIGHTNING_BOLT_IMPACT,  0.9f, 0.6f);
         world.playSound(feet, Sound.ENTITY_GENERIC_EXPLODE,        0.8f, 0.8f);
 
-        // ─── Animated sweep: left → right over 20 ticks ───
-        final int SWEEP_TICKS = 20;
-        final Set<UUID> hit = new HashSet<>();
-
-        // World-axis-aligned half-extents that fully contain the rotated
-        // depth x (2*halfWidth) rectangle, regardless of player facing —
-        // fixes entities being missed unless the player faced a cardinal
-        // direction (getNearbyEntities' box is always world-axis-aligned).
-        final double queryHalfX = Math.abs(fwd.getX()) * depth + Math.abs(right.getX()) * halfWidth + 2;
-        final double queryHalfZ = Math.abs(fwd.getZ()) * depth + Math.abs(right.getZ()) * halfWidth + 2;
-
-        new BukkitRunnable() {
-            int t = 0;
-
-            @Override
-            public void run() {
-                if (t >= SWEEP_TICKS) { cancel(); return; }
-
-                // Current sweep edge: from -halfWidth to +halfWidth
-                double sweepSide = -halfWidth + (2.0 * halfWidth * (t + 1) / SWEEP_TICKS);
-                // Thickness of the current slice (show a thick wall moving across)
-                double sliceWidth = (2.0 * halfWidth) / SWEEP_TICKS * 3;
-
-                // Spawn particles at the current sweep column (at every forward position)
-                int colSteps = Math.max(8, (int)(depth / 2.5));
-                for (int s = 0; s <= colSteps; s++) {
-                    double fwdPos = (s / (double) colSteps) * depth;
-                    Location colBase = feet.clone()
-                            .add(fwd.clone().multiply(fwdPos))
-                            .add(right.clone().multiply(sweepSide));
-
-                    // Main FLAME wall
-                    world.spawnParticle(Particle.FLAME,          colBase.clone().add(0, 0.1, 0), 6, 0.2, 0.8, 0.2, 0.06);
-                    world.spawnParticle(Particle.LARGE_SMOKE,    colBase.clone().add(0, 1.5, 0), 4, 0.2, 0.6, 0.2, 0.02);
-                    world.spawnParticle(Particle.ELECTRIC_SPARK, colBase.clone().add(0, 1.0, 0), 3, 0.3, 0.5, 0.3, 0.08);
-                    if (s % 3 == 0) {
-                        world.spawnParticle(Particle.END_ROD,    colBase.clone().add(0, 2.5, 0), 2, 0.4, 0.4, 0.4, 0.10);
-                    }
+        // ─── One-shot particle burst covering the whole rectangle ───
+        int fSteps = 6;
+        int sSteps = 6;
+        for (int i = 0; i <= fSteps; i++) {
+            double fPos = depth * i / fSteps;
+            for (int j = -sSteps; j <= sSteps; j++) {
+                double sPos = halfWidth * j / sSteps;
+                Location pt = feet.clone()
+                        .add(fwd.clone().multiply(fPos))
+                        .add(right.clone().multiply(sPos));
+                world.spawnParticle(Particle.FLAME,       pt.clone().add(0, 0.1, 0), 4, 0.2, 0.5, 0.2, 0.05);
+                world.spawnParticle(Particle.LARGE_SMOKE, pt.clone().add(0, 1.0, 0), 2, 0.2, 0.4, 0.2, 0.02);
+                if ((i + j) % 3 == 0) {
+                    world.spawnParticle(Particle.ELECTRIC_SPARK, pt.clone().add(0, 0.8, 0), 2, 0.2, 0.3, 0.2, 0.06);
                 }
-
-                // Ground fire line sweeping with the wall
-                for (int s = 0; s <= (int)(depth / 1.5); s++) {
-                    double fwdPos = (s / (double)(depth / 1.5)) * depth;
-                    Location gLoc = feet.clone()
-                            .add(fwd.clone().multiply(fwdPos))
-                            .add(right.clone().multiply(sweepSide))
-                            .add(0, 0.05, 0);
-                    world.spawnParticle(Particle.FLAME, gLoc, 2, 0.15, 0.05, 0.15, 0.02);
-                }
-
-                // Sweep lightning effect at front edge every 3 ticks
-                if (t % 3 == 0) {
-                    for (int fSteps = 0; fSteps < 5; fSteps++) {
-                        double fwdPos = Math.random() * depth;
-                        Location lLoc = feet.clone()
-                                .add(fwd.clone().multiply(fwdPos))
-                                .add(right.clone().multiply(sweepSide));
-                        world.strikeLightningEffect(lLoc);
-                    }
-                    world.playSound(feet, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 0.9f);
-                }
-
-                // Firework at sweep edge (every 4 ticks)
-                if (t % 4 == 0) {
-                    double fwdPos = depth * 0.5 + (Math.random() - 0.5) * depth * 0.6;
-                    Location fwLoc = feet.clone()
-                            .add(fwd.clone().multiply(fwdPos))
-                            .add(right.clone().multiply(sweepSide))
-                            .add(0, 1.5, 0);
-                    spawnFirework(fwLoc, C1, C2, FireworkEffect.Type.STAR, false);
-                }
-
-                // Hit entities in the current sweep slice. The broad-phase box is
-                // centered on the player and sized to fully contain the rotated
-                // sweep rectangle in world space; the precise fwd/right dot-product
-                // filter below does the actual shape check.
-                world.getNearbyEntities(feet, queryHalfX, 3, queryHalfZ).stream()
-                        .filter(e -> e instanceof LivingEntity && e != p)
-                        .filter(e -> !hit.contains(e.getUniqueId()))
-                        .filter(e -> {
-                            Vector rel = e.getLocation().toVector().subtract(feet.toVector());
-                            rel.setY(0);
-                            double fd  = rel.dot(fwd);
-                            double sd  = rel.dot(right); // signed
-                            return fd >= 0 && fd <= depth + 1
-                                    && sd >= sweepSide - sliceWidth && sd <= sweepSide + 1;
-                        })
-                        .map(e -> (LivingEntity) e)
-                        .forEach(target -> {
-                            hit.add(target.getUniqueId());
-                            target.damage(damage, p);
-                            target.setFireTicks(60);
-
-                            Location tLoc = target.getLocation().clone().add(0, 1, 0);
-                            target.getWorld().spawnParticle(Particle.FLAME,          tLoc, 20, 0.4, 0.7, 0.4, 0.10);
-                            target.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, tLoc, 10, 0.3, 0.5, 0.3, 0.08);
-                            target.getWorld().spawnParticle(Particle.END_ROD,        tLoc,  8, 0.3, 0.4, 0.3, 0.12);
-                            target.getWorld().strikeLightningEffect(target.getLocation());
-                            spawnFirework(tLoc.clone().add(0, 0.5, 0), C1, C2, FireworkEffect.Type.STAR, false);
-                        });
-
-                t++;
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }
+        for (int i = 0; i < 4; i++) {
+            Location lLoc = feet.clone()
+                    .add(fwd.clone().multiply(Math.random() * depth))
+                    .add(right.clone().multiply((Math.random() * 2 - 1) * halfWidth));
+            world.strikeLightningEffect(lLoc);
+        }
+        spawnFirework(feet.clone().add(fwd.clone().multiply(depth * 0.5)).add(0, 1, 0),
+                C1, C2, FireworkEffect.Type.BURST, false);
+
+        // ─── Entity damage: same rectangle, instant ───
+        world.getNearbyEntities(feet, queryHalf, 3, queryHalf).stream()
+                .filter(e -> e instanceof LivingEntity && e != p)
+                .filter(e -> {
+                    Vector rel = e.getLocation().toVector().subtract(feet.toVector());
+                    rel.setY(0);
+                    double fd = rel.dot(fwd);
+                    double sd = rel.dot(right);
+                    return fd >= 0 && fd <= depth + 1 && sd >= -halfWidth - 1 && sd <= halfWidth + 1;
+                })
+                .map(e -> (LivingEntity) e)
+                .forEach(target -> {
+                    target.damage(damage, p);
+                    target.setFireTicks(60);
+
+                    Location tLoc = target.getLocation().clone().add(0, 1, 0);
+                    target.getWorld().spawnParticle(Particle.FLAME,          tLoc, 20, 0.4, 0.7, 0.4, 0.10);
+                    target.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, tLoc, 10, 0.3, 0.5, 0.3, 0.08);
+                    target.getWorld().spawnParticle(Particle.END_ROD,        tLoc,  8, 0.3, 0.4, 0.3, 0.12);
+                    target.getWorld().strikeLightningEffect(target.getLocation());
+                    spawnFirework(tLoc.clone().add(0, 0.5, 0), C1, C2, FireworkEffect.Type.STAR, false);
+                });
 
         p.sendMessage(Msg.RAGNAROK_CAST.get(p));
     }
