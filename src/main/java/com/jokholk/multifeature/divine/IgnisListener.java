@@ -22,8 +22,8 @@ import java.util.Set;
 public class IgnisListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE  = 8.0;
-    static final double MAX_RADIUS  = 12.0;
-    static final double MAX_LENGTH  = 60.0;
+    static final double MAX_RADIUS  = 17.0;
+    static final double MAX_LENGTH  = 85.0;
     static final double MAX_DAMAGE  = 40.0;
 
     private static final Color C1 = Color.fromRGB(255, 100, 0);
@@ -82,8 +82,8 @@ public class IgnisListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double radius = 2 + 10 * ratio;
-        double length = 10 + 50 * ratio;
+        double radius = 3 + 14 * ratio;  // 3 → 17 blocks
+        double length = 15 + 70 * ratio; // 15 → 85 blocks
         double damage = 10 + 30 * ratio;
 
         Location eye = p.getEyeLocation();
@@ -123,9 +123,9 @@ public class IgnisListener extends DivineWeaponListener {
         // ─── CYLINDER PARTICLES ───
         for (int s = 1; s <= steps; s += 2) {
             Location pt = eye.clone().add(dir.clone().multiply(s));
-            world.spawnParticle(Particle.FLAME,            pt, 6, (float)radius*0.2f, 0.2f, (float)radius*0.2f, 0.04f);
-            world.spawnParticle(Particle.SMALL_FLAME,      pt, 4, (float)radius*0.3f, 0.3f, (float)radius*0.3f, 0.01f);
-            world.spawnParticle(Particle.DRIPPING_LAVA,    pt, 2, (float)radius*0.2f, 0.2f, (float)radius*0.2f, 0);
+            world.spawnParticle(Particle.FLAME,            pt, 10, (float)radius*0.25f, 0.25f, (float)radius*0.25f, 0.05f);
+            world.spawnParticle(Particle.SMALL_FLAME,      pt, 6, (float)radius*0.35f, 0.35f, (float)radius*0.35f, 0.02f);
+            world.spawnParticle(Particle.DRIPPING_LAVA,    pt, 3, (float)radius*0.2f, 0.2f, (float)radius*0.2f, 0);
             if (s % 10 == 0) {
                 world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, pt, 3, 0.5f, 0.5f, 0.5f, 0.02f);
                 spawnFirework(pt, C1, C2, FireworkEffect.Type.BURST, false);

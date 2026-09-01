@@ -30,9 +30,9 @@ public class VoidBowListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE       = 5.0;
     static final int    MAX_ARROWS       = 25;
-    static final double BASE_RANGE       = 30.0;
-    static final double MAX_RANGE        = 80.0;
-    static final double MAX_AOE_RADIUS   = 10.0;
+    static final double BASE_RANGE       = 40.0;
+    static final double MAX_RANGE        = 110.0;
+    static final double MAX_AOE_RADIUS   = 17.0;
     static final double BASE_ARROW_DMG   = 8.0;
     static final double MAX_ARROW_DMG    = 12.0;
 
@@ -97,8 +97,8 @@ public class VoidBowListener extends DivineWeaponListener {
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
         int    arrowCount = (int)(5 + 20 * ratio);
-        double range      = BASE_RANGE + 50 * ratio;
-        double aoeRadius  = 3 + 7 * ratio;
+        double range      = BASE_RANGE + 70 * ratio; // 40 → 110 blocks
+        double aoeRadius  = 5 + 12 * ratio;          // 5 → 17 blocks
         double arrowDmg   = 24 + 36 * ratio; // 24 → 60 per arrow
 
         Location eye  = p.getEyeLocation();

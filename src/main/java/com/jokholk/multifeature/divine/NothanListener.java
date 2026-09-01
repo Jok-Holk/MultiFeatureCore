@@ -11,6 +11,8 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -24,8 +26,8 @@ import java.util.Set;
 public class NothanListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE    = 4.0;
-    static final double MAX_CONE_HALF = 45.0; // degrees
-    static final double MAX_RANGE     = 37.0; // was 25.0 — didn't match the "15 + 22*ratio" formula's real cap
+    static final double MAX_CONE_HALF = 55.0; // degrees
+    static final double MAX_RANGE     = 50.0;
     static final double MAX_DAMAGE    = 90.0; // was 30.0 — that's the base, not the max ("30 + 60*ratio")
 
     private static final Color C1 = Color.fromRGB(255, 200, 30);
@@ -62,6 +64,17 @@ public class NothanListener extends DivineWeaponListener {
     @Override
     protected String getTheftKickMessage(Player victim) {
         return Msg.NOTHAN_KICK_THEFT.get(victim);
+    }
+
+    // The item is a real Material.CROSSBOW, so vanilla's own load/fire mechanic
+    // can trigger independently of our Consumable-based charge and shoot a real
+    // arrow on top of castSkill()'s cone effect -- "1 charge, 2 shots". Cancel
+    // vanilla firing outright; our own charge/cast handles everything.
+    @EventHandler
+    public void onVanillaShoot(EntityShootBowEvent e) {
+        if (!(e.getEntity() instanceof Player p)) return;
+        if (!isWeapon(e.getBow())) return;
+        e.setCancelled(true);
     }
 
     @Override
@@ -118,7 +131,7 @@ public class NothanListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double range  = 15 + 22 * ratio; // 15 → 37 blocks
+        double range  = 20 + 30 * ratio; // 20 → 50 blocks
         double damage = 30 + 60 * ratio; // 30 → 90 damage
         int    sickTicks = (int)(40 + 80 * ratio);
 
@@ -132,7 +145,7 @@ public class NothanListener extends DivineWeaponListener {
         world.spawnParticle(Particle.ENCHANT,          muzzle, 40, 0.8, 0.8, 0.8, 0.4);
         world.spawnParticle(Particle.CRIT,             muzzle, 25, 0.5, 0.5, 0.5, 0.3);
         // Cone particle stream
-        int streamPts = 12 + (int)(ratio * 8);
+        int streamPts = 18 + (int)(ratio * 14);
         for (int i = 0; i < streamPts; i++) {
             double spread = 0.5 * (i / (double)streamPts);
             double dist   = range * (i / (double)streamPts);

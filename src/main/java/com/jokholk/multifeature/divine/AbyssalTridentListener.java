@@ -159,7 +159,7 @@ public class AbyssalTridentListener implements Listener {
             // area) of a living entity, treat it as a hit instead of a true miss
             // by routing through the same damage path a direct hit uses.
             LivingEntity nearMissTarget = impactLoc.getWorld()
-                    .getNearbyEntities(impactLoc, 1.5, 1.5, 1.5).stream()
+                    .getNearbyEntities(impactLoc, 2.5, 2.5, 2.5).stream()
                     .filter(ent -> ent instanceof LivingEntity && ent != trident.getShooter())
                     .map(ent -> (LivingEntity) ent)
                     .min(Comparator.comparingDouble(ent -> ent.getLocation().distanceSquared(impactLoc)))
@@ -218,8 +218,8 @@ public class AbyssalTridentListener implements Listener {
 
         double effectiveDamage = wet ? BASE_DAMAGE * 2 : BASE_DAMAGE;
         double splashDamage    = effectiveDamage * 0.5;
-        double splashRadius    = wet ? 3.0 : 1.5;
-        float  explosionSize   = wet ? 6.0f : 3.5f;
+        double splashRadius    = wet ? 5.0 : 2.5;
+        float  explosionSize   = wet ? 9.0f : 5.5f;
 
         e.setDamage(effectiveDamage);
         spawnAbyssalEffects(hitLoc, wet);
@@ -271,8 +271,13 @@ public class AbyssalTridentListener implements Listener {
 
     private void spawnAbyssalEffects(Location loc, boolean wet) {
         World world = loc.getWorld();
-        int    fwCount = wet ? 6 : 3;
-        double ring    = wet ? 2.5 : 1.5;
+        int    fwCount = wet ? 10 : 6;
+        double ring    = wet ? 3.5 : 2.5;
+
+        // Extra particle burst so the impact reads as bigger, not just louder
+        world.spawnParticle(Particle.EXPLOSION, loc, wet ? 4 : 2, 0.3, 0.3, 0.3, 0);
+        world.spawnParticle(Particle.FALLING_WATER, loc, wet ? 60 : 35, 0.6, 0.6, 0.6, 0.2);
+        world.spawnParticle(Particle.END_ROD, loc, wet ? 20 : 12, 0.5, 0.6, 0.5, 0.15);
 
         for (int i = 0; i < fwCount; i++) {
             Location fwLoc = loc.clone().add(

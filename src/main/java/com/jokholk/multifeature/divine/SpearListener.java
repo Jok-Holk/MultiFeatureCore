@@ -21,8 +21,8 @@ public class SpearListener extends DivineWeaponListener {
 
     private static final double MAX_CHARGE   = 3.0;  // seconds
     private static final double CD_MULT      = 1.0;  // 1s cooldown per 1s charge
-    private static final int    LUNGE_TICKS  = 28;   // how long we check path after launch
-    private static final double HIT_RADIUS   = 2.5;  // blocks around player while lunging
+    private static final int    LUNGE_TICKS  = 34;   // how long we check path after launch
+    private static final double HIT_RADIUS   = 3.5;  // blocks around player while lunging
     private static final int    MAX_TARGETS  = 5;    // cap on distinct entities hit per lunge
 
     private static final Color C1 = Color.fromRGB(255, 215, 0);
@@ -142,9 +142,11 @@ public class SpearListener extends DivineWeaponListener {
 
                 // Trail along the path
                 world.spawnParticle(Particle.ENCHANT, cur.clone().add(0, 1, 0),
-                        8, 0.25, 0.25, 0.25, 0.35);
+                        14, 0.35, 0.35, 0.35, 0.4);
                 world.spawnParticle(Particle.CRIT, cur.clone().add(0, 0.8, 0),
-                        4, 0.2, 0.2, 0.2, 0.25);
+                        7, 0.3, 0.3, 0.3, 0.3);
+                world.spawnParticle(Particle.END_ROD, cur.clone().add(0, 1, 0),
+                        3, 0.2, 0.2, 0.2, 0.1);
 
                 // Entities in radius — capped at MAX_TARGETS so a single lunge
                 // through a crowd can't chain-hit everyone along the dash path.

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ExcaliburListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE  = 10.0;
-    static final double MAX_RADIUS  = 25.0;
+    static final double MAX_RADIUS  = 38.0;
 
     private static final Color C1 = Color.fromRGB(139, 0,  0);
     private static final Color C2 = Color.fromRGB(40,  0,  0);
@@ -100,7 +100,7 @@ public class ExcaliburListener extends DivineWeaponListener {
     protected void castSkill(Player p, double ratio, double chargedSecs) {
         World    world  = p.getWorld();
         Location origin = p.getLocation();
-        double   maxR   = 5 + 20 * ratio;  // 5 → 25 blocks
+        double   maxR   = 8 + 30 * ratio;  // 8 → 38 blocks
         double   damage = 50 + 90 * ratio; // 50 → 140 damage
 
         if (chargedSecs >= 9.5) {
@@ -127,10 +127,11 @@ public class ExcaliburListener extends DivineWeaponListener {
         world.playSound(origin, Sound.ENTITY_LIGHTNING_BOLT_THUNDER,  1.0f, 0.7f);
         world.playSound(origin, Sound.ENTITY_GENERIC_EXPLODE,         0.9f, 0.6f);
 
-        // Expanding shockwave ring over 15 ticks
+        // Expanding shockwave ring over 22 ticks (scaled up with the bigger radius
+        // so the ring still expands at a readable pace instead of jumping outward)
         new BukkitRunnable() {
             int t = 0;
-            final int TOTAL = 15;
+            final int TOTAL = 22;
             final Set<UUID> hit = new HashSet<>();
 
             @Override
