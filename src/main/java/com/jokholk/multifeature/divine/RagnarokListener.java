@@ -24,7 +24,7 @@ public class RagnarokListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE      = 5.0;
     static final double MAX_HALF_WIDTH  = 42.0;
-    static final double MAX_DEPTH       = 32.0;
+    static final double MAX_DEPTH       = 5.0;
     static final double MAX_DAMAGE      = 120.0;
 
     private static final Color  C1  = Color.fromRGB(255, 80,  0);
@@ -103,8 +103,11 @@ public class RagnarokListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
+        // Was a deep forward zone (like Ignis's beam), hard to aim -- now a
+        // wide horizontal swipe right in front of the player instead: width
+        // still scales with charge, depth stays short and mostly fixed.
         double halfWidth = 12 + 30 * ratio; // 12 → 42 blocks wide on each side
-        double depth     = 8 + 24 * ratio;  // 8 → 32 blocks deep
+        double depth     = 3 + 2 * ratio;   // 3 → 5 blocks deep
         double damage    = 40 + 80 * ratio; // 40 → 120 damage
 
         Vector forward = p.getLocation().getDirection();

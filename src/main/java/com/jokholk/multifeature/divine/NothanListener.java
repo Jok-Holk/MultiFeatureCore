@@ -62,6 +62,15 @@ public class NothanListener extends DivineWeaponListener {
     @Override
     protected double getCdMultiplier()  { return 0.8; }
 
+    // Real crossbow semantics instead of a variable-power charge: hold to
+    // load (fixed MAX_CHARGE duration) -> fires automatically at full power
+    // the instant it's loaded. Releasing before it's loaded cancels outright
+    // (no partial-power shot) -- "lên nòng và bắn", 2 fixed stages.
+    @Override
+    protected boolean autoFireAtMaxCharge()   { return true; }
+    @Override
+    protected boolean cancelIfReleasedEarly() { return true; }
+
     @Override
     protected String getTheftKickMessage(Player victim) {
         return Msg.NOTHAN_KICK_THEFT.get(victim);
@@ -152,9 +161,13 @@ public class NothanListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double range  = 20 + 30 * ratio; // 20 → 50 blocks
-        double damage = 30 + 60 * ratio; // 30 → 90 damage
-        int    sickTicks = (int)(40 + 80 * ratio);
+        // Fixed power, not scaled by ratio -- this weapon fires only once
+        // fully loaded (autoFireAtMaxCharge/cancelIfReleasedEarly above), so
+        // ratio is always 1.0 by the time this runs. Use the MAX_* constants
+        // directly rather than a formula that now always evaluates to its max.
+        double range  = MAX_RANGE;
+        double damage = MAX_DAMAGE;
+        int    sickTicks = 120;
 
         Location eye  = p.getEyeLocation();
         Vector   look = eye.getDirection().normalize();

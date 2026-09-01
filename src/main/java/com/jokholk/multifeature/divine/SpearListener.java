@@ -117,11 +117,10 @@ public class SpearListener extends DivineWeaponListener {
         world.playSound(origin, Sound.ITEM_TRIDENT_THROW,            1f, 0.7f + (float)(ratio * 0.5f));
         world.playSound(origin, Sound.ENTITY_PLAYER_ATTACK_SWEEP,    1f, 0.6f);
 
-        // Lunge velocity: scales 8 → 16 with charge. Was 16 → 34, which routinely
-        // tripped the server's "moved too quickly" anti-cheat and got the whole
-        // dash rubber-banded/cancelled -- the reach now comes from the wider
-        // HIT_RADIUS and longer LUNGE_TICKS instead of raw speed.
-        double power = 8 + 8 * ratio;
+        // Lunge velocity: scales 4 → 8 with charge. Was 16 → 34 (tripped the
+        // anti-cheat), then 8 → 16 (still too fast) -- reach comes from the
+        // wider HIT_RADIUS and longer LUNGE_TICKS, not raw speed.
+        double power = 4 + 4 * ratio;
         p.setVelocity(dir.multiply(power).add(new Vector(0, 0.3, 0)));
 
         // Path AoE runnable

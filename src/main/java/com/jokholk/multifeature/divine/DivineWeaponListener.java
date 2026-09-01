@@ -58,6 +58,21 @@ public abstract class DivineWeaponListener implements Listener {
     protected void onChargeStart(Player p) {}
     protected void onChargeEnd(Player p) {}
 
+    /**
+     * For weapons that work like a real load-then-fire crossbow instead of a
+     * variable-power charge: once ratio reaches 1.0 ("loaded"), fire
+     * immediately at fixed power instead of waiting for the player to
+     * release right-click.
+     */
+    protected boolean autoFireAtMaxCharge() { return false; }
+
+    /**
+     * Paired with autoFireAtMaxCharge(): if the player releases before ratio
+     * reaches 1.0 ("not loaded yet"), cancel instead of firing at partial
+     * power — no cast, no cooldown, just back to idle.
+     */
+    protected boolean cancelIfReleasedEarly() { return false; }
+
     // ─── Anti-theft ───
 
     @EventHandler
@@ -169,9 +184,12 @@ public abstract class DivineWeaponListener implements Listener {
             if (t % 5 == 0) {
                 onChargeVisual(p, getChargeRatio(uid));
             }
-            // No auto-release at max charge — getChargeRatio() clamps to 1.0, so the
-            // player can keep holding at full charge; only releasing right-click
-            // (the isHandRaised() check above) triggers the cast.
+
+            // Load-then-fire weapons (e.g. Nothan): fire the instant it's fully
+            // loaded instead of waiting for the player to let go of right-click.
+            if (autoFireAtMaxCharge() && getChargeRatio(uid) >= 1.0) {
+                releaseCharge(p);
+            }
         }, 1L, 1L);
         chargeTasks.put(uid, task);
     }
@@ -185,6 +203,13 @@ public abstract class DivineWeaponListener implements Listener {
 
         double chargedSecs = Math.min((System.currentTimeMillis() - startMs) / 1000.0, getMaxChargeSecs());
         double ratio = chargedSecs / getMaxChargeSecs();
+
+        // Load-then-fire weapons: releasing before it's fully loaded cancels
+        // outright — no cast, no cooldown, just back to idle.
+        if (cancelIfReleasedEarly() && ratio < 1.0) {
+            onChargeEnd(p);
+            return;
+        }
 
         long cdMs = (long)(chargedSecs * getCdMultiplier() * 1000L);
         cooldowns.put(uid, System.currentTimeMillis() + cdMs);
