@@ -51,6 +51,10 @@ public abstract class DivineWeaponListener implements Listener {
     protected abstract void    onChargeVisual(Player p, double ratio);
     protected abstract void    castSkill(Player p, double ratio, double chargedSecs);
 
+    /** Optional hooks for weapons that swap their held-item model while charging (e.g. Nothan). */
+    protected void onChargeStart(Player p) {}
+    protected void onChargeEnd(Player p) {}
+
     // ─── Anti-theft ───
 
     @EventHandler
@@ -141,6 +145,7 @@ public abstract class DivineWeaponListener implements Listener {
     private void startCharge(Player p) {
         UUID uid = p.getUniqueId();
         chargeStart.put(uid, System.currentTimeMillis());
+        onChargeStart(p);
 
         final int[] ticks = {0};
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
@@ -184,6 +189,7 @@ public abstract class DivineWeaponListener implements Listener {
         long cdMs = (long)(chargedSecs * getCdMultiplier() * 1000L);
         cooldowns.put(uid, System.currentTimeMillis() + cdMs);
 
+        onChargeEnd(p);
         castSkill(p, ratio, chargedSecs);
     }
 
@@ -192,6 +198,7 @@ public abstract class DivineWeaponListener implements Listener {
         chargeStart.remove(uid);
         BukkitTask task = chargeTasks.remove(uid);
         if (task != null) task.cancel();
+        onChargeEnd(p);
     }
 
     protected double getChargeRatio(UUID uid) {

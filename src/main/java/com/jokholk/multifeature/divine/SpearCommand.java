@@ -3,6 +3,7 @@ import com.jokholk.multifeature.*;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -55,7 +56,7 @@ public class SpearCommand implements CommandExecutor {
         spear.setItemMeta(m);
         // Consumable overrides vanilla spear lunge — our listener handles the lunge
         spear.setData(DataComponentTypes.CONSUMABLE,
-                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).animation(ItemUseAnimation.NONE).build());
 
         p.getInventory().addItem(spear);
         p.sendMessage(Msg.SPEAR_GIVEN.get(p));

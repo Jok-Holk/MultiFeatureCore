@@ -1,5 +1,5 @@
 name: MultiFeatureCore
-version: '5.0.0'
+version: '5.0.1'
 main: com.jokholk.multifeature.MainPlugin
 api-version: '26.1'
 
@@ -91,6 +91,10 @@ commands:
   divinedebug:
     description: Debug tool - summon all divine weapons at once
     usage: /divinedebug
+
+  modeltune:
+    description: Debug tool - live-edit item model display transform and re-push resource pack
+    usage: /modeltune <weapon> <context> <rot|pos|scale> <x> <y> <z>
 
   language:
     description: Set your preferred language

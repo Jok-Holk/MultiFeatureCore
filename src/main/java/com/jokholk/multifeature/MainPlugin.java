@@ -104,6 +104,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmdOnly("spear",      new SpearCommand(this));
         registerCmdOnly("nothan",     new NothanCommand(this));
         registerCmdOnly("divinedebug", new DivineDebugCommand(this));
+        registerCmdOnly("modeltune", new ModelTuneCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {

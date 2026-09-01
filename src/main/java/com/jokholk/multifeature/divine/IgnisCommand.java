@@ -3,6 +3,7 @@ import com.jokholk.multifeature.*;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.*;
@@ -62,7 +63,7 @@ public class IgnisCommand implements CommandExecutor {
         m.setItemModel(new NamespacedKey("multifeature", "item/ignis_core"));
         pick.setItemMeta(m);
         pick.setData(DataComponentTypes.CONSUMABLE,
-                Consumable.consumable().consumeSeconds(CONSUME_SECS).build());
+                Consumable.consumable().consumeSeconds(CONSUME_SECS).animation(ItemUseAnimation.NONE).build());
 
         p.getInventory().addItem(pick);
         p.sendMessage(Msg.IGNIS_GIVEN.get(p));

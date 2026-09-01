@@ -5,6 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -61,6 +62,25 @@ public class NothanListener extends DivineWeaponListener {
     @Override
     protected String getTheftKickMessage(Player victim) {
         return Msg.NOTHAN_KICK_THEFT.get(victim);
+    }
+
+    @Override
+    protected void onChargeStart(Player p) {
+        swapModel(p, "item/no_than_charged");
+    }
+
+    @Override
+    protected void onChargeEnd(Player p) {
+        swapModel(p, "item/no_than");
+    }
+
+    private void swapModel(Player p, String modelKey) {
+        ItemStack held = p.getInventory().getItemInMainHand();
+        if (!isWeapon(held)) return;
+        ItemMeta m = held.getItemMeta();
+        m.setItemModel(new NamespacedKey("multifeature", modelKey));
+        held.setItemMeta(m);
+        p.getInventory().setItemInMainHand(held);
     }
 
     @Override
