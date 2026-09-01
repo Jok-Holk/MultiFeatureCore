@@ -8,6 +8,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -101,20 +102,41 @@ public class CoreUpdateCommand implements CommandExecutor {
                     return;
                 }
 
-                Files.move(tempFile, currentJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                boolean replacedNow = true;
+                try {
+                    Files.move(tempFile, currentJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException lockEx) {
+                    // Windows refuses to replace a jar that the running JVM still
+                    // has open (no FILE_SHARE_DELETE) — Linux allows this fine
+                    // (rename() doesn't care that a process has the old inode
+                    // open), so this only bites local Windows test servers.
+                    // Fall back to a detached helper that waits for this process
+                    // to fully exit, then performs the move itself.
+                    if (isWindows()) {
+                        scheduleWindowsDelayedReplace(tempFile, currentJar.toPath());
+                        replacedNow = false;
+                    } else {
+                        throw lockEx;
+                    }
+                }
+                final boolean finalReplacedNow = replacedNow;
+
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.sendMessage("§d[Update] New plugin jar downloaded — server restarting now.");
+                    }
+                    if (finalReplacedNow) {
+                        plugin.getLogger().info("[Update] New jar in place, shutting down for restart.");
+                    } else {
+                        plugin.getLogger().info("[Update] Jar is locked (Windows) — a helper will replace it "
+                                + "once this process exits. Shutting down for restart.");
+                    }
+                    Bukkit.shutdown();
+                });
             } catch (Exception e) {
                 logAndTell(sender, "§cUpdate failed: " + e.getMessage());
                 try { Files.deleteIfExists(tempFile); } catch (Exception ignored) {}
-                return;
             }
-
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendMessage("§d[Update] New plugin jar downloaded — server restarting now.");
-                }
-                plugin.getLogger().info("[Update] New jar in place, shutting down for restart.");
-                Bukkit.shutdown();
-            });
         });
 
         return true;
@@ -123,5 +145,26 @@ public class CoreUpdateCommand implements CommandExecutor {
     private void logAndTell(CommandSender sender, String message) {
         plugin.getLogger().warning(message);
         Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
+    }
+
+    private boolean isWindows() {
+        return System.getProperty("os.name", "").toLowerCase().contains("win");
+    }
+
+    /**
+     * Windows-only fallback: spawn a detached cmd.exe helper that waits for
+     * this JVM to fully release its file lock on the jar, then moves the
+     * downloaded file into place itself. The child process is not tied to
+     * this JVM's lifetime, so it survives Bukkit.shutdown().
+     */
+    private void scheduleWindowsDelayedReplace(Path newJar, Path targetJar) throws IOException {
+        String script = "for /L %i in (1,1,30) do ("
+                + "move /Y \"" + newJar + "\" \"" + targetJar + "\" >nul 2>&1 && exit /b 0"
+                + " & timeout /t 1 /nobreak >nul"
+                + ")";
+        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", script);
+        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+        pb.start();
     }
 }

@@ -1,6 +1,7 @@
 package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -67,24 +68,39 @@ public class NothanListener extends DivineWeaponListener {
     }
 
     // The item is a real Material.CROSSBOW, so vanilla's own load/fire mechanic
-    // can trigger independently of our Consumable-based charge and shoot a real
-    // arrow on top of castSkill()'s cone effect -- "1 charge, 2 shots". Cancel
-    // vanilla firing outright; our own charge/cast handles everything.
+    // (sped up by Quick Charge) runs independently of our Consumable-based
+    // charge, and can complete + fire a real bolt on top of castSkill()'s cone
+    // effect -- "1 charge, 2 shots", sometimes even from a single quick click.
+    // Cancelling the shoot event alone wasn't enough, so also strip
+    // CHARGED_PROJECTILES the moment it appears, so the crossbow can never
+    // actually finish vanilla-loading in the first place.
     @EventHandler
     public void onVanillaShoot(EntityShootBowEvent e) {
         if (!(e.getEntity() instanceof Player p)) return;
         if (!isWeapon(e.getBow())) return;
         e.setCancelled(true);
+        stripChargedProjectiles(p);
+    }
+
+    private void stripChargedProjectiles(Player p) {
+        ItemStack held = p.getInventory().getItemInMainHand();
+        if (!isWeapon(held)) return;
+        if (held.hasData(DataComponentTypes.CHARGED_PROJECTILES)) {
+            held.unsetData(DataComponentTypes.CHARGED_PROJECTILES);
+            p.getInventory().setItemInMainHand(held);
+        }
     }
 
     @Override
     protected void onChargeStart(Player p) {
         swapModel(p, "item/no_than_charged");
+        stripChargedProjectiles(p);
     }
 
     @Override
     protected void onChargeEnd(Player p) {
         swapModel(p, "item/no_than");
+        stripChargedProjectiles(p);
     }
 
     private void swapModel(Player p, String modelKey) {
@@ -98,6 +114,11 @@ public class NothanListener extends DivineWeaponListener {
 
     @Override
     protected void onChargeVisual(Player p, double ratio) {
+        // Vanilla's own (Quick-Charge-sped-up) crossbow loading can complete
+        // mid-charge, well before our custom release -- keep stripping it
+        // throughout the hold, not just at start/end.
+        stripChargedProjectiles(p);
+
         World  world = p.getWorld();
         Vector dir   = p.getEyeLocation().getDirection().normalize();
 
