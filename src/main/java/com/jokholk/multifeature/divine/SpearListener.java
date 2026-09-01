@@ -117,8 +117,11 @@ public class SpearListener extends DivineWeaponListener {
         world.playSound(origin, Sound.ITEM_TRIDENT_THROW,            1f, 0.7f + (float)(ratio * 0.5f));
         world.playSound(origin, Sound.ENTITY_PLAYER_ATTACK_SWEEP,    1f, 0.6f);
 
-        // Lunge velocity: scales 16 → 34 with charge
-        double power = 16 + 18 * ratio;
+        // Lunge velocity: scales 8 → 16 with charge. Was 16 → 34, which routinely
+        // tripped the server's "moved too quickly" anti-cheat and got the whole
+        // dash rubber-banded/cancelled -- the reach now comes from the wider
+        // HIT_RADIUS and longer LUNGE_TICKS instead of raw speed.
+        double power = 8 + 8 * ratio;
         p.setVelocity(dir.multiply(power).add(new Vector(0, 0.3, 0)));
 
         // Path AoE runnable
@@ -173,14 +176,6 @@ public class SpearListener extends DivineWeaponListener {
                     world.playSound(tLoc, Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.4f);
                     world.playSound(tLoc, Sound.BLOCK_ANVIL_LAND,      0.4f, 1.6f);
                     spawnFirework(tLoc, C1, C2, FireworkEffect.Type.STAR, true);
-
-                    // Kick SURVIVAL player
-                    if (target instanceof Player victim
-                            && victim.getGameMode() == GameMode.SURVIVAL) {
-                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                            if (victim.isOnline()) victim.kickPlayer(Msg.SPEAR_KICK_HIT.get(victim));
-                        }, 1L);
-                    }
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);

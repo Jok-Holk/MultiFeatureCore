@@ -171,13 +171,6 @@ public class ExcaliburListener extends DivineWeaponListener {
                             world.spawnParticle(Particle.SCULK_SOUL, tLoc, 10, 0.3, 0.4, 0.3, 0.06);
                             world.strikeLightningEffect(target.getLocation());
                             spawnFirework(tLoc.clone().add(0, 0.5, 0), C1, C2, FireworkEffect.Type.BURST, false);
-
-                            if (target instanceof Player victim
-                                    && victim.getGameMode() == GameMode.SURVIVAL) {
-                                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                                    if (victim.isOnline()) victim.kickPlayer(Msg.EXCALIBUR_KICK_HIT.get(victim));
-                                }, 1L);
-                            }
                         });
 
                 // Periodic firework at ring edge

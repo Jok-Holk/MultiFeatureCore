@@ -224,23 +224,14 @@ public class AbyssalTridentListener implements Listener {
         e.setDamage(effectiveDamage);
         spawnAbyssalEffects(hitLoc, wet);
 
-        // Impact effects (lightning/explosion/splash) always fire regardless of
-        // the victim's gamemode -- previously gated behind SURVIVAL for players,
-        // which made the impact look inconsistent (no effect at all in Creative).
-        // Only the kick punishment stays SURVIVAL-only.
-        if (victim instanceof Player victimPlayer) {
+        // Impact effects always fire regardless of victim type/gamemode, and use
+        // the visual-only lightning (strikeLightningEffect) in both branches --
+        // the real strikeLightning() on mobs was dealing surprise bonus vanilla
+        // lightning damage on top of our own damage/splash, making some hits
+        // look like an inconsistent instant-kill. No kick punishment; damage
+        // only (Creative players are already immune to damage by default).
+        if (victim instanceof LivingEntity) {
             hitLoc.getWorld().strikeLightningEffect(hitLoc);
-            hitLoc.getWorld().createExplosion(hitLoc, explosionSize, false, false);
-            applySplash(hitLoc, splashDamage, splashRadius, victim, trident);
-            if (victimPlayer.getGameMode() == GameMode.SURVIVAL) {
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    if (victimPlayer.isOnline()) {
-                        victimPlayer.kickPlayer(Msg.ABYSSAL_KICK_HIT.get(victimPlayer));
-                    }
-                }, 1L);
-            }
-        } else if (victim instanceof LivingEntity) {
-            hitLoc.getWorld().strikeLightning(hitLoc);
             hitLoc.getWorld().createExplosion(hitLoc, explosionSize, false, false);
             applySplash(hitLoc, splashDamage, splashRadius, victim, trident);
         }

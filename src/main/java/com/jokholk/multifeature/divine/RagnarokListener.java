@@ -118,20 +118,28 @@ public class RagnarokListener extends DivineWeaponListener {
         Location feet  = p.getLocation();
         World    world = feet.getWorld();
 
-        // ─── Block destruction: step directly along fwd and right vectors ───
-        // Bước với step 0.7 block để đảm bảo không bỏ sót ô nào trong vùng quét
+        // ─── Block destruction: scan the world-space bounding box, test each ───
+        // ─── candidate block's LOCAL (fwd/right) coordinates against the shape ───
+        // Stepping along the rotated fwd/right axes and rounding to the nearest
+        // block (the old approach) leaves gaps whenever the player doesn't face
+        // a cardinal direction, since consecutive rotated sample points can round
+        // to non-adjacent blocks -- the classic rotated-line aliasing/staircase
+        // artifact. Scanning the AABB and testing membership per-block has no
+        // such gaps, same pattern already used correctly by Ignis's beam.
         int baseY = feet.getBlockY();
-        Set<String> brokenKeys = new HashSet<>();
-        double step = 0.7;
-        for (double fi = 0; fi <= depth; fi += step) {
-            for (double si = -halfWidth; si <= halfWidth; si += step) {
-                Location bLoc = feet.clone()
-                        .add(fwd.clone().multiply(fi))
-                        .add(right.clone().multiply(si));
-                int bx = bLoc.getBlockX();
-                int bz = bLoc.getBlockZ();
-                String key = bx + "," + bz;
-                if (!brokenKeys.add(key)) continue; // đã phá rồi
+        double blockQueryHalfX = Math.abs(fwd.getX()) * depth + Math.abs(right.getX()) * halfWidth + 1;
+        double blockQueryHalfZ = Math.abs(fwd.getZ()) * depth + Math.abs(right.getZ()) * halfWidth + 1;
+        int minBx = (int) Math.floor(feet.getX() - blockQueryHalfX);
+        int maxBx = (int) Math.ceil( feet.getX() + blockQueryHalfX);
+        int minBz = (int) Math.floor(feet.getZ() - blockQueryHalfZ);
+        int maxBz = (int) Math.ceil( feet.getZ() + blockQueryHalfZ);
+        for (int bx = minBx; bx <= maxBx; bx++) {
+            for (int bz = minBz; bz <= maxBz; bz++) {
+                double dx = (bx + 0.5) - feet.getX();
+                double dz = (bz + 0.5) - feet.getZ();
+                double fd = dx * fwd.getX()   + dz * fwd.getZ();
+                double sd = dx * right.getX() + dz * right.getZ();
+                if (fd < 0 || fd > depth || sd < -halfWidth || sd > halfWidth) continue;
                 for (int dy = -1; dy <= 2; dy++) {
                     breakBlockSilent(world.getBlockAt(bx, baseY + dy, bz));
                 }
