@@ -47,11 +47,11 @@ public class NothanCommand implements CommandExecutor {
         CrossbowMeta m = (CrossbowMeta) crossbow.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§6Strung with the thread §7of celestial law. §6Every bolt a decree from above.",
-                "§7The divine forces §6do not negotiate — §7they §6declare.",
-                "§8Hold §6right-click §8to channel divine force — §6release §8to unleash the cone.",
-                "§6Staggers and weakens §7everything in range. §6No target escapes §7the golden wave.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.NOTHAN_LORE_1.get(p),
+                Msg.NOTHAN_LORE_2.get(p),
+                Msg.NOTHAN_LORE_3.get(p),
+                Msg.NOTHAN_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.UNBREAKING,   10, true);

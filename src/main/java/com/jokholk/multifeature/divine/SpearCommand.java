@@ -47,11 +47,11 @@ public class SpearCommand implements CommandExecutor {
         ItemMeta m = spear.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§eCast by the will of order §7at the moment the world demanded a champion.",
-                "§7It has never §emissed. §7Not once. §eNot in ten thousand years.",
-                "§8Hold §eright-click §8to aim — §erelease §8to lunge forward at full force.",
-                "§7Hits §eevery entity §7along the path. §eSlowness + Blindness. §7Kicks Survival players.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.SPEAR_LORE_1.get(p),
+                Msg.SPEAR_LORE_2.get(p),
+                Msg.SPEAR_LORE_3.get(p),
+                Msg.SPEAR_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.UNBREAKING, 10, true);

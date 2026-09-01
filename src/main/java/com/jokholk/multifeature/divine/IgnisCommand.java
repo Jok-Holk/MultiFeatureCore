@@ -51,11 +51,11 @@ public class IgnisCommand implements CommandExecutor {
         ItemMeta m = pick.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§7Struck from the heartfire of the world's §6first §7forge.",
-                "§6Nothing stands §7before the core. §6Not stone. §7Not ore. §6Not flesh.",
-                "§8Hold §6right-click §8to heat the core — §6release §8to drill.",
-                "§6Drills through all blocks §7(except bedrock) and §6ignites §7everything in the tunnel.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.IGNIS_LORE_1.get(p),
+                Msg.IGNIS_LORE_2.get(p),
+                Msg.IGNIS_LORE_3.get(p),
+                Msg.IGNIS_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.EFFICIENCY,  5, true);

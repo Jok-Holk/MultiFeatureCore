@@ -51,11 +51,11 @@ public class VoidBowCommand implements CommandExecutor {
         ItemMeta m = bow.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§7Do not draw the string. §9Draw the space between stars.",
-                "§9The void does not miss. §7It was never aiming §9at you.",
-                "§8Hold §3right-click §8to pull the constellation — §3release §8to fire.",
-                "§35–25 arrows §7converge on the target point from a §9void portal.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.VOID_LORE_1.get(p),
+                Msg.VOID_LORE_2.get(p),
+                Msg.VOID_LORE_3.get(p),
+                Msg.VOID_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.POWER,      5, true);

@@ -51,11 +51,11 @@ public class RagnarokCommand implements CommandExecutor {
         ItemMeta m = axe.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§7Born the day the sky fractured and gods drew their last breath.",
-                "§cEvery swing §7echoes the sound of a dying world.",
-                "§8Hold §cright-click §8to charge the storm — §crelease §8to sweep.",
-                "§cBreaks all blocks §7and §cdestroys everything §7in its path.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.RAGNAROK_LORE_1.get(p),
+                Msg.RAGNAROK_LORE_2.get(p),
+                Msg.RAGNAROK_LORE_3.get(p),
+                Msg.RAGNAROK_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.SHARPNESS,  5, true);

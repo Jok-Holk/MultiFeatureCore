@@ -51,11 +51,11 @@ public class ExcaliburCommand implements CommandExecutor {
         ItemMeta m = sword.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§8Light abandoned it. Now it drinks shadow for sustenance.",
-                "§4Every king who wielded it. §8Fell. §4Eventually.",
-                "§8Hold §4right-click §8to raise the blade — §4release §8to slam.",
-                "§4Everything §8in the shockwave §4dies. No drops. No mercy.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.EXCALIBUR_LORE_1.get(p),
+                Msg.EXCALIBUR_LORE_2.get(p),
+                Msg.EXCALIBUR_LORE_3.get(p),
+                Msg.EXCALIBUR_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.SHARPNESS,  5, true);

@@ -44,10 +44,10 @@ public class GraveCommand implements CommandExecutor {
         ItemMeta m = shovel.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§8Every grave it digs is claimed by something §5older than death.",
-                "§5The underworld §8does not differentiate §5the quick from the dead.",
-                "§dRight-click §8to charge the depth | §dRight-click §8again to open earth.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.GRAVE_LORE_1.get(p),
+                Msg.GRAVE_LORE_2.get(p),
+                Msg.GRAVE_LORE_3.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.EFFICIENCY,  5, true);

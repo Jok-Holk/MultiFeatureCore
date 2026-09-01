@@ -48,11 +48,11 @@ public class GodMaceCommand implements CommandExecutor {
         m.setDisplayName("§x§F§B§D§A§0§0✦ GOD MACE ✦");
 
         m.setLore(List.of(
-                "§6Weapon of divine judgment. §eNot a gift — §6a verdict.",
-                "§eTo strike from above §7is to speak the final word.",
-                "§eRight-click §7to be cast into heaven | §eFall §7to pass judgment.",
-                "§8Forged by: §7The Hand of God",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.GODMACE_LORE_1.get(p),
+                Msg.GODMACE_LORE_2.get(p),
+                Msg.GODMACE_LORE_3.get(p),
+                Msg.GODMACE_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
 
         m.setUnbreakable(true);

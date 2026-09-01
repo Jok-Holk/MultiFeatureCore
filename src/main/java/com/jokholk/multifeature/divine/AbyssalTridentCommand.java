@@ -43,11 +43,11 @@ public class AbyssalTridentCommand implements CommandExecutor {
 
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§3Forged where §8light dares not reach. §3Where pressure shapes the impossible.",
-                "§bThe crushing deep §3has a memory. §bIt remembers those who drowned in it.",
-                "§3Throw §8to release the abyssal storm — §9lightning obeys its sovereign.",
-                "§bWet condition §3doubles all damage and expands the storm radius.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.ABYSSAL_LORE_1.get(p),
+                Msg.ABYSSAL_LORE_2.get(p),
+                Msg.ABYSSAL_LORE_3.get(p),
+                Msg.ABYSSAL_LORE_4.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
 
         m.setUnbreakable(true);

@@ -44,10 +44,10 @@ public class VerdantCommand implements CommandExecutor {
         ItemMeta m = hoe.getItemMeta();
         m.setDisplayName(DISPLAY_NAME);
         m.setLore(List.of(
-                "§7The first seed, the first field — this relic remembers §2all of it.",
-                "§2The land has not forgotten. §7Neither has this.",
-                "§aShift+Right-click §7to expand area | §aRight-click §7to till and ripen.",
-                "§8Owner: §7" + p.getUniqueId()
+                Msg.VERDANT_LORE_1.get(p),
+                Msg.VERDANT_LORE_2.get(p),
+                Msg.VERDANT_LORE_3.get(p),
+                Msg.WEAPON_OWNER_LABEL.get(p) + p.getUniqueId()
         ));
         m.setUnbreakable(true);
         m.addEnchant(Enchantment.EFFICIENCY,  5, true);

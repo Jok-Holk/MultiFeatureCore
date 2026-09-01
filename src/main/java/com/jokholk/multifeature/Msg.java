@@ -1044,6 +1044,177 @@ public enum Msg {
     SPEAR_CAST(
         "§e⚖ §7Justice §epierces through.",
         "§e⚖ §7Công lý §exuyên thấu."
+    ),
+
+    // ──────────────────────────────────────────────────────────
+    //  Divine weapon lore (localized item description lines)
+    // ──────────────────────────────────────────────────────────
+
+    WEAPON_OWNER_LABEL(
+        "§8Owner: §7",
+        "§8Chủ sở hữu: §7"
+    ),
+
+    VOID_LORE_1(
+        "§7Do not draw the string. §9Draw the space between stars.",
+        "§7Đừng kéo dây cung. §9Hãy kéo khoảng không giữa các vì sao."
+    ),
+    VOID_LORE_2(
+        "§9The void does not miss. §7It was never aiming §9at you.",
+        "§9Hư không không bao giờ trượt. §7Nó chưa từng nhắm §9vào ngươi."
+    ),
+    VOID_LORE_3(
+        "§8Hold §3right-click §8to pull the constellation — §3release §8to fire.",
+        "§8Giữ §3chuột phải §8để kéo chòm sao — §3thả ra §8để bắn."
+    ),
+    VOID_LORE_4(
+        "§35–25 arrows §7converge on the target point from a §9void portal.",
+        "§35–25 mũi tên §7hội tụ vào điểm ngắm từ một §9cổng hư không."
+    ),
+
+    NOTHAN_LORE_1(
+        "§6Strung with the thread §7of celestial law. §6Every bolt a decree from above.",
+        "§6Giăng dây bằng sợi chỉ §7của thiên luật. §6Mỗi phát bắn là một sắc lệnh từ trên cao."
+    ),
+    NOTHAN_LORE_2(
+        "§7The divine forces §6do not negotiate — §7they §6declare.",
+        "§7Thần lực §6không thương lượng — §7chúng §6tuyên án."
+    ),
+    NOTHAN_LORE_3(
+        "§8Hold §6right-click §8to channel divine force — §6release §8to unleash the cone.",
+        "§8Giữ §6chuột phải §8để dồn thần lực — §6thả ra §8để giải phóng luồng hình nón."
+    ),
+    NOTHAN_LORE_4(
+        "§6Staggers and weakens §7everything in range. §6No target escapes §7the golden wave.",
+        "§6Gây choáng và suy yếu §7mọi thứ trong tầm. §6Không mục tiêu nào thoát khỏi §7làn sóng vàng."
+    ),
+
+    EXCALIBUR_LORE_1(
+        "§8Light abandoned it. Now it drinks shadow for sustenance.",
+        "§8Ánh sáng đã ruồng bỏ nó. Giờ nó uống bóng tối để tồn tại."
+    ),
+    EXCALIBUR_LORE_2(
+        "§4Every king who wielded it. §8Fell. §4Eventually.",
+        "§4Mọi vị vua từng cầm nó. §8Đều gục ngã. §4Sớm muộn."
+    ),
+    EXCALIBUR_LORE_3(
+        "§8Hold §4right-click §8to raise the blade — §4release §8to slam.",
+        "§8Giữ §4chuột phải §8để nâng lưỡi kiếm — §4thả ra §8để giáng xuống."
+    ),
+    EXCALIBUR_LORE_4(
+        "§4Everything §8in the shockwave §4dies. No drops. No mercy.",
+        "§4Mọi thứ §8trong sóng xung kích §4đều gục. Không rơi đồ. Không khoan nhượng."
+    ),
+
+    RAGNAROK_LORE_1(
+        "§7Born the day the sky fractured and gods drew their last breath.",
+        "§7Sinh ra vào ngày bầu trời rạn vỡ và các vị thần trút hơi thở cuối cùng."
+    ),
+    RAGNAROK_LORE_2(
+        "§cEvery swing §7echoes the sound of a dying world.",
+        "§cMỗi nhát chém §7vang vọng âm thanh của một thế giới hấp hối."
+    ),
+    RAGNAROK_LORE_3(
+        "§8Hold §cright-click §8to charge the storm — §crelease §8to sweep.",
+        "§8Giữ §cchuột phải §8để dồn nén cơn bão — §cthả ra §8để quét ngang."
+    ),
+    RAGNAROK_LORE_4(
+        "§cBreaks all blocks §7and §cdestroys everything §7in its path.",
+        "§cPhá mọi khối §7và §chủy diệt mọi thứ §7trên đường đi."
+    ),
+
+    IGNIS_LORE_1(
+        "§7Struck from the heartfire of the world's §6first §7forge.",
+        "§7Rèn từ lửa lõi của §6lò rèn đầu tiên §7trên thế giới."
+    ),
+    IGNIS_LORE_2(
+        "§6Nothing stands §7before the core. §6Not stone. §7Not ore. §6Not flesh.",
+        "§6Không gì đứng vững §7trước lõi lửa. §6Không đá. §7Không quặng. §6Không thịt da."
+    ),
+    IGNIS_LORE_3(
+        "§8Hold §6right-click §8to heat the core — §6release §8to drill.",
+        "§8Giữ §6chuột phải §8để nung nóng lõi — §6thả ra §8để khoan."
+    ),
+    IGNIS_LORE_4(
+        "§6Drills through all blocks §7(except bedrock) and §6ignites §7everything in the tunnel.",
+        "§6Khoan xuyên mọi khối §7(trừ bedrock) và §6đốt cháy §7mọi thứ trong đường hầm."
+    ),
+
+    SPEAR_LORE_1(
+        "§eCast by the will of order §7at the moment the world demanded a champion.",
+        "§eĐược đúc bởi ý chí trật tự §7vào khoảnh khắc thế giới cần một nhà vô địch."
+    ),
+    SPEAR_LORE_2(
+        "§7It has never §emissed. §7Not once. §eNot in ten thousand years.",
+        "§7Nó chưa từng §etrượt. §7Không một lần. §eSuốt mười ngàn năm."
+    ),
+    SPEAR_LORE_3(
+        "§8Hold §eright-click §8to aim — §erelease §8to lunge forward at full force.",
+        "§8Giữ §eright-click §8để ngắm — §ethả ra §8để lao tới với toàn lực."
+    ),
+    SPEAR_LORE_4(
+        "§7Hits §eevery entity §7along the path. §eSlowness + Blindness. §7Kicks Survival players.",
+        "§7Trúng §emọi thực thể §7trên đường đi. §eChậm chạp + Mù lòa. §7Đá văng người chơi Survival."
+    ),
+
+    GRAVE_LORE_1(
+        "§8Every grave it digs is claimed by something §5older than death.",
+        "§8Mỗi nấm mộ nó đào đều bị thứ gì đó §5cổ xưa hơn cái chết §8chiếm giữ."
+    ),
+    GRAVE_LORE_2(
+        "§5The underworld §8does not differentiate §5the quick from the dead.",
+        "§5Địa ngục §8không phân biệt §5kẻ sống với người chết."
+    ),
+    GRAVE_LORE_3(
+        "§dRight-click §8to charge the depth | §dRight-click §8again to open earth.",
+        "§dChuột phải §8để tích độ sâu | §dChuột phải §8lần nữa để mở lòng đất."
+    ),
+
+    VERDANT_LORE_1(
+        "§7The first seed, the first field — this relic remembers §2all of it.",
+        "§7Hạt giống đầu tiên, cánh đồng đầu tiên — di vật này nhớ §2tất cả."
+    ),
+    VERDANT_LORE_2(
+        "§2The land has not forgotten. §7Neither has this.",
+        "§2Đất đai chưa từng quên. §7Di vật này cũng vậy."
+    ),
+    VERDANT_LORE_3(
+        "§aShift+Right-click §7to expand area | §aRight-click §7to till and ripen.",
+        "§aShift+Chuột phải §7để mở rộng vùng | §aChuột phải §7để cày và làm chín cây trồng."
+    ),
+
+    GODMACE_LORE_1(
+        "§6Weapon of divine judgment. §eNot a gift — §6a verdict.",
+        "§6Vũ khí của sự phán xét thần thánh. §eKhông phải món quà — §6mà là bản án."
+    ),
+    GODMACE_LORE_2(
+        "§eTo strike from above §7is to speak the final word.",
+        "§eGiáng đòn từ trên cao §7chính là lời phán cuối cùng."
+    ),
+    GODMACE_LORE_3(
+        "§eRight-click §7to be cast into heaven | §eFall §7to pass judgment.",
+        "§eChuột phải §7để được phóng lên trời | §eRơi xuống §7để thi hành phán xét."
+    ),
+    GODMACE_LORE_4(
+        "§8Forged by: §7The Hand of God",
+        "§8Rèn bởi: §7Bàn Tay Của Chúa"
+    ),
+
+    ABYSSAL_LORE_1(
+        "§3Forged where §8light dares not reach. §3Where pressure shapes the impossible.",
+        "§3Rèn ở nơi §8ánh sáng không dám chạm tới. §3Nơi áp suất định hình điều bất khả thi."
+    ),
+    ABYSSAL_LORE_2(
+        "§bThe crushing deep §3has a memory. §bIt remembers those who drowned in it.",
+        "§bVực sâu nghiền nát §3có trí nhớ. §bNó nhớ những kẻ đã chết đuối trong đó."
+    ),
+    ABYSSAL_LORE_3(
+        "§3Throw §8to release the abyssal storm — §9lightning obeys its sovereign.",
+        "§3Ném ra §8để giải phóng cơn bão vực thẳm — §9sấm sét tuân lệnh chúa tể của nó."
+    ),
+    ABYSSAL_LORE_4(
+        "§bWet condition §3doubles all damage and expands the storm radius.",
+        "§bĐiều kiện ướt §3nhân đôi sát thương và mở rộng bán kính bão."
     );
 
     // ──────────────────────────────────────────────────────────
