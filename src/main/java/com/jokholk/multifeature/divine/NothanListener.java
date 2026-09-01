@@ -2,6 +2,7 @@ package com.jokholk.multifeature.divine;
 import com.jokholk.multifeature.*;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -16,14 +17,19 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,6 +49,13 @@ public class NothanListener extends DivineWeaponListener {
     // Players currently holding a fully-loaded shot, ready to fire on their
     // NEXT right-click (a separate click, not a continued hold).
     private final Set<UUID> loaded = new HashSet<>();
+
+    // Per-tick CHARGED_PROJECTILES-stripping task, running from the moment a
+    // charge starts until the loaded shot actually fires. Vanilla's own real
+    // crossbow-loading (sped up by Quick Charge) runs independently of our
+    // charge and can finish well inside the 5-tick gap between onChargeVisual
+    // calls, letting a real vanilla bolt slip through on the firing click.
+    private final Map<UUID, BukkitTask> stripTasks = new HashMap<>();
 
     public NothanListener(MainPlugin plugin) {
         super(plugin);
@@ -64,6 +77,7 @@ public class NothanListener extends DivineWeaponListener {
 
         Player p = e.getPlayer();
         if (loaded.remove(p.getUniqueId())) {
+            e.setCancelled(true);
             e.setUseInteractedBlock(Event.Result.DENY);
             e.setUseItemInHand(Event.Result.DENY);
             fireLoadedShot(p);
@@ -71,6 +85,30 @@ public class NothanListener extends DivineWeaponListener {
         }
 
         super.onInteract(e);
+    }
+
+    // ─── Cleanup: a stray "loaded" state or leftover strip task must never ───
+    // ─── survive a weapon switch or logout. ───
+
+    // These override the base class's own onItemHeld/onQuit (same signature),
+    // so both must call super to keep the base class's charge cleanup working.
+
+    @Override
+    @EventHandler
+    public void onItemHeld(PlayerItemHeldEvent e) {
+        super.onItemHeld(e);
+        UUID uid = e.getPlayer().getUniqueId();
+        loaded.remove(uid);
+        stopStripTask(uid);
+    }
+
+    @Override
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        super.onQuit(e);
+        UUID uid = e.getPlayer().getUniqueId();
+        loaded.remove(uid);
+        stopStripTask(uid);
     }
 
     @Override
@@ -131,6 +169,27 @@ public class NothanListener extends DivineWeaponListener {
         }
     }
 
+    // Strips every tick instead of every 5 (onChargeVisual's cadence) -- with
+    // Quick Charge or just bad luck, vanilla's real crossbow-loading can
+    // complete well inside that 5-tick gap and leave a real bolt loaded.
+    // Runs continuously from charge-start through the "loaded, waiting for
+    // the fire click" window, since the player may keep the mouse held past
+    // the moment our own charge completes.
+    private void startStripTask(Player p) {
+        UUID uid = p.getUniqueId();
+        stopStripTask(uid);
+        BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (!p.isOnline()) { stopStripTask(uid); return; }
+            stripChargedProjectiles(p);
+        }, 1L, 1L);
+        stripTasks.put(uid, task);
+    }
+
+    private void stopStripTask(UUID uid) {
+        BukkitTask task = stripTasks.remove(uid);
+        if (task != null) task.cancel();
+    }
+
     @Override
     protected void onChargeStart(Player p) {
         // Model stays on the idle/unloaded state while loading is in progress
@@ -138,6 +197,7 @@ public class NothanListener extends DivineWeaponListener {
         // it only swaps to the loaded model once loading actually completes,
         // in castSkill() below.
         stripChargedProjectiles(p);
+        startStripTask(p);
     }
 
     @Override
@@ -146,15 +206,23 @@ public class NothanListener extends DivineWeaponListener {
         // a successful load doesn't go through here with an unloaded model,
         // since the model was never swapped to charged in the first place.
         stripChargedProjectiles(p);
+        stopStripTask(p.getUniqueId());
     }
 
+    // Swaps the item_model AND force-resyncs the client via a fresh ItemStack
+    // + updateInventory(). Without this, a model swap made while the item is
+    // still mid "use" animation (which is exactly when loading completes)
+    // can render stuck on the old frame, or centered in a leftover "using
+    // item" pose instead of the normal held position.
     private void swapModel(Player p, String modelKey) {
         ItemStack held = p.getInventory().getItemInMainHand();
         if (!isWeapon(held)) return;
-        ItemMeta m = held.getItemMeta();
+        ItemStack updated = held.clone();
+        ItemMeta m = updated.getItemMeta();
         m.setItemModel(new NamespacedKey("multifeature", modelKey));
-        held.setItemMeta(m);
-        p.getInventory().setItemInMainHand(held);
+        updated.setItemMeta(m);
+        p.getInventory().setItemInMainHand(updated);
+        p.updateInventory();
     }
 
     @Override
@@ -208,6 +276,12 @@ public class NothanListener extends DivineWeaponListener {
     }
 
     private void fireLoadedShot(Player p) {
+        // One last defensive strip before anything else -- if vanilla's real
+        // crossbow-loading slipped a charge in during the "loaded, waiting to
+        // fire" window, this is the last chance to remove it before the
+        // custom effect below runs.
+        stripChargedProjectiles(p);
+        stopStripTask(p.getUniqueId());
         swapModel(p, "item/no_than");
 
         // Fixed power -- no charging involved in the firing click itself.

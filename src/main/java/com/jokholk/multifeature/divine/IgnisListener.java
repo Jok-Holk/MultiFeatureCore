@@ -87,7 +87,7 @@ public class IgnisListener extends DivineWeaponListener {
     protected void castSkill(Player p, double ratio, double chargedSecs) {
         double radius = 3 + 14 * ratio;  // 3 → 17 blocks
         double length = 15 + 70 * ratio; // 15 → 85 blocks
-        double damage = 10 + 30 * ratio;
+        double damage = 5 + 15 * ratio;  // 5 → 20 (nerfed from 10 → 40)
 
         Location eye = p.getEyeLocation();
         Vector   dir = eye.getDirection().normalize();
