@@ -16,7 +16,7 @@ import java.util.List;
 
 public class VoidBowCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§9§l✦ VOID CONSTELLATION ✦";
+    static final String ID = "void_constellation";
     // Technical duration for the Consumable component — kept far beyond any
     // realistic hold so vanilla's own "consume complete" never fires; the real
     // charge cap (5s) lives in VoidBowListener.MAX_CHARGE.
@@ -39,9 +39,7 @@ public class VoidBowCommand implements CommandExecutor {
         }
 
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.BOW
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.BOW && DivineId.is(slot, ID)) {
                 p.sendMessage(Msg.VOID_ALREADY_HAS.get(p));
                 return true;
             }
@@ -49,7 +47,8 @@ public class VoidBowCommand implements CommandExecutor {
 
         ItemStack bow = new ItemStack(Material.BOW);
         ItemMeta m = bow.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.VOID_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.VOID_LORE_1.get(p),
                 Msg.VOID_LORE_2.get(p),
@@ -71,13 +70,6 @@ public class VoidBowCommand implements CommandExecutor {
                 Consumable.consumable().consumeSeconds(CONSUME_SECS).animation(ItemUseAnimation.NONE).build());
 
         p.getInventory().addItem(bow);
-        // Vanilla still requires >=1 arrow in inventory to draw a bow at all
-        // (Infinity only skips consuming it, not the "must possess one" gate)
-        // -- our own firing is fully scripted and never touches real arrows,
-        // so a single arrow here satisfies that check permanently.
-        if (!p.getInventory().containsAtLeast(new ItemStack(Material.ARROW), 1)) {
-            p.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-        }
         p.sendMessage(Msg.VOID_GIVEN.get(p));
         return true;
     }

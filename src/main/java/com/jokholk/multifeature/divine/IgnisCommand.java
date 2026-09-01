@@ -16,7 +16,7 @@ import java.util.List;
 
 public class IgnisCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§6§l🔥 IGNIS CORE §6§l🔥";
+    static final String ID = "ignis_core";
     // Technical duration for the Consumable component — kept far beyond any
     // realistic hold so vanilla's own "consume complete" never fires; the real
     // charge cap (8s) lives in IgnisListener.MAX_CHARGE.
@@ -39,9 +39,7 @@ public class IgnisCommand implements CommandExecutor {
         }
 
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.NETHERITE_PICKAXE
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.NETHERITE_PICKAXE && DivineId.is(slot, ID)) {
                 p.sendMessage(Msg.IGNIS_ALREADY_HAS.get(p));
                 return true;
             }
@@ -49,7 +47,8 @@ public class IgnisCommand implements CommandExecutor {
 
         ItemStack pick = new ItemStack(Material.NETHERITE_PICKAXE);
         ItemMeta m = pick.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.IGNIS_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.IGNIS_LORE_1.get(p),
                 Msg.IGNIS_LORE_2.get(p),

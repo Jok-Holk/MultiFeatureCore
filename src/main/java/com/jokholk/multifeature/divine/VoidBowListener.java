@@ -49,8 +49,7 @@ public class VoidBowListener extends DivineWeaponListener {
     @Override
     protected boolean isWeapon(ItemStack item) {
         if (item == null || item.getType() != Material.BOW) return false;
-        if (!item.hasItemMeta()) return false;
-        return VoidBowCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, VoidBowCommand.ID);
     }
 
     @Override

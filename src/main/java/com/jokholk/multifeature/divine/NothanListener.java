@@ -76,8 +76,7 @@ public class NothanListener extends DivineWeaponListener {
     @Override
     protected boolean isWeapon(ItemStack item) {
         if (item == null || item.getType() != Material.CROSSBOW) return false;
-        if (!item.hasItemMeta()) return false;
-        return NothanCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, NothanCommand.ID);
     }
 
     @Override

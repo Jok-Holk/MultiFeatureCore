@@ -13,7 +13,7 @@ import java.util.List;
 
 public class VerdantCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§2§l🌿 VERDANT CIPHER §2§l🌿";
+    static final String ID = "verdant_cipher";
 
     private final MainPlugin plugin;
 
@@ -32,9 +32,7 @@ public class VerdantCommand implements CommandExecutor {
         }
 
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.NETHERITE_HOE
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.NETHERITE_HOE && DivineId.is(slot, ID)) {
                 p.sendMessage(Msg.VERDANT_ALREADY_HAS.get(p));
                 return true;
             }
@@ -42,7 +40,8 @@ public class VerdantCommand implements CommandExecutor {
 
         ItemStack hoe = new ItemStack(Material.NETHERITE_HOE);
         ItemMeta m = hoe.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.VERDANT_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.VERDANT_LORE_1.get(p),
                 Msg.VERDANT_LORE_2.get(p),

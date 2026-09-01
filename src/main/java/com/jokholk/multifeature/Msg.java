@@ -1059,6 +1059,47 @@ public enum Msg {
         "§8Chủ sở hữu: §7"
     ),
 
+    VOID_NAME(
+        "§9§l✦ VOID CONSTELLATION ✦",
+        "§9§l✦ CHÒM SAO HƯ KHÔNG ✦"
+    ),
+    NOTHAN_NAME(
+        "§6§l✦ DIVINE CROSSBOW ✦",
+        "§6§l✦ NỎ THẦN ✦"
+    ),
+    EXCALIBUR_NAME(
+        "§4§l≪ Dark Excalibur ≫",
+        "§4§l≪ Excalibur Hắc Ám ≫"
+    ),
+    RAGNAROK_NAME(
+        "§c§l⚡ RAGNAROK ⚡",
+        "§c§l⚡ TẬN THẾ ⚡"
+    ),
+    IGNIS_NAME(
+        "§6§l🔥 IGNIS CORE 🔥",
+        "§6§l🔥 LÕI HỎA NGỤC 🔥"
+    ),
+    GRAVE_NAME(
+        "§5§l💀 GRAVE SOVEREIGN 💀",
+        "§5§l💀 CHÚA TỂ MỘ ĐỊA 💀"
+    ),
+    VERDANT_NAME(
+        "§2§l🌿 VERDANT CIPHER 🌿",
+        "§2§l🌿 MẬT MÃ XANH 🌿"
+    ),
+    SPEAR_NAME(
+        "§e§l⚖ SPEAR OF JUSTICE ⚖",
+        "§e§l⚖ THƯƠNG CÔNG LÝ ⚖"
+    ),
+    ABYSSAL_NAME(
+        "§b⚓ §3ABYSSAL SOVEREIGN §b⚓",
+        "§b⚓ §3CHÚA TỂ VỰC THẲM §b⚓"
+    ),
+    GODMACE_NAME(
+        "§x§F§B§D§A§0§0✦ GOD MACE ✦",
+        "§x§F§B§D§A§0§0✦ CHÙY THẦN ✦"
+    ),
+
     VOID_LORE_1(
         "§7Do not draw the string. §9Draw the space between stars.",
         "§7Đừng kéo dây cung. §9Hãy kéo khoảng không giữa các vì sao."

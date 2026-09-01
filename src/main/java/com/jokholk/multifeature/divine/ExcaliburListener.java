@@ -34,8 +34,7 @@ public class ExcaliburListener extends DivineWeaponListener {
     @Override
     protected boolean isWeapon(ItemStack item) {
         if (item == null || item.getType() != Material.NETHERITE_SWORD) return false;
-        if (!item.hasItemMeta()) return false;
-        return ExcaliburCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, ExcaliburCommand.ID);
     }
 
     @Override

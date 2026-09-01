@@ -37,8 +37,7 @@ public class GodMaceListener implements Listener {
     private boolean isGodMace(ItemStack i) {
         if (i == null) return false;
         if (i.getType() != Material.MACE) return false;
-        if (!i.hasItemMeta()) return false;
-        return "§x§F§B§D§A§0§0✦ GOD MACE ✦".equals(i.getItemMeta().getDisplayName());
+        return DivineId.is(i, GodMaceCommand.ID);
     }
 
     private boolean isOwner(Player p, ItemStack i) {

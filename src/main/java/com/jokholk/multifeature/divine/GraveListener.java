@@ -54,8 +54,7 @@ public class GraveListener implements Listener {
 
     private boolean isGrave(ItemStack item) {
         if (item == null || item.getType() != Material.NETHERITE_SHOVEL) return false;
-        if (!item.hasItemMeta()) return false;
-        return GraveCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, GraveCommand.ID);
     }
 
     private boolean isOwner(Player p, ItemStack item) {

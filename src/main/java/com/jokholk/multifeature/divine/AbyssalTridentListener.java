@@ -34,8 +34,7 @@ public class AbyssalTridentListener implements Listener {
 
     private boolean isAbyssalTrident(ItemStack item) {
         if (item == null || item.getType() != Material.TRIDENT) return false;
-        if (!item.hasItemMeta()) return false;
-        return AbyssalTridentCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, AbyssalTridentCommand.ID);
     }
 
     private boolean isOwner(Player p, ItemStack item) {

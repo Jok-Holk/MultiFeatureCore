@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ExcaliburCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME  = "§4§l≪ Dark Excalibur ≫";
+    static final String ID = "dark_excalibur";
     // Technical duration for the Consumable component — kept far beyond any
     // realistic hold so vanilla's own "consume complete" never fires; the real
     // charge cap (10s) lives in ExcaliburListener.MAX_CHARGE.
@@ -39,9 +39,7 @@ public class ExcaliburCommand implements CommandExecutor {
         }
 
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.NETHERITE_SWORD
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.NETHERITE_SWORD && DivineId.is(slot, ID)) {
                 p.sendMessage(Msg.EXCALIBUR_ALREADY_HAS.get(p));
                 return true;
             }
@@ -49,7 +47,8 @@ public class ExcaliburCommand implements CommandExecutor {
 
         ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
         ItemMeta m = sword.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.EXCALIBUR_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.EXCALIBUR_LORE_1.get(p),
                 Msg.EXCALIBUR_LORE_2.get(p),

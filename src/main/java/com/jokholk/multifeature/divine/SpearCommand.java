@@ -16,7 +16,7 @@ import java.util.List;
 
 public class SpearCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§e§l⚖ SPEAR OF JUSTICE ⚖";
+    static final String ID = "spear_of_justice";
     // Technical duration for the Consumable component — kept far beyond any
     // realistic hold so vanilla's own "consume complete" never fires; the real
     // charge cap (3s) lives in SpearListener.MAX_CHARGE.
@@ -45,7 +45,8 @@ public class SpearCommand implements CommandExecutor {
 
         ItemStack spear = new ItemStack(Material.NETHERITE_SPEAR);
         ItemMeta m = spear.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.SPEAR_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.SPEAR_LORE_1.get(p),
                 Msg.SPEAR_LORE_2.get(p),
@@ -68,9 +69,7 @@ public class SpearCommand implements CommandExecutor {
 
     static boolean hasSpear(Player p) {
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.NETHERITE_SPEAR
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.NETHERITE_SPEAR && DivineId.is(slot, ID)) {
                 return true;
             }
         }

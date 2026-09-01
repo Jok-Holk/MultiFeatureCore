@@ -35,8 +35,7 @@ public class SpearListener extends DivineWeaponListener {
     @Override
     protected boolean isWeapon(ItemStack item) {
         if (item == null || item.getType() != Material.NETHERITE_SPEAR) return false;
-        if (!item.hasItemMeta()) return false;
-        return SpearCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, SpearCommand.ID);
     }
 
     @Override

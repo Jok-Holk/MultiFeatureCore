@@ -13,7 +13,7 @@ import java.util.List;
 
 public class GraveCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§5§l💀 GRAVE SOVEREIGN §5§l💀";
+    static final String ID = "grave_sovereign";
 
     private final MainPlugin plugin;
 
@@ -32,9 +32,7 @@ public class GraveCommand implements CommandExecutor {
         }
 
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.NETHERITE_SHOVEL
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.NETHERITE_SHOVEL && DivineId.is(slot, ID)) {
                 p.sendMessage(Msg.GRAVE_ALREADY_HAS.get(p));
                 return true;
             }
@@ -42,7 +40,8 @@ public class GraveCommand implements CommandExecutor {
 
         ItemStack shovel = new ItemStack(Material.NETHERITE_SHOVEL);
         ItemMeta m = shovel.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.GRAVE_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.GRAVE_LORE_1.get(p),
                 Msg.GRAVE_LORE_2.get(p),

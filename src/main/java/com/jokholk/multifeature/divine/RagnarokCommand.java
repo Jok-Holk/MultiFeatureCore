@@ -16,7 +16,7 @@ import java.util.List;
 
 public class RagnarokCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§c§l⚡ RAGNAROK §c§l⚡";
+    static final String ID = "ragnarok";
     // Technical duration for the Consumable component — kept far beyond any
     // realistic hold so vanilla's own "consume complete" never fires; the real
     // charge cap (5s) lives in RagnarokListener.MAX_CHARGE.
@@ -39,9 +39,7 @@ public class RagnarokCommand implements CommandExecutor {
         }
 
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.NETHERITE_AXE
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.NETHERITE_AXE && DivineId.is(slot, ID)) {
                 p.sendMessage(Msg.RAGNAROK_ALREADY_HAS.get(p));
                 return true;
             }
@@ -49,7 +47,8 @@ public class RagnarokCommand implements CommandExecutor {
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
         ItemMeta m = axe.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.RAGNAROK_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.RAGNAROK_LORE_1.get(p),
                 Msg.RAGNAROK_LORE_2.get(p),

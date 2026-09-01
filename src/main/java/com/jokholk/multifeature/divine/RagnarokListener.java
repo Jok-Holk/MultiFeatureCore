@@ -38,8 +38,7 @@ public class RagnarokListener extends DivineWeaponListener {
     @Override
     protected boolean isWeapon(ItemStack item) {
         if (item == null || item.getType() != Material.NETHERITE_AXE) return false;
-        if (!item.hasItemMeta()) return false;
-        return RagnarokCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, RagnarokCommand.ID);
     }
 
     @Override

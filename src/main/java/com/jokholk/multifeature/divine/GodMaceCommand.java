@@ -13,6 +13,8 @@ import java.util.List;
 
 public class GodMaceCommand implements CommandExecutor {
 
+    static final String ID = "god_mace";
+
     private final MainPlugin plugin;
 
     public GodMaceCommand(MainPlugin plugin) {
@@ -45,7 +47,8 @@ public class GodMaceCommand implements CommandExecutor {
         ItemStack mace = new ItemStack(Material.MACE);
         ItemMeta m = mace.getItemMeta();
 
-        m.setDisplayName("§x§F§B§D§A§0§0✦ GOD MACE ✦");
+        m.setDisplayName(Msg.GODMACE_NAME.get(p));
+        DivineId.set(m, ID);
 
         m.setLore(List.of(
                 Msg.GODMACE_LORE_1.get(p),
@@ -69,9 +72,7 @@ public class GodMaceCommand implements CommandExecutor {
 
     static boolean hasMace(Player p) {
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.MACE
-                    && slot.hasItemMeta()
-                    && "§x§F§B§D§A§0§0✦ GOD MACE ✦".equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.MACE && DivineId.is(slot, ID)) {
                 return true;
             }
         }

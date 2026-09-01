@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AbyssalTridentCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§b⚓ §3ABYSSAL SOVEREIGN §b⚓";
+    static final String ID = "abyssal_sovereign";
 
     private final MainPlugin plugin;
 
@@ -41,7 +41,8 @@ public class AbyssalTridentCommand implements CommandExecutor {
         ItemStack trident = new ItemStack(Material.TRIDENT);
         ItemMeta m = trident.getItemMeta();
 
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.ABYSSAL_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.ABYSSAL_LORE_1.get(p),
                 Msg.ABYSSAL_LORE_2.get(p),
@@ -64,9 +65,7 @@ public class AbyssalTridentCommand implements CommandExecutor {
 
     static boolean hasTrident(Player p) {
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.TRIDENT
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.TRIDENT && DivineId.is(slot, ID)) {
                 return true;
             }
         }

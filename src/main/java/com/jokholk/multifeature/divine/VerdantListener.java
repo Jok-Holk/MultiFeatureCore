@@ -62,8 +62,7 @@ public class VerdantListener implements Listener {
 
     private boolean isVerdant(ItemStack item) {
         if (item == null || item.getType() != Material.NETHERITE_HOE) return false;
-        if (!item.hasItemMeta()) return false;
-        return VerdantCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, VerdantCommand.ID);
     }
 
     private boolean isOwner(Player p, ItemStack item) {

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class NothanCommand implements CommandExecutor {
 
-    static final String DISPLAY_NAME = "§6§l✦ DIVINE CROSSBOW ✦";
+    static final String ID = "no_than";
     // Technical duration for the Consumable component — kept far beyond any
     // realistic hold so vanilla's own "consume complete" never fires; the real
     // charge cap (4s) lives in NothanListener.MAX_CHARGE.
@@ -45,7 +45,8 @@ public class NothanCommand implements CommandExecutor {
 
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         CrossbowMeta m = (CrossbowMeta) crossbow.getItemMeta();
-        m.setDisplayName(DISPLAY_NAME);
+        m.setDisplayName(Msg.NOTHAN_NAME.get(p));
+        DivineId.set(m, ID);
         m.setLore(List.of(
                 Msg.NOTHAN_LORE_1.get(p),
                 Msg.NOTHAN_LORE_2.get(p),
@@ -64,22 +65,13 @@ public class NothanCommand implements CommandExecutor {
                 Consumable.consumable().consumeSeconds(CONSUME_SECS).animation(ItemUseAnimation.NONE).build());
 
         p.getInventory().addItem(crossbow);
-        // Vanilla still requires >=1 arrow in inventory to load a crossbow at
-        // all -- our firing is fully scripted and stripChargedProjectiles()
-        // (in NothanListener) prevents vanilla from ever really consuming it,
-        // so a single arrow here satisfies that check permanently.
-        if (!p.getInventory().containsAtLeast(new ItemStack(Material.ARROW), 1)) {
-            p.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-        }
         p.sendMessage(Msg.NOTHAN_GIVEN.get(p));
         return true;
     }
 
     static boolean hasNothan(Player p) {
         for (ItemStack slot : p.getInventory().getContents()) {
-            if (slot != null && slot.getType() == Material.CROSSBOW
-                    && slot.hasItemMeta()
-                    && DISPLAY_NAME.equals(slot.getItemMeta().getDisplayName())) {
+            if (slot != null && slot.getType() == Material.CROSSBOW && DivineId.is(slot, ID)) {
                 return true;
             }
         }

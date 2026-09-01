@@ -37,8 +37,7 @@ public class IgnisListener extends DivineWeaponListener {
     @Override
     protected boolean isWeapon(ItemStack item) {
         if (item == null || item.getType() != Material.NETHERITE_PICKAXE) return false;
-        if (!item.hasItemMeta()) return false;
-        return IgnisCommand.DISPLAY_NAME.equals(item.getItemMeta().getDisplayName());
+        return DivineId.is(item, IgnisCommand.ID);
     }
 
     @Override
