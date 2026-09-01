@@ -22,10 +22,10 @@ import java.util.Set;
 public class IgnisListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE  = 8.0;
-    static final double MIN_RADIUS  = 1.0;
-    static final double MAX_RADIUS  = 4.0;
-    static final double MIN_LENGTH  = 5.0;
-    static final double MAX_LENGTH  = 20.0;
+    static final double MIN_RADIUS  = 0.5;
+    static final double MAX_RADIUS  = 2.0;
+    static final double MIN_LENGTH  = 2.5;
+    static final double MAX_LENGTH  = 10.0;
     static final double MAX_DAMAGE  = 40.0;
     private static final double MIN_COOLDOWN = 5.0;
 
