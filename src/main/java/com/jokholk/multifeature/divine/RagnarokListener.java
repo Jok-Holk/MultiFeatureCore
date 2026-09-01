@@ -141,7 +141,15 @@ public class RagnarokListener extends DivineWeaponListener {
         forward.normalize();
 
         final Vector fwd   = forward;
-        final Vector right = fwd.crossProduct(UP).normalize();
+        // fwd.crossProduct(UP) would MUTATE fwd in place and return that same
+        // object (Bukkit's Vector methods mutate `this` and return it) --
+        // making `right` alias `fwd` and silently destroying the real forward
+        // direction. clone() first so fwd keeps its own value. This was the
+        // actual root cause of the long-standing "sweep looks diagonal/off to
+        // the right" complaint: fd and sd ended up computed from the same
+        // (right-only) vector, producing a strip along the true forward axis
+        // but offset sideways instead of a rectangle in front of the player.
+        final Vector right = fwd.clone().crossProduct(UP).normalize();
 
         Location feet  = p.getLocation();
         World    world = feet.getWorld();
