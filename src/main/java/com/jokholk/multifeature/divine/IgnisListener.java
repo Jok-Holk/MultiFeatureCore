@@ -133,11 +133,22 @@ public class IgnisListener extends DivineWeaponListener {
         }
 
         // ─── ENTITY QUERY ───
+        // Same perpendicular-distance-from-beam-axis check used for block breaking
+        // above, so only entities actually inside the radius take damage — without
+        // this the broad-phase box alone hits everything near the beam's full
+        // length regardless of how far off-axis they are.
         Location midPt  = eye.clone().add(dir.clone().multiply(length / 2.0));
         double halfLen  = length / 2.0 + 1;
         Set<LivingEntity> targets = new HashSet<>();
         world.getNearbyEntities(midPt, halfLen + ri, ri, halfLen + ri).stream()
                 .filter(e -> e instanceof LivingEntity && e != p)
+                .filter(e -> {
+                    Vector toEnt = e.getLocation().toVector().subtract(eye.toVector());
+                    double proj = toEnt.dot(dir);
+                    if (proj < 0 || proj > length) return false;
+                    double perpDist2 = toEnt.lengthSquared() - proj * proj;
+                    return perpDist2 <= r2;
+                })
                 .map(e -> (LivingEntity) e)
                 .forEach(targets::add);
 

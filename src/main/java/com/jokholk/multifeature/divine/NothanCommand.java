@@ -17,7 +17,10 @@ import java.util.List;
 public class NothanCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§6§l✦ DIVINE CROSSBOW ✦";
-    static final float  CONSUME_SECS = 4.0f;
+    // Technical duration for the Consumable component — kept far beyond any
+    // realistic hold so vanilla's own "consume complete" never fires; the real
+    // charge cap (4s) lives in NothanListener.MAX_CHARGE.
+    static final float  CONSUME_SECS = 600.0f;
 
     private final MainPlugin plugin;
 

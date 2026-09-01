@@ -17,7 +17,10 @@ import java.util.List;
 public class IgnisCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§6§l🔥 IGNIS CORE §6§l🔥";
-    static final float  CONSUME_SECS = 8.0f;
+    // Technical duration for the Consumable component — kept far beyond any
+    // realistic hold so vanilla's own "consume complete" never fires; the real
+    // charge cap (8s) lives in IgnisListener.MAX_CHARGE.
+    static final float  CONSUME_SECS = 600.0f;
 
     private final MainPlugin plugin;
 

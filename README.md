@@ -73,7 +73,7 @@ Spawn a personal war horse bound to your UUID. Other players cannot ride it. All
 ### Divine Weapons
 Ten legendary weapons, each UUID-locked to its owner. Anyone else who picks one up gets kicked. ADMIN/OWNER/DEVELOPER only. Each weapon has a custom resource-pack model linked via `setItemModel`.
 
-**Charge-and-release** (right-click once to start charging, again to release):
+**Charge-and-release** (hold right-click to charge, release to cast -- holding past max charge just caps the ratio at 100%, it does not auto-fire):
 
 | Command | Item | Mechanic |
 |---|---|---|
@@ -82,7 +82,7 @@ Ten legendary weapons, each UUID-locked to its owner. Anyone else who picks one 
 | `/ignis` | NETHERITE\_PICKAXE -- Ignis Core | Charge 8s -> forward cylinder drill, breaks stone-tier blocks, ignites entities |
 | `/void` | BOW -- Void Constellation | Charge 5s -> ray-cast to target, summons particle ring, fires 5-25 arrows with spread |
 | `/nothan` | CROSSBOW -- Divine Crossbow | Charge 4s -> forward cone of divine force; stagger + weaken targets in range; cone angle and damage scale with charge |
-| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Charge 3s -> lunge forward at high speed; hits ALL entities along the path (2.5 block radius); +15-45 damage + Slowness III + Blindness + Glowing; golden particle trail during lunge; kicks SURVIVAL player on contact |
+| `/spear` | NETHERITE\_SPEAR -- Spear of Justice | Charge 3s -> lunge forward at high speed; hits up to 5 entities along the path (2.5 block radius); 45-135 damage + Slowness III + Blindness + Glowing; golden particle trail during lunge; kicks SURVIVAL player on contact |
 
 **Mode-based** (sneak+right-click to cycle area, right-click to activate):
 
@@ -137,6 +137,7 @@ Control how long a Minecraft day takes in real minutes.
 | `/void` | Summon Void Constellation | ADMIN/OWNER/DEVELOPER |
 | `/spear` | Summon Spear of Justice | ADMIN/OWNER/DEVELOPER |
 | `/nothan` | Summon Divine Crossbow | ADMIN/OWNER/DEVELOPER |
+| `/coreupdate` | Download the latest plugin jar and shut the server down for restart | console, OWNER, or DEVELOPER |
 
 ---
 
@@ -163,6 +164,18 @@ The `src/main/resources/pack-contents/` directory contains the resource pack for
 
 ---
 
+## Self-Update (`/coreupdate`)
+
+Lets an OWNER, DEVELOPER, or the server console push a new build to production without a manual file copy.
+
+1. Every push to `master` runs `.github/workflows/release.yml`: it builds the plugin with Maven and publishes the jar to the GitHub release tagged `latest`, under a fixed filename (`multifeaturecore.jar`) so the download link never changes between versions.
+2. Running `/coreupdate` downloads that jar from the URL in `update.jar-url` (`config.yml`), writes it to a temp file next to the currently-running jar, sanity-checks the response (HTTP 200, size > 1 KB), then atomically replaces the running jar on disk.
+3. It then calls `Bukkit.shutdown()`. The command does **not** attempt to hot-swap the loaded plugin classes or relaunch the process itself -- it relies entirely on however the server is run to bring it back up (e.g. a Docker `restart: unless-stopped` policy). If the server isn't run under something that auto-restarts, it will stay down until started manually.
+
+Uses `https://.../releases/download/latest/multifeaturecore.jar` -- the direct tag URL, not the `/releases/latest/download/...` alias, since that alias resolves to whichever release in the whole repo is currently flagged "latest" and can be hijacked by publishing an unrelated release (e.g. the resource pack).
+
+---
+
 ## Build
 
 ```bash
@@ -179,7 +192,8 @@ Output: `target/multifeaturecore-<version>.jar`
 
 | Version | Summary |
 |---|---|
-| 5.0.1 | Divine weapons hold-release mechanic + cinematic effects + major power buff; Grave Sovereign mode-based area control; resource pack auto-push on join with hardcoded URL fallback; items/item/ folder for MC 1.21.4+ item model system |
+| 5.0.2 | Divine weapon charge mechanic fix: holding right-click past max charge no longer auto-fires -- only releasing the mouse button does. Rework Ragnarok (fixed facing-dependent hit-detection bug, rebalanced damage), Ignis (fixed entity damage hitting a whole bounding box instead of the beam's actual radius), Excalibur (replaced flat instant-kill damage with a scaling formula), Abyssal Trident (near-miss hit assist + audible miss feedback), Spear (capped targets per lunge) |
+| 5.0.1 | Divine weapons hold-release mechanic + cinematic effects + major power buff; Grave Sovereign mode-based area control; resource pack auto-push on join with hardcoded URL fallback; items/item/ folder for MC 1.21.4+ item model system; add `/coreupdate` self-update command + GitHub Actions auto-release workflow; bow resource pack rework (item/bow parent, orientation/scale fixes); remove dev-only `/divinedebug` and `/modeltune` commands |
 | 5.0.0 | Bilingual language system (/language english\|vietnamese); resource pack model links for all 10 divine weapons (setItemModel); package modularization into 7 subpackages; Spear of Justice rewritten to charge-and-release lunge with path AoE; Grave Sovereign rewritten to mode-based area control (sneak+click to cycle 1x1->15x15) |
 | 4.9.6 | Full weapon overhaul + 2 new divine weapons: Spear of Justice and Divine Crossbow (No Than) |
 | 4.9.5 | Add 6 Divine Weapons: Excalibur, Ragnarok, Ignis Core, Grave Sovereign, Verdant Cipher, Void Constellation -- all UUID-locked, ADMIN+ only, shared charge/release mechanic |

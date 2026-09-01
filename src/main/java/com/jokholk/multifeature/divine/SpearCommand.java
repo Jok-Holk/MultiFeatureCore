@@ -17,7 +17,10 @@ import java.util.List;
 public class SpearCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§e§l⚖ SPEAR OF JUSTICE ⚖";
-    static final float  CONSUME_SECS = 3.0f;
+    // Technical duration for the Consumable component — kept far beyond any
+    // realistic hold so vanilla's own "consume complete" never fires; the real
+    // charge cap (3s) lives in SpearListener.MAX_CHARGE.
+    static final float  CONSUME_SECS = 600.0f;
 
     private final MainPlugin plugin;
 

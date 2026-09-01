@@ -25,8 +25,8 @@ public class NothanListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE    = 4.0;
     static final double MAX_CONE_HALF = 45.0; // degrees
-    static final double MAX_RANGE     = 25.0;
-    static final double MAX_DAMAGE    = 30.0;
+    static final double MAX_RANGE     = 37.0; // was 25.0 — didn't match the "15 + 22*ratio" formula's real cap
+    static final double MAX_DAMAGE    = 90.0; // was 30.0 — that's the base, not the max ("30 + 60*ratio")
 
     private static final Color C1 = Color.fromRGB(255, 200, 30);
     private static final Color C2 = Color.fromRGB(255, 140, 0);

@@ -100,7 +100,8 @@ public class ExcaliburListener extends DivineWeaponListener {
     protected void castSkill(Player p, double ratio, double chargedSecs) {
         World    world  = p.getWorld();
         Location origin = p.getLocation();
-        double   maxR   = 5 + 20 * ratio; // 5 → 25 blocks
+        double   maxR   = 5 + 20 * ratio;  // 5 → 25 blocks
+        double   damage = 50 + 90 * ratio; // 50 → 140 damage
 
         if (chargedSecs >= 9.5) {
             for (Player viewer : Bukkit.getOnlinePlayers()) {
@@ -161,7 +162,7 @@ public class ExcaliburListener extends DivineWeaponListener {
                             hit.add(target.getUniqueId());
                             slamKillTargets.add(target.getUniqueId());
                             target.setNoDamageTicks(0);
-                            target.damage(9999.0, p); // obliterate
+                            target.damage(damage, p);
 
                             Location tLoc = target.getLocation().clone().add(0, 1, 0);
                             world.spawnParticle(Particle.SOUL,       tLoc, 25, 0.5, 0.8, 0.5, 0.06);

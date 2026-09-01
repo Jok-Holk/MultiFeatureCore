@@ -37,10 +37,11 @@ public class CoreUpdateCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         boolean allowed = sender instanceof ConsoleCommandSender;
         if (sender instanceof Player p) {
-            allowed = plugin.getRankSystem().getRank(p).equals("OWNER");
+            String rank = plugin.getRankSystem().getRank(p);
+            allowed = rank.equals("OWNER") || rank.equals("DEVELOPER");
         }
         if (!allowed) {
-            sender.sendMessage("§cOnly console or OWNER can run this command.");
+            sender.sendMessage("§cOnly console, OWNER, or DEVELOPER can run this command.");
             return true;
         }
 

@@ -151,6 +151,30 @@ public class AbyssalTridentListener implements Listener {
             // Khong cancel: de EntityDamageByEntityEvent xu ly dame, sau do restore velocity
 
         } else {
+            Location impactLoc = trident.getLocation();
+
+            // Near-miss assist: vanilla trident-vs-entity collision has a small
+            // hitbox and full travel time, making it genuinely hard to land a
+            // direct hit. If the block impact lands within ~1.5 blocks (a "3x3"
+            // area) of a living entity, treat it as a hit instead of a true miss
+            // by routing through the same damage path a direct hit uses.
+            LivingEntity nearMissTarget = impactLoc.getWorld()
+                    .getNearbyEntities(impactLoc, 1.5, 1.5, 1.5).stream()
+                    .filter(ent -> ent instanceof LivingEntity && ent != trident.getShooter())
+                    .map(ent -> (LivingEntity) ent)
+                    .min(Comparator.comparingDouble(ent -> ent.getLocation().distanceSquared(impactLoc)))
+                    .orElse(null);
+
+            if (nearMissTarget != null) {
+                // Re-enters onTridentDamage via EntityDamageByEntityEvent — must
+                // happen before trackedTridents.remove() below so that handler
+                // can still resolve the shooter.
+                nearMissTarget.damage(BASE_DAMAGE, trident);
+            } else {
+                // True miss — always give audible feedback for where it landed.
+                impactLoc.getWorld().playSound(impactLoc, Sound.ENTITY_ELDER_GUARDIAN_FLOP, 0.5f, 1.2f);
+            }
+
             // Trung block -> ket thuc hanh trinh, tra ve cho chu
             stopTrail(tridentId);
             hitEntities.remove(tridentId);
@@ -160,7 +184,6 @@ public class AbyssalTridentListener implements Listener {
             if (returnItem == null) returnItem = trident.getItemStack().clone();
             final ItemStack finalItem = returnItem;
 
-            Location impactLoc = trident.getLocation();
             spawnImpactBurst(impactLoc);
             startStuckGlow(impactLoc);
 

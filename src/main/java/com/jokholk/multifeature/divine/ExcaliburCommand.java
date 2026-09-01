@@ -17,7 +17,10 @@ import java.util.List;
 public class ExcaliburCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME  = "§4§l≪ Dark Excalibur ≫";
-    static final float  CONSUME_SECS  = 10.0f; // matches ExcaliburListener.MAX_CHARGE
+    // Technical duration for the Consumable component — kept far beyond any
+    // realistic hold so vanilla's own "consume complete" never fires; the real
+    // charge cap (10s) lives in ExcaliburListener.MAX_CHARGE.
+    static final float  CONSUME_SECS  = 600.0f;
 
     private final MainPlugin plugin;
 

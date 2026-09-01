@@ -25,7 +25,7 @@ public class RagnarokListener extends DivineWeaponListener {
     static final double MAX_CHARGE      = 5.0;
     static final double MAX_HALF_WIDTH  = 30.0;
     static final double MAX_DEPTH       = 22.0;
-    static final double MAX_DAMAGE      = 50.0;
+    static final double MAX_DAMAGE      = 120.0;
 
     private static final Color  C1  = Color.fromRGB(255, 80,  0);
     private static final Color  C2  = Color.fromRGB(255, 200, 0);
@@ -103,9 +103,9 @@ public class RagnarokListener extends DivineWeaponListener {
 
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        double halfWidth = 8 + 22 * ratio;   // 8 → 30 blocks wide on each side
-        double depth     = 5 + 17 * ratio;   // 5 → 22 blocks deep
-        double damage    = 45 + 105 * ratio; // 45 → 150 damage
+        double halfWidth = 8 + 22 * ratio;  // 8 → 30 blocks wide on each side
+        double depth     = 5 + 17 * ratio;  // 5 → 22 blocks deep
+        double damage    = 40 + 80 * ratio; // 40 → 120 damage
 
         Vector forward = p.getLocation().getDirection();
         forward.setY(0);
@@ -146,6 +146,13 @@ public class RagnarokListener extends DivineWeaponListener {
         // ─── Animated sweep: left → right over 20 ticks ───
         final int SWEEP_TICKS = 20;
         final Set<UUID> hit = new HashSet<>();
+
+        // World-axis-aligned half-extents that fully contain the rotated
+        // depth x (2*halfWidth) rectangle, regardless of player facing —
+        // fixes entities being missed unless the player faced a cardinal
+        // direction (getNearbyEntities' box is always world-axis-aligned).
+        final double queryHalfX = Math.abs(fwd.getX()) * depth + Math.abs(right.getX()) * halfWidth + 2;
+        final double queryHalfZ = Math.abs(fwd.getZ()) * depth + Math.abs(right.getZ()) * halfWidth + 2;
 
         new BukkitRunnable() {
             int t = 0;
@@ -208,9 +215,11 @@ public class RagnarokListener extends DivineWeaponListener {
                     spawnFirework(fwLoc, C1, C2, FireworkEffect.Type.STAR, false);
                 }
 
-                // Hit entities in the current sweep slice
-                world.getNearbyEntities(feet.clone().add(fwd.clone().multiply(depth / 2.0)),
-                        Math.abs(sweepSide) + 2, 3, depth / 2.0 + 2).stream()
+                // Hit entities in the current sweep slice. The broad-phase box is
+                // centered on the player and sized to fully contain the rotated
+                // sweep rectangle in world space; the precise fwd/right dot-product
+                // filter below does the actual shape check.
+                world.getNearbyEntities(feet, queryHalfX, 3, queryHalfZ).stream()
                         .filter(e -> e instanceof LivingEntity && e != p)
                         .filter(e -> !hit.contains(e.getUniqueId()))
                         .filter(e -> {

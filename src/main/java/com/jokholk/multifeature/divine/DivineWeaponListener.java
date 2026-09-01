@@ -28,8 +28,11 @@ import java.util.UUID;
 /**
  * Base class for all charge-and-release divine weapons.
  * Mechanic: HOLD right-click to charge, RELEASE to cast.
- * Requires the item to have a CONSUMABLE data component (consumeSeconds = maxChargeSecs)
- * so that isHandRaised() returns true while holding.
+ * Requires the item to have a CONSUMABLE data component with a long consumeSeconds
+ * (far beyond getMaxChargeSecs()) so that isHandRaised() returns true while holding,
+ * without vanilla's own "consume complete" ever firing during normal play — charge
+ * ratio caps at 1.0 via getChargeRatio() and the player can keep holding at 100%
+ * charge indefinitely; the cast only fires when they physically release right-click.
  */
 public abstract class DivineWeaponListener implements Listener {
 
@@ -111,7 +114,9 @@ public abstract class DivineWeaponListener implements Listener {
         // which makes isHandRaised() return true while the player holds right-click.
     }
 
-    // Fires when the consumable duration completes = max charge reached
+    // consumeSeconds is set far beyond getMaxChargeSecs(), so this should never
+    // actually fire during normal play — cancel defensively without releasing,
+    // so a very long hold doesn't get force-cast by vanilla's own consume-complete.
     @EventHandler
     public void onConsume(PlayerItemConsumeEvent e) {
         Player p = e.getPlayer();
@@ -119,9 +124,6 @@ public abstract class DivineWeaponListener implements Listener {
         if (!isWeapon(item)) return;
         if (!isOwner(p, item)) return;
         e.setCancelled(true);
-        if (chargeStart.containsKey(p.getUniqueId())) {
-            releaseCharge(p);
-        }
     }
 
     // ─── Cancel on item switch or quit ───
@@ -167,11 +169,9 @@ public abstract class DivineWeaponListener implements Listener {
             if (t % 5 == 0) {
                 onChargeVisual(p, getChargeRatio(uid));
             }
-
-            // Safety net: release at max charge if consume event didn't fire
-            if (t >= (int)(getMaxChargeSecs() * 20)) {
-                releaseCharge(p);
-            }
+            // No auto-release at max charge — getChargeRatio() clamps to 1.0, so the
+            // player can keep holding at full charge; only releasing right-click
+            // (the isHandRaised() check above) triggers the cast.
         }, 1L, 1L);
         chargeTasks.put(uid, task);
     }

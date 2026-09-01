@@ -17,7 +17,10 @@ import java.util.List;
 public class RagnarokCommand implements CommandExecutor {
 
     static final String DISPLAY_NAME = "§c§l⚡ RAGNAROK §c§l⚡";
-    static final float  CONSUME_SECS = 5.0f;
+    // Technical duration for the Consumable component — kept far beyond any
+    // realistic hold so vanilla's own "consume complete" never fires; the real
+    // charge cap (5s) lives in RagnarokListener.MAX_CHARGE.
+    static final float  CONSUME_SECS = 600.0f;
 
     private final MainPlugin plugin;
 
