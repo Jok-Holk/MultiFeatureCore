@@ -12,8 +12,10 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -23,6 +25,7 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class NothanListener extends DivineWeaponListener {
 
@@ -37,8 +40,37 @@ public class NothanListener extends DivineWeaponListener {
     // cos(45°) = 0.707
     private static final double COS_MIN = Math.cos(Math.toRadians(MAX_CONE_HALF));
 
+    // Players currently holding a fully-loaded shot, ready to fire on their
+    // NEXT right-click (a separate click, not a continued hold).
+    private final Set<UUID> loaded = new HashSet<>();
+
     public NothanListener(MainPlugin plugin) {
         super(plugin);
+    }
+
+    // Real crossbow UX: click 1 (hold) loads; click 2 (separate, while
+    // loaded) fires immediately with no further charging. Intercept before
+    // the base class's onInteract so a loaded weapon doesn't start a fresh
+    // load cycle on the firing click.
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        var action = e.getAction();
+        boolean isRight = action == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+                       || action == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
+        if (!isRight) return;
+
+        ItemStack held = e.getItem();
+        if (!isWeapon(held)) return;
+
+        Player p = e.getPlayer();
+        if (loaded.remove(p.getUniqueId())) {
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
+            fireLoadedShot(p);
+            return;
+        }
+
+        super.onInteract(e);
     }
 
     @Override
@@ -102,13 +134,18 @@ public class NothanListener extends DivineWeaponListener {
 
     @Override
     protected void onChargeStart(Player p) {
-        swapModel(p, "item/no_than_charged");
+        // Model stays on the idle/unloaded state while loading is in progress
+        // (onChargeVisual's particles carry the "charging up" feedback) --
+        // it only swaps to the loaded model once loading actually completes,
+        // in castSkill() below.
         stripChargedProjectiles(p);
     }
 
     @Override
     protected void onChargeEnd(Player p) {
-        swapModel(p, "item/no_than");
+        // Only reached via an early-release cancel (cancelIfReleasedEarly) --
+        // a successful load doesn't go through here with an unloaded model,
+        // since the model was never swapped to charged in the first place.
         stripChargedProjectiles(p);
     }
 
@@ -159,12 +196,22 @@ public class NothanListener extends DivineWeaponListener {
         }
     }
 
+    // Called by the base class the instant loading completes (ratio hits
+    // 1.0 via autoFireAtMaxCharge). This does NOT fire -- it just marks the
+    // weapon "loaded" and shows the loaded model; the actual shot happens in
+    // fireLoadedShot() on the player's next, separate right-click.
     @Override
     protected void castSkill(Player p, double ratio, double chargedSecs) {
-        // Fixed power, not scaled by ratio -- this weapon fires only once
-        // fully loaded (autoFireAtMaxCharge/cancelIfReleasedEarly above), so
-        // ratio is always 1.0 by the time this runs. Use the MAX_* constants
-        // directly rather than a formula that now always evaluates to its max.
+        loaded.add(p.getUniqueId());
+        swapModel(p, "item/no_than_charged");
+        p.playSound(p.getLocation(), Sound.ITEM_CROSSBOW_LOADING_END, 1.0f, 1.0f);
+        p.sendMessage(Msg.NOTHAN_LOADED.get(p));
+    }
+
+    private void fireLoadedShot(Player p) {
+        swapModel(p, "item/no_than");
+
+        // Fixed power -- no charging involved in the firing click itself.
         double range  = MAX_RANGE;
         double damage = MAX_DAMAGE;
         int    sickTicks = 120;
@@ -179,7 +226,7 @@ public class NothanListener extends DivineWeaponListener {
         world.spawnParticle(Particle.ENCHANT,          muzzle, 40, 0.8, 0.8, 0.8, 0.4);
         world.spawnParticle(Particle.CRIT,             muzzle, 25, 0.5, 0.5, 0.5, 0.3);
         // Cone particle stream
-        int streamPts = 18 + (int)(ratio * 14);
+        int streamPts = 32;
         for (int i = 0; i < streamPts; i++) {
             double spread = 0.5 * (i / (double)streamPts);
             double dist   = range * (i / (double)streamPts);

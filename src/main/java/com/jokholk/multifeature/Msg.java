@@ -945,6 +945,10 @@ public enum Msg {
         "§6§l✦ §eHeavenly decree issued. §6§l✦ §7%count% judged.",
         "§6§l✦ §eThiên lệnh đã ban ra. §6§l✦ §7%count% người bị phán xét."
     ),
+    NOTHAN_LOADED(
+        "§6[Divine Crossbow] §7Loaded — right-click again to fire.",
+        "§6[Nỏ Thần] §7Đã nạp — bấm chuột phải lần nữa để bắn."
+    ),
 
     // ──────────────────────────────────────────────────────────
     //  Abyssal Sovereign (Trident)
