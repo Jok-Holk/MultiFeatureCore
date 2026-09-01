@@ -125,7 +125,7 @@ public class SpearListener extends DivineWeaponListener {
         p.setVelocity(dir.multiply(power).add(new Vector(0, 0.3, 0)));
 
         // Path AoE runnable
-        double extraDamage = 45 + 90 * ratio;
+        double extraDamage = 20 + 40 * ratio; // 20 → 60 damage
         int slowTicks  = (int)(40 + 100 * ratio);  // 2s → 7s
         int blindTicks = (int)(30 +  70 * ratio);  // 1.5s → 5s
 

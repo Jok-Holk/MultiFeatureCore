@@ -102,7 +102,7 @@ public class ExcaliburListener extends DivineWeaponListener {
         World    world  = p.getWorld();
         Location origin = p.getLocation();
         double   maxR   = 8 + 30 * ratio;  // 8 → 38 blocks
-        double   damage = 50 + 90 * ratio; // 50 → 140 damage
+        double   damage = 10 + 60 * ratio; // 10 → 70 damage
 
         if (chargedSecs >= 9.5) {
             for (Player viewer : Bukkit.getOnlinePlayers()) {
