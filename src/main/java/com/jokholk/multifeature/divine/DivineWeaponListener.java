@@ -54,6 +54,16 @@ public abstract class DivineWeaponListener implements Listener {
     protected abstract void    onChargeVisual(Player p, double ratio);
     protected abstract void    castSkill(Player p, double ratio, double chargedSecs);
 
+    /**
+     * Floor applied to the cooldown regardless of how briefly the weapon was
+     * charged. Without this, a quick tap-release (near-zero chargedSecs)
+     * produces a near-zero cooldown, letting the skill be spammed back to
+     * back — e.g. the Spear's lunge. Weapons that want a real cooldown
+     * between casts should override this; the default keeps the old
+     * proportional-only behavior for weapons that don't need it.
+     */
+    protected double getMinCooldownSecs() { return 0.0; }
+
     /** Optional hooks for weapons that swap their held-item model while charging (e.g. Nothan). */
     protected void onChargeStart(Player p) {}
     protected void onChargeEnd(Player p) {}
@@ -211,7 +221,7 @@ public abstract class DivineWeaponListener implements Listener {
             return;
         }
 
-        long cdMs = (long)(chargedSecs * getCdMultiplier() * 1000L);
+        long cdMs = (long)(Math.max(chargedSecs * getCdMultiplier(), getMinCooldownSecs()) * 1000L);
         cooldowns.put(uid, System.currentTimeMillis() + cdMs);
 
         onChargeEnd(p);

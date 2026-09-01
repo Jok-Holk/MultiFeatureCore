@@ -25,6 +25,7 @@ public class IgnisListener extends DivineWeaponListener {
     static final double MAX_RADIUS  = 17.0;
     static final double MAX_LENGTH  = 85.0;
     static final double MAX_DAMAGE  = 40.0;
+    private static final double MIN_COOLDOWN = 5.0;
 
     private static final Color C1 = Color.fromRGB(255, 100, 0);
     private static final Color C2 = Color.fromRGB(255, 200, 0);
@@ -53,6 +54,9 @@ public class IgnisListener extends DivineWeaponListener {
 
     @Override
     protected double getCdMultiplier()  { return 0.5; }
+
+    @Override
+    protected double getMinCooldownSecs() { return MIN_COOLDOWN; }
 
     @Override
     protected String getTheftKickMessage(Player victim) {

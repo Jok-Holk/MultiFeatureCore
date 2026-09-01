@@ -26,6 +26,7 @@ public class RagnarokListener extends DivineWeaponListener {
     static final double MAX_HALF_WIDTH  = 42.0;
     static final double MAX_DEPTH       = 5.0;
     static final double MAX_DAMAGE      = 120.0;
+    private static final double MIN_COOLDOWN = 6.0;
 
     private static final Color  C1  = Color.fromRGB(255, 80,  0);
     private static final Color  C2  = Color.fromRGB(255, 200, 0);
@@ -49,8 +50,9 @@ public class RagnarokListener extends DivineWeaponListener {
         return lore.get(lore.size() - 1).contains(p.getUniqueId().toString());
     }
 
-    @Override protected double getMaxChargeSecs() { return MAX_CHARGE; }
-    @Override protected double getCdMultiplier()  { return 1.0; }
+    @Override protected double getMaxChargeSecs()   { return MAX_CHARGE; }
+    @Override protected double getCdMultiplier()    { return 1.0; }
+    @Override protected double getMinCooldownSecs() { return MIN_COOLDOWN; }
     @Override protected String getTheftKickMessage(Player victim) { return Msg.RAGNAROK_KICK_THEFT.get(victim); }
 
     // ─── Charge visual: storm builds up around player ───

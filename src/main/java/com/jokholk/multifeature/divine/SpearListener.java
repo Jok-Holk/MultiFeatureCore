@@ -20,7 +20,8 @@ import java.util.UUID;
 public class SpearListener extends DivineWeaponListener {
 
     private static final double MAX_CHARGE   = 3.0;  // seconds
-    private static final double CD_MULT      = 1.0;  // 1s cooldown per 1s charge
+    private static final double CD_MULT      = 1.5;  // cooldown scales faster than charge time
+    private static final double MIN_COOLDOWN = 4.0;  // floor so a quick tap can't spam the lunge
     private static final int    LUNGE_TICKS  = 34;   // how long we check path after launch
     private static final double HIT_RADIUS   = 3.5;  // blocks around player while lunging
     private static final int    MAX_TARGETS  = 5;    // cap on distinct entities hit per lunge
@@ -46,8 +47,9 @@ public class SpearListener extends DivineWeaponListener {
         return lore.get(lore.size() - 1).contains(p.getUniqueId().toString());
     }
 
-    @Override protected double getMaxChargeSecs() { return MAX_CHARGE; }
-    @Override protected double getCdMultiplier()  { return CD_MULT; }
+    @Override protected double getMaxChargeSecs()   { return MAX_CHARGE; }
+    @Override protected double getCdMultiplier()    { return CD_MULT; }
+    @Override protected double getMinCooldownSecs() { return MIN_COOLDOWN; }
 
     @Override
     protected String getTheftKickMessage(Player victim) {

@@ -20,6 +20,7 @@ public class ExcaliburListener extends DivineWeaponListener {
 
     static final double MAX_CHARGE  = 10.0;
     static final double MAX_RADIUS  = 38.0;
+    private static final double MIN_COOLDOWN = 5.0;
 
     private static final Color C1 = Color.fromRGB(139, 0,  0);
     private static final Color C2 = Color.fromRGB(40,  0,  0);
@@ -45,8 +46,9 @@ public class ExcaliburListener extends DivineWeaponListener {
         return lore.get(lore.size() - 1).contains(p.getUniqueId().toString());
     }
 
-    @Override protected double getMaxChargeSecs() { return MAX_CHARGE; }
-    @Override protected double getCdMultiplier()  { return 0.3; }
+    @Override protected double getMaxChargeSecs()   { return MAX_CHARGE; }
+    @Override protected double getCdMultiplier()    { return 0.3; }
+    @Override protected double getMinCooldownSecs() { return MIN_COOLDOWN; }
     @Override protected String getTheftKickMessage(Player victim) { return Msg.EXCALIBUR_KICK_THEFT.get(victim); }
 
     // ─── Charge visual: dark blade rising upward ───
