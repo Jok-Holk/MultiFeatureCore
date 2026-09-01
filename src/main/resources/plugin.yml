@@ -8,6 +8,10 @@ description: A multi-feature core plugin - fast travel, rank system, height lock
 website: https://jokholk.dev
 
 commands:
+  coreupdate:
+    description: Download the latest plugin jar and shut the server down for restart
+    usage: /coreupdate
+
   travel:
     description: Fast travel system
     usage: /travel [save|load|name|delete|slots|icon] [args...]
@@ -87,14 +91,6 @@ commands:
   nothan:
     description: Summon the Divine Crossbow
     usage: /nothan
-
-  divinedebug:
-    description: Debug tool - summon all divine weapons at once
-    usage: /divinedebug
-
-  modeltune:
-    description: Debug tool - live-edit item model display transform and re-push resource pack
-    usage: /modeltune <weapon> <context> <rot|pos|scale> <x> <y> <z>
 
   language:
     description: Set your preferred language
@@ -188,10 +184,6 @@ permissions:
 
   multifeature.nothan:
     description: Summon Divine Crossbow
-    default: op
-
-  multifeature.divinedebug:
-    description: Debug tool - summon all divine weapons at once
     default: op
 
   multifeature.language:

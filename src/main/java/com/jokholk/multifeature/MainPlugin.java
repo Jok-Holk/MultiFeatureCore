@@ -103,8 +103,7 @@ public class MainPlugin extends JavaPlugin implements Listener {
         registerCmdOnly("void",       new VoidBowCommand(this));
         registerCmdOnly("spear",      new SpearCommand(this));
         registerCmdOnly("nothan",     new NothanCommand(this));
-        registerCmdOnly("divinedebug", new DivineDebugCommand(this));
-        registerCmdOnly("modeltune", new ModelTuneCommand(this));
+        registerCmdOnly("coreupdate", new CoreUpdateCommand(this));
 
         // ─── Init online players (hot reload) ───
         for (Player player : getServer().getOnlinePlayers()) {
@@ -178,9 +177,9 @@ public class MainPlugin extends JavaPlugin implements Listener {
         // Resource pack push (1 giây sau khi join để login hoàn tất)
         // Config override trước, fallback về URL mặc định trong code
         String rpUrl = config.getString("resource-pack.url",
-                "https://github.com/Jok-Holk/MultiFeatureCore/releases/download/resourcepack-v2/multifeature-pack.zip");
+                "https://github.com/Jok-Holk/MultiFeatureCore/releases/download/resourcepack/multifeature-pack.zip");
         String rpSha1 = config.getString("resource-pack.sha1",
-                "3bf81686ab75fc77e110975c823790b861877d4f");
+                "831c4f878335d84e81ba74edb1c254f2ffc23dc1");
         boolean rpRequired = config.getBoolean("resource-pack.required", false);
         if (!rpUrl.isEmpty()) {
             Bukkit.getScheduler().runTaskLater(this, () -> {

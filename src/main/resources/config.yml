@@ -3,6 +3,9 @@ resource-pack:
   sha1: ""      # Để trống = dùng SHA1 mặc định trong code; điền vào để override
   required: false  # true = bắt buộc player phải nhận
 
+update:
+  jar-url: "https://github.com/Jok-Holk/MultiFeatureCore/releases/latest/download/multifeaturecore.jar"
+
 travel:
   title: "Fast Travel"
   size: 9

@@ -1,0 +1,38 @@
+name: Build and release plugin jar
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build
+        run: mvn -B -q package -DskipTests
+
+      - name: Rename jar to a stable filename
+        run: cp target/multifeaturecore-*.jar target/multifeaturecore.jar
+
+      - name: Publish "latest" release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest build
+          body: Automatically built from the latest commit on master (${{ github.sha }}).
+          prerelease: false
+          make_latest: true
+          files: target/multifeaturecore.jar
